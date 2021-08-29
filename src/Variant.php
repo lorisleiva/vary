@@ -11,7 +11,9 @@ use Illuminate\Support\Traits\Tappable;
 
 class Variant
 {
-    use Conditionable, Macroable, Tappable;
+    use Conditionable;
+    use Macroable;
+    use Tappable;
 
     protected string $value;
     protected ?string $path;
@@ -52,7 +54,7 @@ class Variant
     }
 
     // TODO: Organise in traits.
-    public function replace(string|array $search, string|array $replace): static
+    public function replace(string | array $search, string | array $replace): static
     {
         return $this->new(Str::replace($search, $replace, $this->value));
     }
@@ -77,7 +79,7 @@ class Variant
         return $this->new(Str::replaceLast($search, $replace, $this->value));
     }
 
-    public function replaceMatches(string $pattern, Closure|string $replace, int $limit = -1): static
+    public function replaceMatches(string $pattern, Closure | string $replace, int $limit = -1): static
     {
         if ($replace instanceof Closure) {
             return $this->new(preg_replace_callback($pattern, $replace, $this->value, $limit));
