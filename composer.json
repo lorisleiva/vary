@@ -1,11 +1,10 @@
 {
-    "name": "lorisleiva/skeleton",
-    "description": "TODO",
+    "name": "lorisleiva/vary",
+    "description": "WIP",
     "keywords": [
-        "laravel",
-        "skeleton"
+        "php"
     ],
-    "homepage": "https://github.com/lorisleiva/skeleton",
+    "homepage": "https://github.com/lorisleiva/vary",
     "license": "MIT",
     "authors": [
         {
@@ -16,22 +15,21 @@
         }
     ],
     "require": {
-        "php": "^7.4|^8.0",
+        "php": "^8.0",
         "illuminate/contracts": "^7.0|^8.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.0",
-        "pestphp/pest": "^0.3.14",
+        "pestphp/pest": "^1.17.0",
         "phpunit/phpunit": "^9.3.10"
     },
     "autoload": {
         "psr-4": {
-            "Lorisleiva\\Skeleton\\": "src"
+            "Lorisleiva\\Vary\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Lorisleiva\\Skeleton\\Tests\\": "tests"
+            "Lorisleiva\\Vary\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -40,16 +38,6 @@
     },
     "config": {
         "sort-packages": true
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Lorisleiva\\Skeleton\\SkeletonServiceProvider"
-            ],
-            "aliases": {
-                "Skeleton": "Lorisleiva\\Skeleton\\Facades\\Skeleton"
-            }
-        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

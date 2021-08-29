@@ -1,21 +1,10 @@
 <?php
 
-namespace Lorisleiva\Skeleton\Tests;
+namespace Lorisleiva\Vary\Tests;
 
-use Lorisleiva\Skeleton\SkeletonServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
-class TestCase extends Orchestra
+class TestCase extends BaseTestCase
 {
-    protected function getPackageProviders($app)
-    {
-        return [
-            SkeletonServiceProvider::class,
-        ];
-    }
-
-    public function getEnvironmentSetUp($app)
-    {
-        //
-    }
+    //
 }

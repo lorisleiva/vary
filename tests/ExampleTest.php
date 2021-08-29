@@ -1,16 +1,7 @@
 <?php
 
-use Lorisleiva\Skeleton\Skeleton;
+use Lorisleiva\Vary\Vary;
 
-it('resolves from the container', function () {
-    $skeleton = app(Skeleton::class);
-
-    expect($skeleton instanceof Skeleton)->toBeTrue();
-});
-
-it('resolves as a singleton', function () {
-    $skeletonA = app(Skeleton::class);
-    $skeletonB = app(Skeleton::class);
-
-    expect($skeletonA)->toBe($skeletonB);
+it('passes dummy tests', function () {
+    expect(true)->toBeTrue();
 });
