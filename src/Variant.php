@@ -8,6 +8,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\Tappable;
+use JetBrains\PhpStorm\NoReturn;
+use JetBrains\PhpStorm\Pure;
 
 class Variant
 {
@@ -24,7 +26,7 @@ class Variant
         $this->path = $path;
     }
 
-    public function getCurrentPath(): ?string
+    public function getPath(): ?string
     {
         return $this->path;
     }
@@ -34,23 +36,44 @@ class Variant
         return $this->value;
     }
 
-    public function __toString(): string
+    #[Pure] public function __toString(): string
     {
         return $this->toString();
     }
 
-    public function new(string $value): static
+    #[Pure] public function new(string $value): static
     {
         return new static($value, $this->path);
     }
 
-    public function save(?string $path = null, int $flags = 0): bool
+    public function save(?string $path = null, int $flags = 0): static
     {
         if (! $path = $path ?? $this->path) {
             throw new Exception('Path not given');
         }
 
-        return file_put_contents($path, $this->value, $flags) !== false;
+        file_put_contents($path, $this->value, $flags) !== false;
+
+        return $this;
+    }
+
+    public function saveAs(string $path, int $flags = 0): static
+    {
+        return $this->save($path, $flags);
+    }
+
+    public function dump(): static
+    {
+        VarDumper::dump($this->value);
+
+        return $this;
+    }
+
+    #[NoReturn] public function dd(): void
+    {
+        $this->dump();
+
+        exit(1);
     }
 
     // TODO: Organise in traits.

@@ -2,6 +2,9 @@
 
 namespace Lorisleiva\Vary;
 
+use Illuminate\Filesystem\Filesystem;
+use JetBrains\PhpStorm\Pure;
+
 class Vary
 {
     public static function file(string $path): Variant
@@ -11,8 +14,13 @@ class Vary
         return new Variant($value, $path);
     }
 
-    public static function string(string $value): Variant
+    #[Pure] public static function string(string $value): Variant
     {
         return new Variant($value, null);
+    }
+
+    #[Pure] public static function filesystem(): Filesystem
+    {
+        return new Filesystem();
     }
 }
