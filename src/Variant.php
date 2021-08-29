@@ -92,12 +92,12 @@ class Variant
         return $this->new(Str::replaceArray($search, $replace, $this->value));
     }
 
-    public function replaceFirst(string $search, string $replace): static
+    #[Pure] public function replaceFirst(string $search, string $replace): static
     {
         return $this->new(Str::replaceFirst($search, $replace, $this->value));
     }
 
-    public function replaceLast(string $search, string $replace): static
+    #[Pure] public function replaceLast(string $search, string $replace): static
     {
         return $this->new(Str::replaceLast($search, $replace, $this->value));
     }
