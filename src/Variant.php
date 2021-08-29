@@ -2,14 +2,16 @@
 
 namespace Lorisleiva\Vary;
 
-use Closure;
 use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\Tappable;
 use JetBrains\PhpStorm\NoReturn;
 use JetBrains\PhpStorm\Pure;
+use Lorisleiva\Vary\Concerns\AltersMethods;
+use Lorisleiva\Vary\Concerns\AltersProperties;
+use Lorisleiva\Vary\Concerns\HandlesMustaches;
+use Lorisleiva\Vary\Concerns\HandlesReplacements;
 use Symfony\Component\VarDumper\VarDumper;
 
 class Variant
@@ -17,6 +19,10 @@ class Variant
     use Conditionable;
     use Macroable;
     use Tappable;
+    use HandlesReplacements;
+    use HandlesMustaches;
+    use AltersProperties;
+    use AltersMethods;
 
     protected string $value;
     protected ?string $path;
@@ -75,60 +81,5 @@ class Variant
         $this->dump();
 
         exit(1);
-    }
-
-    // TODO: Organise in traits.
-    public function replace(string | array $search, string | array $replace): static
-    {
-        return $this->new(Str::replace($search, $replace, $this->value));
-    }
-
-    public function replaceAll(array $replacements): static
-    {
-        return $this->replace(array_keys($replacements), array_values($replacements));
-    }
-
-    public function replaceSequentially(string $search, array $replace): static
-    {
-        return $this->new(Str::replaceArray($search, $replace, $this->value));
-    }
-
-    #[Pure] public function replaceFirst(string $search, string $replace): static
-    {
-        return $this->new(Str::replaceFirst($search, $replace, $this->value));
-    }
-
-    #[Pure] public function replaceLast(string $search, string $replace): static
-    {
-        return $this->new(Str::replaceLast($search, $replace, $this->value));
-    }
-
-    public function replaceMatches(string $pattern, Closure | string $replace, int $limit = -1): static
-    {
-        if ($replace instanceof Closure) {
-            return $this->new(preg_replace_callback($pattern, $replace, $this->value, $limit));
-        }
-
-        return $this->new(preg_replace($pattern, $replace, $this->value, $limit));
-    }
-
-    public function mustache(string $variable, string $value, int $limit = -1): static
-    {
-        $safeVariable = preg_quote($variable, '/');
-
-        return $this->new(preg_replace("/{{\s*$safeVariable\s*}}/", $value, $this->value, $limit));
-    }
-
-    public function mustacheAll(array $replacements): static
-    {
-        $value = $this->value;
-
-        foreach ($replacements as $variable => $variableValue) {
-            $safeVariable = preg_quote($variable, '/');
-
-            $value = preg_replace("/{{\s*$safeVariable\s*}}/", $variableValue, $value);
-        }
-
-        return $this->new($value);
     }
 }

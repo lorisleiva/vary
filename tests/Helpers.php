@@ -12,7 +12,7 @@ function tmp(string $path): string
     return __DIR__ . "/tmp/$path";
 }
 
-function cleanTmp(): string
+function cleanTmp(): void
 {
     (new Filesystem)->deleteDirectory(__DIR__ . "/tmp", preserve: true);
     (new Filesystem)->put(__DIR__ . "/tmp/.gitkeep", '');
