@@ -18,6 +18,16 @@ trait HandlesReplacements
         return $this->new($content);
     }
 
+    #[Pure] public function prepend(string $prefix): static
+    {
+        return $this->new($prefix . $this->value);
+    }
+
+    #[Pure] public function append(string $suffix): static
+    {
+        return $this->new($this->value . $suffix);
+    }
+
     public function replace(string | array $search, string | array $replace): static
     {
         return $this->new(Str::replace($search, $replace, $this->value));

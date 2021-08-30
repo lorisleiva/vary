@@ -3,25 +3,27 @@
 use Lorisleiva\Vary\Vary;
 
 it('can empty the entire text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->empty();
+    $variant = Vary::string('Some text')->empty();
 
     expect($variant->toString())->toBe('');
 });
 
 it('can override the entire text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->override('Hello World');
+    $variant = Vary::string('Some text')->override('Hello World');
 
     expect($variant->toString())->toBe('Hello World');
+});
+
+it('can prepend some text', function () {
+    $variant = Vary::string('World')->prepend('Hello ');
+
+    expect($variant->toString())->toBe('Hello World');
+});
+
+it('can append some text', function () {
+    $variant = Vary::string('World')->append(' Hello');
+
+    expect($variant->toString())->toBe('World Hello');
 });
 
 it('can replace all instances of one text with another', function () {
