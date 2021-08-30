@@ -5,7 +5,6 @@ namespace Lorisleiva\Vary;
 use Exception;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
-use Illuminate\Support\Traits\Tappable;
 use JetBrains\PhpStorm\NoReturn;
 use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Concerns\AltersLines;
