@@ -48,7 +48,7 @@ trait AltersLines
         );
     }
 
-    public function addLineAfterMatch(string $search, string $line, bool $keepIndent = false): static
+    public function addLineAfterMatches(string $search, string $line, bool $keepIndent = false): static
     {
         return $this->matchLine(
             $search,
@@ -64,7 +64,7 @@ trait AltersLines
         );
     }
 
-    public function addLineBeforeMatch(string $search, string $line, bool $keepIndent = false): static
+    public function addLineBeforeMatches(string $search, string $line, bool $keepIndent = false): static
     {
         return $this->matchLine(
             $search,

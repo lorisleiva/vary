@@ -109,7 +109,7 @@ it('can add a line after another matched line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineAfterMatch('sloth', 'New Line', keepIndent: true);
+        ->addLineAfterMatches('sloth', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         Perfection of sloth: to live your last day, every day,
@@ -158,7 +158,7 @@ it('can add a line before another matched line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineBeforeMatch('sloth', 'New Line', keepIndent: true);
+        ->addLineBeforeMatches('sloth', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         New Line
