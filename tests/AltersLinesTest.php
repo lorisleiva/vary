@@ -260,17 +260,58 @@ it('can remove the last line', function () {
 
 it('can remove lines that matches the given text exactly', function () {
     $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
+        First Line
+        Second Line
+        Third Line
     END;
 
-    $variant = Vary::string($content)
-        ->updateLine(
-            'without frenzy, or sloth, or pretense.',
-            fn (Variant $variant) => $variant->empty(),
-        );
+    expect(Vary::string($content)->removeLine('First Line')->toString())
+        ->toBe(<<<END
+            Second Line
+            Third Line
+        END);
 
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last day, every day,
-    END);
-})->skip();
+    expect(Vary::string($content)->removeLine('Second Line')->toString())
+        ->toBe(<<<END
+            First Line
+            Third Line
+        END);
+
+    expect(Vary::string($content)->removeLine('Third Line')->toString())
+        ->toBe(<<<END
+            First Line
+            Second Line
+        END);
+
+    expect(Vary::string('One line only')->removeLine('One line only')->toString())
+        ->toBe('');
+});
+
+it('can remove lines that matches a given regex', function () {
+    $content = <<<END
+        First Line
+        Second Line
+        Third Line
+    END;
+
+    expect(Vary::string($content)->removeLineMatches('First')->toString())
+        ->toBe(<<<END
+            Second Line
+            Third Line
+        END);
+
+    expect(Vary::string($content)->removeLineMatches('Second')->toString())
+        ->toBe(<<<END
+            First Line
+            Third Line
+        END);
+
+    expect(Vary::string($content)->removeLineMatches('Third')->toString())
+        ->toBe(<<<END
+            First Line
+            Second Line
+        END);
+
+    expect(Vary::string('One line only')->removeLineMatches('only')->toString())
+        ->toBe('');
+});
