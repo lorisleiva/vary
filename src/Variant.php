@@ -100,11 +100,34 @@ class Variant
         return $this->replaceFirst($oldValue, $newValue);
     }
 
+    public function beforeLast(string $search, Closure $callback): static
+    {
+        $oldValue = Str::beforeLast($this->value, $search);
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceFirst($oldValue, $newValue);
+    }
+
     public function after(string $search, Closure $callback): static
     {
         $oldValue = Str::after($this->value, $search);
         $newValue = $this->fragment($oldValue, $callback);
 
         return $this->replaceLast($oldValue, $newValue);
+    }
+
+    public function afterLast(string $search, Closure $callback): static
+    {
+        $oldValue = Str::afterLast($this->value, $search);
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceLast($oldValue, $newValue);
+    }
+
+    public function between(string $from, string $to, Closure $callback): static
+    {
+        return $this->after($from,
+            fn (Variant $variant) => $variant->before($to, $callback)
+        );
     }
 }
