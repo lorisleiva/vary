@@ -41,4 +41,9 @@ trait HandlesReplacements
 
         return $this->new(preg_replace($pattern, $replace, $this->value, $limit));
     }
+
+    #[Pure] public function empty(): static
+    {
+        return $this->new('');
+    }
 }
