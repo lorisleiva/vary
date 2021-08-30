@@ -2,9 +2,7 @@
 
 namespace Lorisleiva\Vary;
 
-use Closure;
 use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\Tappable;

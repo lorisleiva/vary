@@ -80,11 +80,11 @@ trait HandlesFragments
         return $this->after(
             search: $from,
             callback: fn (Variant $variant) => $variant->before(
-            search: $to,
-            callback: $callback,
-            last: $toLast,
-            included: $toIncluded,
-        ),
+                search: $to,
+                callback: $callback,
+                last: $toLast,
+                included: $toIncluded,
+            ),
             last: $fromLast,
             included: $fromIncluded,
         );
