@@ -44,6 +44,7 @@ trait AltersLines
         $safeSearch = preg_quote($search, '/');
         $replace = function (array $matches) use ($line, $keepIndent) {
             $indent = $keepIndent ? $matches[1] : '';
+
             return $matches[0] . "\n$indent$line";
         };
 
@@ -55,6 +56,7 @@ trait AltersLines
         $safeSearch = preg_quote($search, '/');
         $replace = function (array $matches) use ($line, $keepIndent) {
             $indent = $keepIndent ? $matches[1] : '';
+
             return  "$indent$line\n" . $matches[0];
         };
 
