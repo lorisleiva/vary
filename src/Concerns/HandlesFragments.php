@@ -129,4 +129,12 @@ trait HandlesFragments
     {
         return $this->between($from, $to, $callback, fromLast: true, fromIncluded: true, toLast: true, toIncluded: true);
     }
+
+    public function match(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    {
+        $replace = $replace ?? fn ($matches) => $matches[0];
+        $newReplace = fn ($matches) => $this->fragment($replace($matches), $callback);
+
+        return $this->replaceMatches($pattern, $newReplace, $limit);
+    }
 }

@@ -126,3 +126,18 @@ it('can update a fragment between two given text', function () {
     expect(Vary::string($content)->betweenLastAndLastIncluded('repeated', 'repeated', $callback)->toString())
         ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
 });
+
+it('can update fragments from a regex expression', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)
+        ->match('/day/', fn (Variant $variant) => $variant->replace('day', 'week'));
+
+    expect($variant->toString())->toBe(<<<END
+        Perfection of character: to live your last week, every week,
+        without frenzy, or sloth, or pretense.
+    END);
+});
