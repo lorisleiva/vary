@@ -2,7 +2,9 @@
 
 namespace Lorisleiva\Vary;
 
+use Closure;
 use Exception;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\Tappable;
@@ -81,5 +83,28 @@ class Variant
         $this->dump();
 
         exit(1);
+    }
+
+    protected function fragment(string $oldValue, Closure $callback): string
+    {
+        $newValue = $callback(new static($oldValue));
+
+        return $newValue instanceof Variant ? $newValue->toString() : $newValue;
+    }
+
+    public function before(string $search, Closure $callback): static
+    {
+        $oldValue = Str::before($this->value, $search);
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceFirst($oldValue, $newValue);
+    }
+
+    public function after(string $search, Closure $callback): static
+    {
+        $oldValue = Str::after($this->value, $search);
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceLast($oldValue, $newValue);
     }
 }
