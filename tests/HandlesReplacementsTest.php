@@ -145,3 +145,49 @@ it('can replace text using regular expressions and a callback', function () {
         without frenzy, or sloth, or pretense.
     END);
 });
+
+it('can delete all instances of one text', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    expect(Vary::string($content)->delete(' day')->toString())->toBe(<<<END
+        Perfection of character: to live your last, every,
+        without frenzy, or sloth, or pretense.
+    END);
+
+    expect(Vary::string($content)->delete([' day', ' or'])->toString())->toBe(<<<END
+        Perfection of character: to live your last, every,
+        without frenzy, sloth, pretense.
+    END);
+});
+
+it('can delete the first or last instance of one text', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    expect(Vary::string($content)->deleteFirst(' day')->toString())->toBe(<<<END
+        Perfection of character: to live your last, every day,
+        without frenzy, or sloth, or pretense.
+    END);
+
+    expect(Vary::string($content)->deleteLast(' day')->toString())->toBe(<<<END
+        Perfection of character: to live your last day, every,
+        without frenzy, or sloth, or pretense.
+    END);
+});
+
+it('can delete instances of text that match a given regex', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    expect(Vary::string($content)->deleteMatches('/\s(day|or)/')->toString())->toBe(<<<END
+        Perfection of character: to live your last, every,
+        without frenzy, sloth, pretense.
+    END);
+});

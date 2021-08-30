@@ -61,4 +61,26 @@ trait HandlesReplacements
 
         return $this->new(preg_replace($pattern, $replace, $this->value, $limit));
     }
+
+    public function delete(string | array $search): static
+    {
+        $replace = is_array($search) ? array_pad([], count($search), '') : '';
+
+        return $this->replace($search, $replace);
+    }
+
+    #[Pure] public function deleteFirst(string $search): static
+    {
+        return $this->new(Str::replaceFirst($search, '', $this->value));
+    }
+
+    #[Pure] public function deleteLast(string $search): static
+    {
+        return $this->new(Str::replaceLast($search, '', $this->value));
+    }
+
+    public function deleteMatches(string $pattern, int $limit = -1): static
+    {
+        return $this->new(preg_replace($pattern, '', $this->value, $limit));
+    }
 }
