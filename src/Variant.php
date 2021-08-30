@@ -126,7 +126,8 @@ class Variant
 
     public function between(string $from, string $to, Closure $callback): static
     {
-        return $this->after($from,
+        return $this->after(
+            $from,
             fn (Variant $variant) => $variant->before($to, $callback)
         );
     }
