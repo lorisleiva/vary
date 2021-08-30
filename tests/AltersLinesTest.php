@@ -234,7 +234,7 @@ it('can add a line before another matched line', function () {
 
 it('can remove the first line', function () {
     $content = <<<END
-        Perfection of sloth: to live your last day, every day,
+        Perfection of character: to live your last day, every day,
         without frenzy, or sloth, or pretense.
     END;
 
@@ -247,13 +247,30 @@ it('can remove the first line', function () {
 
 it('can remove the last line', function () {
     $content = <<<END
-        Perfection of sloth: to live your last day, every day,
+        Perfection of character: to live your last day, every day,
         without frenzy, or sloth, or pretense.
     END;
 
     $variant = Vary::string($content)->removeLastLine();
 
     expect($variant->toString())->toBe(<<<END
-        Perfection of sloth: to live your last day, every day,
+        Perfection of character: to live your last day, every day,
     END);
 });
+
+it('can remove lines that matches the given text exactly', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)
+        ->updateLine(
+            'without frenzy, or sloth, or pretense.',
+            fn (Variant $variant) => $variant->empty(),
+        );
+
+    expect($variant->toString())->toBe(<<<END
+        Perfection of character: to live your last day, every day,
+    END);
+})->skip();
