@@ -31,17 +31,15 @@ trait HandlesReplacements
 
     public function prependAfterWhitespace(string $prefix): static
     {
-        return $this->matchFirstGroup(
-            pattern: '/^\s*(.*)$/',
-            callback: fn (Variant $variant) => $variant->prepend($prefix),
+        return $this->afterWhitespace(
+            fn (Variant $variant) => $variant->prepend($prefix),
         );
     }
 
     public function appendBeforeWhitespace(string $suffix): static
     {
-        return $this->matchFirstGroup(
-            pattern: '/^(.*?)\s*$/',
-            callback: fn (Variant $variant) => $variant->append($suffix),
+        return $this->beforeWhitespace(
+            fn (Variant $variant) => $variant->append($suffix),
         );
     }
 
