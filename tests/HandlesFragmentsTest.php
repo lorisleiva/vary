@@ -78,3 +78,28 @@ it('keeps the before text intact when updating an after fragment', function () {
     expect($variant->toString())
         ->toBe('Some repeated fragment. Some unique fragment.');
 });
+
+it('can include the before and after text when updating a fragment', function () {
+    $content = 'last day, every day';
+    $callback = fn (Variant $variant) => $variant->replace('day', 'week');
+
+    // Before.
+    expect(Vary::string($content)->beforeIncluded('day', $callback)->toString())
+        ->toBe('last week, every day');
+    expect(Vary::string($content)->beforeLastIncluded('day', $callback)->toString())
+        ->toBe('last week, every week');
+
+    // After.
+    expect(Vary::string($content)->afterIncluded('day', $callback)->toString())
+        ->toBe('last week, every week');
+    expect(Vary::string($content)->afterLastIncluded('day', $callback)->toString())
+        ->toBe('last day, every week');
+});
+
+it('can update a fragment between two given text', function () {
+    $content = 'Some repeated fragment. Some repeated fragment. Some repeated fragment.';
+    $callback = fn (Variant $variant) => $variant->replace('repeated', 'CHANGED');
+
+    expect(Vary::string($content)->between('Some', 'fragment', $callback)->toString())
+        ->toBe('Some CHANGED fragment. Some repeated fragment. Some repeated fragment.');
+});

@@ -108,6 +108,22 @@ class Variant
         return $this->replaceFirst($oldValue, $newValue);
     }
 
+    public function beforeIncluded(string $search, Closure $callback): static
+    {
+        $oldValue = Str::before($this->value, $search) . $search;
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceFirst($oldValue, $newValue);
+    }
+
+    public function beforeLastIncluded(string $search, Closure $callback): static
+    {
+        $oldValue = Str::beforeLast($this->value, $search) . $search;
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceFirst($oldValue, $newValue);
+    }
+
     public function after(string $search, Closure $callback): static
     {
         $oldValue = Str::after($this->value, $search);
@@ -119,6 +135,22 @@ class Variant
     public function afterLast(string $search, Closure $callback): static
     {
         $oldValue = Str::afterLast($this->value, $search);
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceLast($oldValue, $newValue);
+    }
+
+    public function afterIncluded(string $search, Closure $callback): static
+    {
+        $oldValue = $search . Str::after($this->value, $search);
+        $newValue = $this->fragment($oldValue, $callback);
+
+        return $this->replaceLast($oldValue, $newValue);
+    }
+
+    public function afterLastIncluded(string $search, Closure $callback): static
+    {
+        $oldValue = $search . Str::afterLast($this->value, $search);
         $newValue = $this->fragment($oldValue, $callback);
 
         return $this->replaceLast($oldValue, $newValue);
