@@ -16,17 +16,17 @@ trait AltersLines
 
     public function getFirstLine(): string
     {
-        return Arr::first(explode("\n", $this->value));
+        return Arr::first(explode(PHP_EOL, $this->value));
     }
 
     public function getLastLine(): string
     {
-        return Arr::last(explode("\n", $this->value));
+        return Arr::last(explode(PHP_EOL, $this->value));
     }
 
     public function appendLine(string $line, bool $keepIndent = false): static
     {
-        $lineJump = $this->value ? "\n" : '';
+        $lineJump = $this->value ? PHP_EOL : '';
         $indent = $keepIndent ? $this->getIndentFromLine($this->getLastLine()) : '';
 
         return $this->new($this->value . "$lineJump$indent$line");
@@ -34,7 +34,7 @@ trait AltersLines
 
     public function prependLine(string $line, bool $keepIndent = false): static
     {
-        $lineJump = $this->value ? "\n" : '';
+        $lineJump = $this->value ? PHP_EOL : '';
         $indent = $keepIndent ? $this->getIndentFromLine($this->getFirstLine()) : '';
 
         return $this->new("$indent$line$lineJump" . $this->value);
@@ -70,5 +70,21 @@ trait AltersLines
             $search,
             fn (Variant $variant) => $variant->prependLine($line, $keepIndent),
         );
+    }
+
+    public function removeFirstLine(): static
+    {
+        $lines = explode(PHP_EOL, $this->value);
+        array_shift($lines);
+
+        return $this->new(implode(PHP_EOL, $lines));
+    }
+
+    public function removeLastLine(): static
+    {
+        $lines = explode(PHP_EOL, $this->value);
+        array_pop($lines);
+
+        return $this->new(implode(PHP_EOL, $lines));
     }
 }

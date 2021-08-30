@@ -167,3 +167,29 @@ it('can add a line before another matched line', function () {
         without frenzy, or sloth, or pretense.
     END);
 });
+
+it('can remove the first line', function () {
+    $content = <<<END
+        Perfection of sloth: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)->removeFirstLine();
+
+    expect($variant->toString())->toBe(<<<END
+        without frenzy, or sloth, or pretense.
+    END);
+});
+
+it('can remove the last line', function () {
+    $content = <<<END
+        Perfection of sloth: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)->removeLastLine();
+
+    expect($variant->toString())->toBe(<<<END
+        Perfection of sloth: to live your last day, every day,
+    END);
+});
