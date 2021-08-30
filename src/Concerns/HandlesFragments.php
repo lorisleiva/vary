@@ -158,4 +158,21 @@ trait HandlesFragments
 
         return $this->match($pattern, $callback, $replace, $limit);
     }
+
+    public function beforeWhitespace(Closure $callback): static
+    {
+        return $this->matchFirstGroup('/^(.*?)\s*$/s', $callback);
+    }
+
+    public function afterWhitespace(Closure $callback): static
+    {
+        return $this->matchFirstGroup('/^\s*(.*)$/s', $callback);
+    }
+
+    public function betweenWhitespace(Closure $callback): static
+    {
+        return $this->afterWhitespace(
+            fn (Variant $variant) => $variant->beforeWhitespace($callback)
+        );
+    }
 }

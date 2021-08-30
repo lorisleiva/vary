@@ -170,3 +170,17 @@ it('can update fragments from the first captured group of a regex expression', f
         without frenzy, or sloth, or pretense.
     END);
 });
+
+it('can update fragments before, after and between whitespaces', function () {
+    $content = "  \t\n  \r\n Hello Moto \n  \t";
+    $callback = fn (Variant $variant) => $variant->override('CHANGED');
+
+    expect(Vary::string($content)->beforeWhitespace($callback)->toString())
+        ->toBe("CHANGED \n  \t");
+
+    expect(Vary::string($content)->afterWhitespace($callback)->toString())
+        ->toBe("  \t\n  \r\n CHANGED");
+
+    expect(Vary::string($content)->betweenWhitespace($callback)->toString())
+        ->toBe("  \t\n  \r\n CHANGED \n  \t");
+});
