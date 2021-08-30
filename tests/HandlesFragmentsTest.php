@@ -100,6 +100,29 @@ it('can update a fragment between two given text', function () {
     $content = 'Some repeated fragment. Some repeated fragment. Some repeated fragment.';
     $callback = fn (Variant $variant) => $variant->replace('repeated', 'CHANGED');
 
+    // Between first and first.
     expect(Vary::string($content)->between('Some', 'fragment', $callback)->toString())
         ->toBe('Some CHANGED fragment. Some repeated fragment. Some repeated fragment.');
+    expect(Vary::string($content)->betweenFirstAndFirst('Some', 'fragment', $callback)->toString())
+        ->toBe('Some CHANGED fragment. Some repeated fragment. Some repeated fragment.');
+    expect(Vary::string($content)->betweenFirstAndFirstIncluded('repeated', 'repeated', $callback)->toString())
+        ->toBe('Some CHANGED fragment. Some repeated fragment. Some repeated fragment.');
+
+    // Between first and last.
+    expect(Vary::string($content)->betweenFirstAndLast('Some', 'fragment', $callback)->toString())
+        ->toBe('Some CHANGED fragment. Some CHANGED fragment. Some CHANGED fragment.');
+    expect(Vary::string($content)->betweenFirstAndLastIncluded('repeated', 'repeated', $callback)->toString())
+        ->toBe('Some CHANGED fragment. Some CHANGED fragment. Some CHANGED fragment.');
+
+    // Between last and first.
+    expect(Vary::string($content)->betweenLastAndFirst('Some', 'fragment', $callback)->toString())
+        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
+    expect(Vary::string($content)->betweenLastAndFirstIncluded('repeated', 'repeated', $callback)->toString())
+        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
+
+    // Between last and last.
+    expect(Vary::string($content)->betweenLastAndLast('Some', 'fragment', $callback)->toString())
+        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
+    expect(Vary::string($content)->betweenLastAndLastIncluded('repeated', 'repeated', $callback)->toString())
+        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
 });
