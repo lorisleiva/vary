@@ -2,6 +2,28 @@
 
 use Lorisleiva\Vary\Vary;
 
+it('can empty the entire text', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)->empty();
+
+    expect($variant->toString())->toBe('');
+});
+
+it('can override the entire text', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)->override('Hello World');
+
+    expect($variant->toString())->toBe('Hello World');
+});
+
 it('can replace all instances of one text with another', function () {
     $content = <<<END
         Perfection of character: to live your last day, every day,
@@ -120,15 +142,4 @@ it('can replace text using regular expressions and a callback', function () {
         Perfection of character: to live your day, day,
         without frenzy, or sloth, or pretense.
     END);
-});
-
-it('can empty the entire text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->empty();
-
-    expect($variant->toString())->toBe('');
 });

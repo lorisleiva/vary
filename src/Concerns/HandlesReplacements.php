@@ -8,6 +8,16 @@ use JetBrains\PhpStorm\Pure;
 
 trait HandlesReplacements
 {
+    #[Pure] public function empty(): static
+    {
+        return $this->new('');
+    }
+
+    #[Pure] public function override(string $content): static
+    {
+        return $this->new($content);
+    }
+
     public function replace(string | array $search, string | array $replace): static
     {
         return $this->new(Str::replace($search, $replace, $this->value));
@@ -40,10 +50,5 @@ trait HandlesReplacements
         }
 
         return $this->new(preg_replace($pattern, $replace, $this->value, $limit));
-    }
-
-    #[Pure] public function empty(): static
-    {
-        return $this->new('');
     }
 }

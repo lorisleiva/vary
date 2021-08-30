@@ -8,6 +8,16 @@ use Lorisleiva\Vary\Variant;
 
 trait AltersLines
 {
+    public function firstLine(Closure $callback): static
+    {
+        return $this->beforeIncluded(PHP_EOL, $callback);
+    }
+
+    public function lastLine(Closure $callback): static
+    {
+        return $this->afterLastIncluded(PHP_EOL, $callback);
+    }
+
     public function matchLine(string $pattern, Closure $callback, int $limit = -1): static
     {
         return $this->match("/^.*$pattern.*$/m", $callback, null, $limit);
