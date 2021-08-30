@@ -8,6 +8,7 @@ use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\Tappable;
 use JetBrains\PhpStorm\NoReturn;
 use JetBrains\PhpStorm\Pure;
+use Lorisleiva\Vary\Concerns\AltersLines;
 use Lorisleiva\Vary\Concerns\AltersMethods;
 use Lorisleiva\Vary\Concerns\AltersProperties;
 use Lorisleiva\Vary\Concerns\HandlesFragments;
@@ -17,12 +18,16 @@ use Symfony\Component\VarDumper\VarDumper;
 
 class Variant
 {
+    // Extendable.
     use Conditionable;
     use Macroable;
     use Tappable;
+
+    // Core Traits.
     use HandlesReplacements;
     use HandlesMustaches;
     use HandlesFragments;
+    use AltersLines;
     use AltersProperties;
     use AltersMethods;
 
