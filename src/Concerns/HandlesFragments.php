@@ -151,4 +151,9 @@ trait HandlesFragments
 
         return $this->match($pattern, $callback, $replace, $limit);
     }
+
+    public function matchLine(string $pattern, Closure $callback, int $limit = -1): static
+    {
+        return $this->match("/^.*$pattern.*$/m", $callback, null, $limit);
+    }
 }

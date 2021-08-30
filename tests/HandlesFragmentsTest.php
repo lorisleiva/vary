@@ -156,3 +156,18 @@ it('can update fragments from the first captured group of a regex expression', f
         without frenzy, or sloth, or pretense.
     END);
 });
+
+it('can update lines from regex expressions', function () {
+    $content = <<<END
+        Perfection of sloth: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)
+        ->matchLine('frenzy', fn (Variant $variant) => $variant->replace('sloth', 'laziness'));
+
+    expect($variant->toString())->toBe(<<<END
+        Perfection of sloth: to live your last day, every day,
+        without frenzy, or laziness, or pretense.
+    END);
+});
