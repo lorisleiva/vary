@@ -3,19 +3,22 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
-use Illuminate\Support\Arr;
 use Lorisleiva\Vary\Variant;
 
 trait AltersLines
 {
-    public function firstLine(Closure $callback): static
+    public function firstLine(Closure $callback, bool $includeEol = false): static
     {
-        return $this->before(PHP_EOL, $callback);
+        return str_contains($this->value, PHP_EOL)
+            ? $this->before(PHP_EOL, $callback, included: $includeEol)
+            : $this->tap($callback);
     }
 
-    public function lastLine(Closure $callback): static
+    public function lastLine(Closure $callback, bool $includeEol = false): static
     {
-        return $this->afterLast(PHP_EOL, $callback);
+        return str_contains($this->value, PHP_EOL)
+            ? $this->after(PHP_EOL, $callback, last: true, included: $includeEol)
+            : $this->tap($callback);
     }
 
     public function matchLine(string $pattern, Closure $callback, int $limit = -1): static
@@ -30,30 +33,33 @@ trait AltersLines
         return $this->match("/^\s*$safeLine\s*$/m", $callback, null, $limit);
     }
 
-    public function getFirstLine(): string
+    public function getIndentation(): string
     {
-        return Arr::first(explode(PHP_EOL, $this->value));
-    }
+        preg_match('/^(\s*)/', $this->value, $matches);
 
-    public function getLastLine(): string
-    {
-        return Arr::last(explode(PHP_EOL, $this->value));
+        return $matches[1] ?? '';
     }
 
     public function appendLine(string $line, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? PHP_EOL : '';
-        $indent = $keepIndent ? $this->getIndentFromLine($this->getLastLine()) : '';
 
-        return $this->new($this->value . "$lineJump$indent$line");
+        return $this->lastLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
+            $indent = $keepIndent ? $variant->getIndentation() : '';
+
+            return $variant->append("$lineJump$indent$line");
+        });
     }
 
     public function prependLine(string $line, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? PHP_EOL : '';
-        $indent = $keepIndent ? $this->getIndentFromLine($this->getFirstLine()) : '';
 
-        return $this->new("$indent$line$lineJump" . $this->value);
+        return $this->firstLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
+            $indent = $keepIndent ? $variant->getIndentation() : '';
+
+            return $variant->prepend("$indent$line$lineJump");
+        });
     }
 
     public function addLineAfter(string $search, string $line, bool $keepIndent = false): static
@@ -90,24 +96,17 @@ trait AltersLines
 
     public function removeFirstLine(): static
     {
-        return $this->beforeIncluded(
-            PHP_EOL,
-            fn (Variant $variant) => $variant->empty(),
+        return $this->firstLine(
+            callback: fn (Variant $variant) => $variant->empty(),
+            includeEol: true,
         );
     }
 
     public function removeLastLine(): static
     {
-        return $this->afterLastIncluded(
-            PHP_EOL,
-            fn (Variant $variant) => $variant->empty(),
+        return $this->lastLine(
+            callback: fn (Variant $variant) => $variant->empty(),
+            includeEol: true,
         );
-    }
-
-    protected function getIndentFromLine(string $line): string
-    {
-        preg_match('/^(\s*)/', $line, $matches);
-
-        return $matches[1] ?? '';
     }
 }

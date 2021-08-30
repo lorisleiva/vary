@@ -3,6 +3,13 @@
 use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
+it('can tap its own value', function () {
+    $variant = Vary::string('Hello World')
+        ->tap(fn (Variant $variant) => $variant->replace('World', 'Moto'));
+
+    expect($variant->toString())->toBe('Hello Moto');
+});
+
 it('can update a fragment before a given text', function () {
     $content = <<<END
         Perfection of character: to live your last day, every day,
@@ -94,6 +101,13 @@ it('can include the before and after text when updating a fragment', function ()
         ->toBe('last week, every week');
     expect(Vary::string($content)->afterLastIncluded('day', $callback)->toString())
         ->toBe('last day, every week');
+});
+
+it('ignores the nested variants when the before or after text was not found', function () {
+    $callback = fn (Variant $variant) => $variant->append('CHANGED');
+
+    expect(Vary::string('')->before('Some text', $callback)->toString())->toBe('');
+    expect(Vary::string('')->after('Some text', $callback)->toString())->toBe('');
 });
 
 it('can update a fragment between two given text', function () {

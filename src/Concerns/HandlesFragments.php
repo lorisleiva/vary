@@ -15,6 +15,13 @@ trait HandlesFragments
         return $newValue instanceof Variant ? $newValue->toString() : $newValue;
     }
 
+    public function tap(Closure $callback): static
+    {
+        $newValue = $this->fragment($this->value, $callback);
+
+        return $this->new($newValue);
+    }
+
     public function before(string $search, Closure $callback, bool $last = false, bool $included = false): static
     {
         $oldValue = $last

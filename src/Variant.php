@@ -21,7 +21,6 @@ class Variant
     // Extendable.
     use Conditionable;
     use Macroable;
-    use Tappable;
 
     // Core Traits.
     use HandlesReplacements;
