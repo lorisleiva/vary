@@ -95,7 +95,7 @@ trait AltersLines
         );
     }
 
-    public function removeFirstLine(): static
+    public function deleteFirstLine(): static
     {
         return $this->firstLine(
             callback: fn (Variant $variant) => $variant->empty(),
@@ -103,7 +103,7 @@ trait AltersLines
         );
     }
 
-    public function removeLastLine(): static
+    public function deleteLastLine(): static
     {
         return $this->lastLine(
             callback: fn (Variant $variant) => $variant->empty(),
@@ -111,25 +111,25 @@ trait AltersLines
         );
     }
 
-    public function removeLine(string $search, int $limit = -1): static
+    public function deleteLine(string $search, int $limit = -1): static
     {
         $placeholder = $this->getRandomPlaceholder();
         $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
 
         return $this->updateLine($search, $overrideCallback, $limit)
-            ->removePlaceholderLines($placeholder);
+            ->deletePlaceholderLines($placeholder);
     }
 
-    public function removeLineMatches(string $search, int $limit = -1): static
+    public function deleteLineMatches(string $search, int $limit = -1): static
     {
         $placeholder = $this->getRandomPlaceholder();
         $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
 
         return $this->matchLine($search, $overrideCallback, $limit)
-            ->removePlaceholderLines($placeholder);
+            ->deletePlaceholderLines($placeholder);
     }
 
-    protected function removePlaceholderLines(string $placeholder): static
+    protected function deletePlaceholderLines(string $placeholder): static
     {
         return $this->replace($placeholder . PHP_EOL, '')
             ->replace(PHP_EOL . $placeholder, '')
