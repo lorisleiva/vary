@@ -156,4 +156,11 @@ trait HandlesFragments
     {
         return $this->match("/^.*$pattern.*$/m", $callback, null, $limit);
     }
+
+    public function updateLine(string $lineWithoutWhitespace, Closure $callback, int $limit = -1): static
+    {
+        $safeLine = preg_quote($lineWithoutWhitespace, '/');
+
+        return $this->match("/^\s*$safeLine\s*$/m", $callback, null, $limit);
+    }
 }

@@ -3,6 +3,7 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Illuminate\Support\Arr;
+use Lorisleiva\Vary\Variant;
 
 trait AltersLines
 {
@@ -41,25 +42,33 @@ trait AltersLines
 
     public function addLineAfter(string $search, string $line, bool $keepIndent = false): static
     {
-        $safeSearch = preg_quote($search, '/');
-        $replace = function (array $matches) use ($line, $keepIndent) {
-            $indent = $keepIndent ? $matches[1] : '';
+        return $this->updateLine(
+            $search,
+            fn (Variant $variant) => $variant->appendLine($line, $keepIndent)
+        );
+    }
 
-            return $matches[0] . "\n$indent$line";
-        };
-
-        return $this->replaceMatches("/^(\s*)$safeSearch\s*$/m", $replace);
+    public function addLineAfterMatch(string $search, string $line, bool $keepIndent = false): static
+    {
+        return $this->matchLine(
+            $search,
+            fn (Variant $variant) => $variant->appendLine($line, $keepIndent)
+        );
     }
 
     public function addLineBefore(string $search, string $line, bool $keepIndent = false): static
     {
-        $safeSearch = preg_quote($search, '/');
-        $replace = function (array $matches) use ($line, $keepIndent) {
-            $indent = $keepIndent ? $matches[1] : '';
+        return $this->updateLine(
+            $search,
+            fn (Variant $variant) => $variant->prependLine($line, $keepIndent),
+        );
+    }
 
-            return  "$indent$line\n" . $matches[0];
-        };
-
-        return $this->replaceMatches("/^(\s*)$safeSearch\s*$/m", $replace);
+    public function addLineBeforeMatch(string $search, string $line, bool $keepIndent = false): static
+    {
+        return $this->matchLine(
+            $search,
+            fn (Variant $variant) => $variant->prependLine($line, $keepIndent),
+        );
     }
 }

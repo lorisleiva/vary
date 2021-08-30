@@ -102,6 +102,23 @@ it('can add a line after another line whilst keeping its identation', function (
     END);
 });
 
+it('can add a line after another matched line', function () {
+    $content = <<<END
+        Perfection of sloth: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)
+        ->addLineAfterMatch('sloth', 'New Line', keepIndent: true);
+
+    expect($variant->toString())->toBe(<<<END
+        Perfection of sloth: to live your last day, every day,
+        New Line
+        without frenzy, or sloth, or pretense.
+        New Line
+    END);
+});
+
 it('can add a line before another line', function () {
     $content = <<<END
         Perfection of character: to live your last day, every day,
@@ -129,6 +146,23 @@ it('can add a line before another line whilst keeping its identation', function 
 
     expect($variant->toString())->toBe(<<<END
         Perfection of character: to live your last day, every day,
+        New Line
+        without frenzy, or sloth, or pretense.
+    END);
+});
+
+it('can add a line before another matched line', function () {
+    $content = <<<END
+        Perfection of sloth: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)
+        ->addLineBeforeMatch('sloth', 'New Line', keepIndent: true);
+
+    expect($variant->toString())->toBe(<<<END
+        New Line
+        Perfection of sloth: to live your last day, every day,
         New Line
         without frenzy, or sloth, or pretense.
     END);
