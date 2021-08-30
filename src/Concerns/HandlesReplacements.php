@@ -5,6 +5,7 @@ namespace Lorisleiva\Vary\Concerns;
 use Closure;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\Pure;
+use Lorisleiva\Vary\Variant;
 
 trait HandlesReplacements
 {
@@ -26,6 +27,22 @@ trait HandlesReplacements
     #[Pure] public function append(string $suffix): static
     {
         return $this->new($this->value . $suffix);
+    }
+
+    public function prependAfterWhitespace(string $prefix): static
+    {
+        return $this->matchFirstGroup(
+            pattern: '/^\s*(.*)$/',
+            callback: fn (Variant $variant) => $variant->prepend($prefix),
+        );
+    }
+
+    public function appendBeforeWhitespace(string $suffix): static
+    {
+        return $this->matchFirstGroup(
+            pattern: '/^(.*?)\s*$/',
+            callback: fn (Variant $variant) => $variant->append($suffix),
+        );
     }
 
     public function replace(string | array $search, string | array $replace): static

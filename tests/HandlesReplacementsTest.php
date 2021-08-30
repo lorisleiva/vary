@@ -26,6 +26,18 @@ it('can append some text', function () {
     expect($variant->toString())->toBe('World Hello');
 });
 
+it('can prepend some text after all whitespaces', function () {
+    $variant = Vary::string(" \t\n Hello World")->prependAfterWhitespace('// ');
+
+    expect($variant->toString())->toBe(" \t\n // Hello World");
+});
+
+it('can append some text before all whitespaces', function () {
+    $variant = Vary::string("Hello World \t\n ")->appendBeforeWhitespace(';');
+
+    expect($variant->toString())->toBe("Hello World; \t\n ");
+});
+
 it('can replace all instances of one text with another', function () {
     $content = <<<END
         Perfection of character: to live your last day, every day,

@@ -131,9 +131,9 @@ trait AltersLines
 
     protected function deletePlaceholderLines(string $placeholder): static
     {
-        return $this->replace($placeholder . PHP_EOL, '')
-            ->replace(PHP_EOL . $placeholder, '')
-            ->replace($placeholder, '');
+        return $this->delete($placeholder . PHP_EOL)
+            ->delete(PHP_EOL . $placeholder)
+            ->delete($placeholder);
     }
 
     protected function getRandomPlaceholder(): string
