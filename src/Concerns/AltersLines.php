@@ -2,16 +2,22 @@
 
 namespace Lorisleiva\Vary\Concerns;
 
+use Closure;
 use Illuminate\Support\Arr;
 use Lorisleiva\Vary\Variant;
 
 trait AltersLines
 {
-    protected function getIndentFromLine(string $line): string
+    public function matchLine(string $pattern, Closure $callback, int $limit = -1): static
     {
-        preg_match('/^(\s*)/', $line, $matches);
+        return $this->match("/^.*$pattern.*$/m", $callback, null, $limit);
+    }
 
-        return $matches[1] ?? '';
+    public function updateLine(string $lineWithoutWhitespace, Closure $callback, int $limit = -1): static
+    {
+        $safeLine = preg_quote($lineWithoutWhitespace, '/');
+
+        return $this->match("/^\s*$safeLine\s*$/m", $callback, null, $limit);
     }
 
     public function getFirstLine(): string
@@ -86,5 +92,12 @@ trait AltersLines
         array_pop($lines);
 
         return $this->new(implode(PHP_EOL, $lines));
+    }
+
+    protected function getIndentFromLine(string $line): string
+    {
+        preg_match('/^(\s*)/', $line, $matches);
+
+        return $matches[1] ?? '';
     }
 }
