@@ -3,6 +3,36 @@
 use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
+it('can select the first line', function () {
+    $content = <<<END
+        Hello
+        Hello
+    END;
+
+    $variant = Vary::string($content)
+        ->firstLine(fn (Variant $variant) => $variant->replace('Hello', 'World'));
+
+    expect($variant->toString())->toBe(<<<END
+        World
+        Hello
+    END);
+});
+
+it('can select the last line', function () {
+    $content = <<<END
+        Hello
+        Hello
+    END;
+
+    $variant = Vary::string($content)
+        ->lastLine(fn (Variant $variant) => $variant->replace('Hello', 'World'));
+
+    expect($variant->toString())->toBe(<<<END
+        Hello
+        World
+    END);
+});
+
 it('can update lines from regex expressions', function () {
     $content = <<<END
         Perfection of sloth: to live your last day, every day,

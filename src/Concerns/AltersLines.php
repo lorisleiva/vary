@@ -10,12 +10,12 @@ trait AltersLines
 {
     public function firstLine(Closure $callback): static
     {
-        return $this->beforeIncluded(PHP_EOL, $callback);
+        return $this->before(PHP_EOL, $callback);
     }
 
     public function lastLine(Closure $callback): static
     {
-        return $this->afterLastIncluded(PHP_EOL, $callback);
+        return $this->afterLast(PHP_EOL, $callback);
     }
 
     public function matchLine(string $pattern, Closure $callback, int $limit = -1): static
@@ -90,18 +90,18 @@ trait AltersLines
 
     public function removeFirstLine(): static
     {
-        $lines = explode(PHP_EOL, $this->value);
-        array_shift($lines);
-
-        return $this->new(implode(PHP_EOL, $lines));
+        return $this->beforeIncluded(
+            PHP_EOL,
+            fn (Variant $variant) => $variant->empty(),
+        );
     }
 
     public function removeLastLine(): static
     {
-        $lines = explode(PHP_EOL, $this->value);
-        array_pop($lines);
-
-        return $this->new(implode(PHP_EOL, $lines));
+        return $this->afterLastIncluded(
+            PHP_EOL,
+            fn (Variant $variant) => $variant->empty(),
+        );
     }
 
     protected function getIndentFromLine(string $line): string
