@@ -2,7 +2,6 @@
 
 namespace Lorisleiva\Vary\Concerns;
 
-use Closure;
 use Illuminate\Support\Arr;
 
 trait AltersLines
