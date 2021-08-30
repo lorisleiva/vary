@@ -141,3 +141,18 @@ it('can update fragments from a regex expression', function () {
         without frenzy, or sloth, or pretense.
     END);
 });
+
+it('can update fragments from the first captured group of a regex expression', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)
+        ->matchFirstGroup('/character(.*)every/', fn (Variant $variant) => $variant->replace('day', 'week'));
+
+    expect($variant->toString())->toBe(<<<END
+        Perfection of character: to live your last week, every day,
+        without frenzy, or sloth, or pretense.
+    END);
+});

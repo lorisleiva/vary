@@ -132,9 +132,23 @@ trait HandlesFragments
 
     public function match(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        $replace = $replace ?? fn ($matches) => $matches[0];
-        $newReplace = fn ($matches) => $this->fragment($replace($matches), $callback);
+        $replace = $replace ?? fn (array $matches, Closure $next) => $next($matches[0]);
+
+        $next = fn (string $fragment) => $this->fragment($fragment, $callback);
+        $newReplace = fn ($matches) => $replace($matches, $next);
 
         return $this->replaceMatches($pattern, $newReplace, $limit);
+    }
+
+    public function matchFirstGroup(string $pattern, Closure $callback, int $limit = -1): static
+    {
+        $replace = function (array $matches, Closure $next) {
+            $before = Str::before($matches[0], $matches[1]);
+            $after = Str::after($matches[0], $matches[1]);
+
+            return $before . $next($matches[1]) . $after;
+        };
+
+        return $this->match($pattern, $callback, $replace, $limit);
     }
 }
