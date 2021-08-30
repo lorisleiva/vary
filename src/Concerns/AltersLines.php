@@ -38,4 +38,26 @@ trait AltersLines
 
         return $this->new("$indent$line$lineJump" . $this->value);
     }
+
+    public function addLineAfter(string $search, string $line, bool $keepIndent = false): static
+    {
+        $safeSearch = preg_quote($search, '/');
+        $replace = function (array $matches) use ($line, $keepIndent) {
+            $indent = $keepIndent ? $matches[1] : '';
+            return $matches[0] . "\n$indent$line";
+        };
+
+        return $this->replaceMatches("/^(\s*)$safeSearch\s*$/m", $replace);
+    }
+
+    public function addLineBefore(string $search, string $line, bool $keepIndent = false): static
+    {
+        $safeSearch = preg_quote($search, '/');
+        $replace = function (array $matches) use ($line, $keepIndent) {
+            $indent = $keepIndent ? $matches[1] : '';
+            return  "$indent$line\n" . $matches[0];
+        };
+
+        return $this->replaceMatches("/^(\s*)$safeSearch\s*$/m", $replace);
+    }
 }
