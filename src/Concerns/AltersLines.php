@@ -13,15 +13,20 @@ trait AltersLines
         return $matches[1] ?? '';
     }
 
+    public function getFirstLine(): string
+    {
+        return Arr::first(explode("\n", $this->value));
+    }
+
+    public function getLastLine(): string
+    {
+        return Arr::last(explode("\n", $this->value));
+    }
+
     public function appendLine(string $line, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? "\n" : '';
-        $indent = '';
-
-        if ($keepIndent) {
-            $lastLine = Arr::last(explode("\n", $this->value));
-            $indent = $this->getIndentFromLine($lastLine);
-        }
+        $indent = $keepIndent ? $this->getIndentFromLine($this->getLastLine()) : '';
 
         return $this->new($this->value . "$lineJump$indent$line");
     }
@@ -29,12 +34,7 @@ trait AltersLines
     public function prependLine(string $line, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? "\n" : '';
-        $indent = '';
-
-        if ($keepIndent) {
-            $lastLine = Arr::first(explode("\n", $this->value));
-            $indent = $this->getIndentFromLine($lastLine);
-        }
+        $indent = $keepIndent ? $this->getIndentFromLine($this->getFirstLine()) : '';
 
         return $this->new("$indent$line$lineJump" . $this->value);
     }
