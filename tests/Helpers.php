@@ -17,6 +17,23 @@ function expectVariantToBe(string $expected): Closure
     };
 }
 
+function expectVariantNotToBeCalled(): Closure
+{
+    return function (Variant $variant) {
+        throw new Exception(
+            "Expected variant callback not to be called. " .
+            "Received call with [{$variant->toString()}]."
+        );
+    };
+}
+
+function overrideVariantTo(string $text): Closure
+{
+    return function (Variant $variant) use ($text) {
+        return $variant->override($text);
+    };
+}
+
 function stubs(string $path): string
 {
     return __DIR__ . "/stubs/$path";

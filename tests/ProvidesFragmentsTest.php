@@ -3,7 +3,7 @@
 use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
-it('selects all of its value', function () {
+it('selects all of its content', function () {
     // Either via the "selectAll" method.
     Vary::string('Hello World')
         ->selectAll(expectVariantToBe('Hello World'));
@@ -12,6 +12,46 @@ it('selects all of its value', function () {
     Vary::string('Hello World')
         ->tap(expectVariantToBe('Hello World'));
 });
+
+it('selects a given fragment of text', function () {
+    Vary::string('Hello World')
+        ->select('World', expectVariantToBe('World'));
+
+    Vary::string("Hello World \n with line break.")
+        ->select("World \n with", expectVariantToBe("World \n with"));
+});
+
+it('selects a fragment from a given pattern', function () {
+    $variant = Vary::string('You can also commit injustice by doing nothing.');
+
+    $variant->selectPattern('/com+it/', expectVariantToBe('commit'));
+    $variant->selectPattern('/You.*also/', expectVariantToBe('You can also'));
+    $variant->selectPattern('/NOT_FOUND/', expectVariantNotToBeCalled());
+});
+
+it('selects multiple fragments from a given pattern', function () {
+    Vary::string('You can also commit injustice by doing nothing.')
+        ->selectPattern('/also|(doing.*)/', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('You can CHANGED commit injustice by CHANGED'));
+});
+
+it('selects a fragment using the first group of a given pattern', function () {
+    $variant = Vary::string('You can also commit injustice by doing nothing.');
+
+    $variant->selectPatternFirstGroup('/You\s(.*)\sby/', expectVariantToBe('can also commit injustice'));
+    $variant->selectPatternFirstGroup('/injustice\s([^t]+)/', expectVariantToBe('by doing no'));
+    $variant->selectPatternFirstGroup('/CONTENT_(NOT)_FOUND/', expectVariantNotToBeCalled());
+});
+
+it('selects multiple fragments using the first group of a given pattern', function () {
+    Vary::string('An apple pie, an humble pie and an apple TV.')
+        ->selectPatternFirstGroup('/an\s(.*?)\spie/i', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('An CHANGED pie, an CHANGED pie and an apple TV.'));
+});
+
+
+// ------------
+
 
 it('can update a fragment before a given text', function () {
     $content = <<<END
@@ -142,36 +182,6 @@ it('can update a fragment between two given text', function () {
         ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
     expect(Vary::string($content)->selectBetweenLastAndLastIncluded('repeated', 'repeated', $callback)->toString())
         ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
-});
-
-it('can update fragments from a regex expression', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)
-        ->selectPattern('/day/', fn (Variant $variant) => $variant->replace('day', 'week'));
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last week, every week,
-        without frenzy, or sloth, or pretense.
-    END);
-});
-
-it('can update fragments from the first captured group of a regex expression', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)
-        ->selectPatternFirstGroup('/character(.*)every/', fn (Variant $variant) => $variant->replace('day', 'week'));
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last week, every day,
-        without frenzy, or sloth, or pretense.
-    END);
 });
 
 it('can update fragments before, after and between whitespaces', function () {
