@@ -170,21 +170,4 @@ trait ProvidesFragments
     {
         return $this->selectBetween($from, $to, $callback, fromLast: true, fromIncluded: true, toLast: true, toIncluded: true);
     }
-
-    public function selectBeforeWhitespace(Closure $callback): static
-    {
-        return $this->selectPatternFirstGroup('/^(.*?)\s*$/s', $callback);
-    }
-
-    public function selectAfterWhitespace(Closure $callback): static
-    {
-        return $this->selectPatternFirstGroup('/^\s*(.*)$/s', $callback);
-    }
-
-    public function selectBetweenWhitespace(Closure $callback): static
-    {
-        return $this->selectAfterWhitespace(
-            fn (Variant $variant) => $variant->selectBeforeWhitespace($callback)
-        );
-    }
 }

@@ -2,16 +2,16 @@
 
 namespace Lorisleiva\Vary\Concerns;
 
-trait HandlesMustaches
+trait AltersMustaches
 {
-    public function mustache(string $variable, string $value, int $limit = -1): static
+    public function replaceMustache(string $variable, string $value, int $limit = -1): static
     {
         $safeVariable = preg_quote($variable, '/');
 
         return $this->new(preg_replace("/{{\s*$safeVariable\s*}}/", $value, $this->value, $limit));
     }
 
-    public function mustacheAll(array $replacements): static
+    public function replaceAllMustaches(array $replacements): static
     {
         $value = $this->value;
 

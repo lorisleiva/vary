@@ -8,7 +8,7 @@ it('can replace all instances of a mustache variable with the given value', func
         without frenzy, or sloth, or pretense.
     END;
 
-    $variant = Vary::string($content)->mustache('unit', 'day');
+    $variant = Vary::string($content)->replaceMustache('unit', 'day');
 
     expect($variant->toString())->toBe(<<<END
         Perfection of character: to live your last day, every day,
@@ -22,7 +22,7 @@ it('can replace multiple mustache variables within a given array of data', funct
         without frenzy, {{ gate }} sloth, {{ gate }} pretense.
     END;
 
-    $variant = Vary::string($content)->mustacheAll([
+    $variant = Vary::string($content)->replaceAllMustaches([
         'entity' => 'self',
         'unit' => 'minute',
         'gate' => 'nor',
@@ -35,10 +35,10 @@ it('can replace multiple mustache variables within a given array of data', funct
 });
 
 it('can replace mustache variable no matter how many whitespace is provided', function () {
-    expect(Vary::string('{{unit}}')->mustache('unit', 'day')->toString())->toBe('day');
-    expect(Vary::string('{{ unit}}')->mustache('unit', 'day')->toString())->toBe('day');
-    expect(Vary::string('{{unit }}')->mustache('unit', 'day')->toString())->toBe('day');
-    expect(Vary::string('{{ unit }}')->mustache('unit', 'day')->toString())->toBe('day');
-    expect(Vary::string('{{      unit      }}')->mustache('unit', 'day')->toString())->toBe('day');
-    expect(Vary::string("{{ unit \t\n\r}}")->mustache('unit', 'day')->toString())->toBe('day');
+    expect(Vary::string('{{unit}}')->replaceMustache('unit', 'day')->toString())->toBe('day');
+    expect(Vary::string('{{ unit}}')->replaceMustache('unit', 'day')->toString())->toBe('day');
+    expect(Vary::string('{{unit }}')->replaceMustache('unit', 'day')->toString())->toBe('day');
+    expect(Vary::string('{{ unit }}')->replaceMustache('unit', 'day')->toString())->toBe('day');
+    expect(Vary::string('{{      unit      }}')->replaceMustache('unit', 'day')->toString())->toBe('day');
+    expect(Vary::string("{{ unit \t\n\r}}")->replaceMustache('unit', 'day')->toString())->toBe('day');
 });
