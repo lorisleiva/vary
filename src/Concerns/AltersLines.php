@@ -57,6 +57,11 @@ trait AltersLines
         return $this->selectLastLine($callback, includeEol: true);
     }
 
+    public function selectAllLines(Closure $callback): static
+    {
+        return $this->selectLinePattern('/^.*$/', $callback);
+    }
+
     public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
         $pattern = $this->ensureMultipleRegex($pattern);
@@ -69,11 +74,14 @@ trait AltersLines
         $lineJump = $this->value ? PHP_EOL : '';
 
         return $this->selectFirstLine(function (Variant $variant) use ($lineJump, $content, $keepIndent) {
-            $indent = $keepIndent ? $variant->getLeftWhitespace() : '';
+            if ($keepIndent) {
+                $indent = $variant->getLeftWhitespace();
+                $content = (new static($content))
+                    ->selectAllLines(fn (Variant $line) => $line->prepend($indent))
+                    ->toString();
+            }
 
-            // TODO: selectAllLines + prepend whitespace.
-
-            return $variant->prepend("$indent$content$lineJump");
+            return $variant->prepend("$content$lineJump");
         });
     }
 
@@ -82,11 +90,14 @@ trait AltersLines
         $lineJump = $this->value ? PHP_EOL : '';
 
         return $this->selectLastLine(function (Variant $variant) use ($lineJump, $content, $keepIndent) {
-            $indent = $keepIndent ? $variant->getLeftWhitespace() : '';
+            if ($keepIndent) {
+                $indent = $variant->getLeftWhitespace();
+                $content = (new static($content))
+                    ->selectAllLines(fn (Variant $line) => $line->prepend($indent))
+                    ->toString();
+            }
 
-            // TODO: selectAllLines + append whitespace.
-
-            return $variant->append("$lineJump$indent$content");
+            return $variant->append("$lineJump$content");
         });
     }
 

@@ -1,6 +1,5 @@
 <?php
 
-use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
 it('selects a line by providing its content', function () {
@@ -61,6 +60,23 @@ it('selects the first and last lines', function () {
     $variant->selectLastLineWithEol(expectVariantToBe("\nOne humble pie."));
 });
 
+it('selects all lines', function () {
+    $variant = Vary::string(
+        <<<END
+        One apple pie.
+        One humble pie.
+        END
+    );
+
+    $variant->selectAllLines(overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe(
+            <<<END
+            CHANGED
+            CHANGED
+            END
+        ));
+});
+
 it('selects lines using regular expressions', function () {
     $variant = Vary::string(
         <<<END
@@ -70,106 +86,120 @@ it('selects lines using regular expressions', function () {
         END
     );
 
-    // TODO
+    $variant->selectLinePattern('/^.*TV.*$/', expectVariantToBe('One apple TV.'));
+    $variant->selectLinePattern('/^.*TV.*$/m', expectVariantToBe('One apple TV.'));
+    $variant->selectLinePattern('/^.*TV.*$\n?/m', expectVariantToBe('One apple TV.'));
+    $variant->selectLinePattern('/^.*humble.*$\n?/m', expectVariantToBe("One humble pie.\n"));
+    $variant->selectLinePattern('/\n?^.*humble.*$/m', expectVariantToBe("\nOne humble pie."));
+
+    $variant->selectLinePattern('/^.*apple.*$/', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe(
+            <<<END
+            CHANGED
+            One humble pie.
+            CHANGED
+            END
+        ));
 });
 
-// it('can update lines from regex expressions', function () {
-//     $content = <<<END
-//         Perfection of sloth: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->selectLinePattern('frenzy', fn (Variant $variant) => $variant->replace('sloth', 'laziness'));
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of sloth: to live your last day, every day,
-//         without frenzy, or laziness, or pretense.
-//     END);
-// });
-//
-// it('can update lines from regex expressions including the end of line', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->selectLinePattern('character', fn (Variant $variant) => $variant->empty(), includeEol: true);
-//
-//     expect($variant->toString())->toBe(<<<END
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
-// it('can append a line at the end', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)->appendLine('— Marcus Aurelius');
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     — Marcus Aurelius
-//     END);
-// });
-//
-// it('can append a line at the end whilst keeping the last identation', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)->appendLine('— Marcus Aurelius', keepIndent: true);
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//         — Marcus Aurelius
-//     END);
-// });
-//
-// it('can prepend a line at the end', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)->prependLine('Marcus Aurelius said:');
-//
-//     expect($variant->toString())->toBe(<<<END
-//     Marcus Aurelius said:
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
-// it('can prepend a line at the end whilst keeping the last identation', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)->prependLine('Marcus Aurelius said:', keepIndent: true);
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Marcus Aurelius said:
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
-// it('ignores identation when the text is empty', function () {
-//     expect(Vary::string('')->appendLine('New Line', keepIndent: true)->toString())
-//         ->toBe('New Line');
-//
-//     expect(Vary::string('')->prependLine('New Line', keepIndent: true)->toString())
-//         ->toBe('New Line');
-// });
-//
+it('prepends some lines', function () {
+    Vary::string(
+        <<<END
+                One apple pie.
+                One humble pie.
+            END
+    )
+        ->prependLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END
+        )->tap(expectVariantToBe(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+                One apple pie.
+                One humble pie.
+            END
+        ));
+});
+
+it('prepends some lines whilst keeping the indentation of the first line', function () {
+    Vary::string(
+        <<<END
+                One apple pie.
+                One humble pie.
+            END
+    )
+        ->prependLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END,
+            keepIndent: true,
+        )->tap(expectVariantToBe(
+            <<<END
+                Two apple pie.
+                Two humble pie.
+                One apple pie.
+                One humble pie.
+            END
+        ));
+});
+
+it('appends some lines', function () {
+    Vary::string(
+        <<<END
+                One apple pie.
+                One humble pie.
+            END
+    )
+        ->appendLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END
+        )->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                One humble pie.
+            Two apple pie.
+            Two humble pie.
+            END
+        ));
+});
+
+it('appends some lines whilst keeping the indentation of the first line', function () {
+    Vary::string(
+        <<<END
+                One apple pie.
+                One humble pie.
+            END
+    )
+        ->appendLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END,
+            keepIndent: true,
+        )->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                One humble pie.
+                Two apple pie.
+                Two humble pie.
+            END
+        ));
+});
+
+it('ignores indentation and line jumps when the text is empty', function () {
+   Vary::string('')->appendLine('New Line', keepIndent: true)
+       ->tap(expectVariantToBe('New Line'));
+
+   Vary::string('')->prependLine('New Line', keepIndent: true)
+       ->tap(expectVariantToBe('New Line'));
+});
+
 // it('can add a line after another line', function () {
 //     $content = <<<END
 //         Perfection of character: to live your last day, every day,
