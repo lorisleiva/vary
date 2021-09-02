@@ -75,6 +75,9 @@ it('selects all lines', function () {
             CHANGED
             END
         ));
+
+    $variant->selectAllLinesWithEol(overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGEDCHANGED'));
 });
 
 it('selects lines using regular expressions', function () {
@@ -87,7 +90,9 @@ it('selects lines using regular expressions', function () {
     );
 
     $variant->selectLinePattern('.*TV.*', expectVariantToBe('One apple TV.'));
+    $variant->selectLinePatternWithEol('.*TV.*', expectVariantToBe('One apple TV.'));
     $variant->selectLinePattern('.*humble.*', expectVariantToBe('One humble pie.'));
+    $variant->selectLinePatternWithEol('.*humble.*', expectVariantToBe("One humble pie.\n"));
     $variant->selectLinePattern('.*apple.*', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe(
             <<<END

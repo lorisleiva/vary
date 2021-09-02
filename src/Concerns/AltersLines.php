@@ -56,14 +56,26 @@ trait AltersLines
         return $this->selectLastLine($callback, includeEol: true);
     }
 
-    public function selectAllLines(Closure $callback): static
+    public function selectAllLines(Closure $callback, bool $includeEol = false): static
     {
-        return $this->selectLinePattern('.*', $callback);
+        return $this->selectLinePattern('.*', $callback, includeEol: $includeEol);
     }
 
-    public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectAllLinesWithEol(Closure $callback): static
     {
-        return $this->selectPattern("/^$pattern$/m", $callback, $replace, $limit);
+        return $this->selectAllLines($callback, includeEol: true);
+    }
+
+    public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): static
+    {
+        $pattern = $includeEol ? "/^$pattern$\n?/m" : "/^$pattern$/m";
+
+        return $this->selectPattern($pattern, $callback, $replace, $limit);
+    }
+
+    public function selectLinePatternWithEol(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    {
+        return $this->selectLinePattern($pattern, $callback, $replace, $limit, includeEol: true);
     }
 
     public function prependLine(string $content, bool $keepIndent = false): static
@@ -116,11 +128,12 @@ trait AltersLines
         );
     }
 
-    public function addAfterLine(string $search, string $content, bool $keepIndent = false): static
+    public function addAfterLine(string $search, string $content, bool $keepIndent = false, bool $ignoreWhitespace = true): static
     {
         return $this->selectLine(
-            $search,
-            fn (Variant $variant) => $variant->appendLine($content, $keepIndent)
+            search: $search,
+            callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
+            ignoreWhitespace: $ignoreWhitespace,
         );
     }
 
