@@ -31,7 +31,46 @@ it('adds some text before some other text', function () {
 
     $variant->addBefore('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble pie.'));
     $variant->addBeforeLast('pie', 'hip')->tap(expectVariantToBe('One apple pie. One humble hippie.'));
-    // $variant->addBeforeAll('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
+    $variant->addBeforeAll('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
+});
+
+it('prepends the text when adding text before the entire content', function () {
+    $variant = Vary::string('Hello World');
+
+    $variant->addBefore('Hello World', 'Say: ')->tap(expectVariantToBe('Say: Hello World'));
+    $variant->addBeforeLast('Hello World', 'Say: ')->tap(expectVariantToBe('Say: Hello World'));
+    $variant->addBeforeAll('Hello World', 'Say: ')->tap(expectVariantToBe('Say: Hello World'));
+});
+
+it('does not add text before some text that is not found', function () {
+    $variant = Vary::string('Hello World');
+
+    $variant->addBefore('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    $variant->addBeforeLast('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    $variant->addBeforeAll('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    Vary::string('')->addBefore('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+    Vary::string('')->addBeforeLast('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+    Vary::string('')->addBeforeAll('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+});
+
+it('adds some text before a given pattern', function () {
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->addBeforePattern('/pie/', 'hip')
+        ->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
+
+    $variant->addBeforePattern('/One .*? pie./', 'Say: ')
+        ->tap(expectVariantToBe('Say: One apple pie. Say: One humble pie.'));
+});
+
+it('adds some text before the first group of a given pattern', function () {
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->addBeforePatternFirstGroup('/One (.*)/', 'or two ')
+        ->tap(expectVariantToBe('One or two apple pie. One humble pie.'));
+
+    $variant->addBeforePatternFirstGroup('/One (.*?) pie./', 'big ')
+        ->tap(expectVariantToBe('One big apple pie. One big humble pie.'));
 });
 
 it('replaces all instances of one text with another', function () {

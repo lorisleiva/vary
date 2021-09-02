@@ -29,30 +29,37 @@ trait ProvidesMutators
         return $this->new($this->value . $suffix);
     }
 
-    public function addBefore(string $search, string $content, bool $last = false): static
+    #[Pure] public function addBefore(string $search, string $content): static
     {
-        if ($search === $this->value) {
-            return $this->prepend($content);
-        }
-
-        return $this->selectAfter($search, function (Variant $variant) use ($search, $content) {
-            return $search === $variant->toString() ? $variant : $variant->prepend($content);
-        }, last: $last, included: true);
+        return $this->replaceFirst($search, $content . $search);
     }
 
-    public function addBeforeLast(string $search, string $content): static
+    #[Pure] public function addBeforeLast(string $search, string $content): static
     {
-        return $this->addBefore($search, $content, last: true);
+        return $this->replaceLast($search, $content . $search);
     }
 
     public function addBeforeAll(string $search, string $content): static
     {
-        return $this;
+        return $this->replace($search, $content . $search);
     }
 
     public function addBeforePattern(string $pattern, string $content, int $limit = -1): static
     {
-        //
+        return $this->selectPattern(
+            pattern: $pattern,
+            callback: fn (Variant $variant) => $variant->prepend($content),
+            limit: $limit,
+        );
+    }
+
+    public function addBeforePatternFirstGroup(string $pattern, string $content, int $limit = -1): static
+    {
+        return $this->selectPatternFirstGroup(
+            pattern: $pattern,
+            callback: fn (Variant $variant) => $variant->prepend($content),
+            limit: $limit,
+        );
     }
 
     public function replace(string | array $search, string | array $replace): static
