@@ -62,6 +62,39 @@ trait ProvidesMutators
         );
     }
 
+    #[Pure] public function addAfter(string $search, string $content): static
+    {
+        return $this->replaceFirst($search, $search . $content);
+    }
+
+    #[Pure] public function addAfterLast(string $search, string $content): static
+    {
+        return $this->replaceLast($search, $search . $content);
+    }
+
+    public function addAfterAll(string $search, string $content): static
+    {
+        return $this->replace($search, $search . $content);
+    }
+
+    public function addAfterPattern(string $pattern, string $content, int $limit = -1): static
+    {
+        return $this->selectPattern(
+            pattern: $pattern,
+            callback: fn (Variant $variant) => $variant->append($content),
+            limit: $limit,
+        );
+    }
+
+    public function addAfterPatternFirstGroup(string $pattern, string $content, int $limit = -1): static
+    {
+        return $this->selectPatternFirstGroup(
+            pattern: $pattern,
+            callback: fn (Variant $variant) => $variant->append($content),
+            limit: $limit,
+        );
+    }
+
     public function replace(string | array $search, string | array $replace): static
     {
         return $this->new(Str::replace($search, $replace, $this->value));

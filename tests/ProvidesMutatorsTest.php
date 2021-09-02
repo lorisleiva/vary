@@ -73,6 +73,53 @@ it('adds some text before the first group of a given pattern', function () {
         ->tap(expectVariantToBe('One big apple pie. One big humble pie.'));
 });
 
+it('adds some text after some other text', function () {
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->addAfter('pie', 'rcing')->tap(expectVariantToBe('One apple piercing. One humble pie.'));
+    $variant->addAfterLast('pie', 'rcing')->tap(expectVariantToBe('One apple pie. One humble piercing.'));
+    $variant->addAfterAll('pie', 'rcing')->tap(expectVariantToBe('One apple piercing. One humble piercing.'));
+});
+
+it('appends the text when adding text after the entire content', function () {
+    $variant = Vary::string('Hello World');
+
+    $variant->addAfter('Hello World', '!')->tap(expectVariantToBe('Hello World!'));
+    $variant->addAfterLast('Hello World', '!')->tap(expectVariantToBe('Hello World!'));
+    $variant->addAfterAll('Hello World', '!')->tap(expectVariantToBe('Hello World!'));
+});
+
+it('does not add text after some text that is not found', function () {
+    $variant = Vary::string('Hello World');
+
+    $variant->addAfter('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    $variant->addAfterLast('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    $variant->addAfterAll('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    Vary::string('')->addAfter('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+    Vary::string('')->addAfterLast('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+    Vary::string('')->addAfterAll('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+});
+
+it('adds some text after a given pattern', function () {
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->addAfterPattern('/pie/', 'rcing')
+        ->tap(expectVariantToBe('One apple piercing. One humble piercing.'));
+
+    $variant->addAfterPattern('/One .*? pie./', ' I said!')
+        ->tap(expectVariantToBe('One apple pie. I said! One humble pie. I said!'));
+});
+
+it('adds some text after the first group of a given pattern', function () {
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->addAfterPatternFirstGroup('/(.*) humble/', ' super')
+        ->tap(expectVariantToBe('One apple pie. One super humble pie.'));
+
+    $variant->addAfterPatternFirstGroup('/One (.*?) pie./', '-ish')
+        ->tap(expectVariantToBe('One apple-ish pie. One humble-ish pie.'));
+});
+
 it('replaces all instances of one text with another', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
         ->replace('One', 'Two')
