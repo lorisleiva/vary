@@ -62,7 +62,7 @@ trait ProvidesFragments
             ? Str::beforeLast($this->value, $search)
             : Str::before($this->value, $search);
 
-        if ($included) {
+        if ($included && $oldValue !== $this->value) {
             $oldValue = $oldValue . $search;
         }
 
@@ -92,7 +92,7 @@ trait ProvidesFragments
             ? Str::afterLast($this->value, $search)
             : Str::after($this->value, $search);
 
-        if ($included) {
+        if ($included && $oldValue !== $this->value) {
             $oldValue = $search . $oldValue;
         }
 

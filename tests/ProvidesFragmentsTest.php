@@ -1,6 +1,5 @@
 <?php
 
-use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
 it('selects all of its content', function () {
@@ -49,151 +48,78 @@ it('selects multiple fragments using the first group of a given pattern', functi
         ->tap(expectVariantToBe('An CHANGED pie, an CHANGED pie and an apple TV.'));
 });
 
+it('selects a fragment before a given text', function () {
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
-// ------------
-
-
-it('can update a fragment before a given text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)
-        ->selectBefore('every', fn (Variant $variant) => $variant->replace('day', 'week'));
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last week, every day,
-        without frenzy, or sloth, or pretense.
-    END);
+    $variant->selectBefore('pie', expectVariantToBe('One apple '));
+    $variant->selectBeforeIncluded('pie', expectVariantToBe('One apple pie'));
+    $variant->selectBeforeLast('pie', expectVariantToBe('One apple pie. One humble '));
+    $variant->selectBeforeLastIncluded('pie', expectVariantToBe('One apple pie. One humble pie'));
 });
 
-it('can update a fragment before the last instance a given text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
+it('selects all when the before text could not be found', function () {
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
-    $variant = Vary::string($content)
-        ->selectBeforeLast('day', fn (Variant $variant) => $variant->replace('every', 'any'));
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last day, any day,
-        without frenzy, or sloth, or pretense.
-    END);
+    $variant->selectBefore('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectBeforeIncluded('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    Vary::string('')->selectBefore('NOT_FOUND', expectVariantToBe(''));
 });
 
-it('keeps the after text intact when updating a before fragment', function () {
-    $variant = Vary::string('Some repeated fragment. Some repeated fragment.')
-        ->selectBefore('fragment', fn (Variant $variant) => $variant->replace('repeated', 'unique'));
-
-    expect($variant->toString())
-        ->toBe('Some unique fragment. Some repeated fragment.');
+it('updates a fragment before a given text without affecting the rest', function () {
+    Vary::string('Some repeated fragment. Some repeated fragment.')
+        ->selectBeforeIncluded('fragment', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED. Some repeated fragment.'));
 });
 
-it('can update a fragment after a given text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
+it('selects a fragment after a given text', function () {
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
-    $variant = Vary::string($content)
-        ->selectAfter('every', fn (Variant $variant) => $variant->replace('day', 'week'));
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last day, every week,
-        without frenzy, or sloth, or pretense.
-    END);
+    $variant->selectAfter('One', expectVariantToBe(' apple pie. One humble pie. One apple TV.'));
+    $variant->selectAfterIncluded('One', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectAfterLast('One', expectVariantToBe(' apple TV.'));
+    $variant->selectAfterLastIncluded('One', expectVariantToBe('One apple TV.'));
 });
 
-it('can update a fragment after the last instance of a given text', function () {
-    $content = <<<END
-        Perfection of sloth: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
+it('selects all when the after text could not be found', function () {
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
-    $variant = Vary::string($content)
-        ->selectAfterLast('day', fn (Variant $variant) => $variant->replace('sloth', 'laziness'));
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of sloth: to live your last day, every day,
-        without frenzy, or laziness, or pretense.
-    END);
+    $variant->selectAfter('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectAfterIncluded('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    Vary::string('')->selectAfter('NOT_FOUND', expectVariantToBe(''));
 });
 
-it('keeps the before text intact when updating an after fragment', function () {
-    $variant = Vary::string('Some repeated fragment. Some repeated fragment.')
-        ->selectAfter('fragment', fn (Variant $variant) => $variant->replace('repeated', 'unique'));
-
-    expect($variant->toString())
-        ->toBe('Some repeated fragment. Some unique fragment.');
+it('updates a fragment after a given text without affecting the rest', function () {
+    Vary::string('Some repeated fragment. Some repeated fragment.')
+        ->selectAfterLastIncluded('Some', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('Some repeated fragment. CHANGED'));
 });
 
-it('can include the before and after text when updating a fragment', function () {
-    $content = 'last day, every day';
-    $callback = fn (Variant $variant) => $variant->replace('day', 'week');
-
-    // Before.
-    expect(Vary::string($content)->selectBeforeIncluded('day', $callback)->toString())
-        ->toBe('last week, every day');
-    expect(Vary::string($content)->selectBeforeLastIncluded('day', $callback)->toString())
-        ->toBe('last week, every week');
-
-    // After.
-    expect(Vary::string($content)->selectAfterIncluded('day', $callback)->toString())
-        ->toBe('last week, every week');
-    expect(Vary::string($content)->selectAfterLastIncluded('day', $callback)->toString())
-        ->toBe('last day, every week');
-});
-
-it('ignores the nested variants when the before or after text was not found', function () {
-    $callback = fn (Variant $variant) => $variant->append('CHANGED');
-
-    expect(Vary::string('')->selectBefore('Some text', $callback)->toString())->toBe('');
-    expect(Vary::string('')->selectAfter('Some text', $callback)->toString())->toBe('');
-});
-
-it('can update a fragment between two given text', function () {
-    $content = 'Some repeated fragment. Some repeated fragment. Some repeated fragment.';
-    $callback = fn (Variant $variant) => $variant->replace('repeated', 'CHANGED');
+it('selects a fragment between two given texts', function () {
+    $variant = Vary::string('One apple pie. One humble pie. Two berry pies.');
 
     // Between first and first.
-    expect(Vary::string($content)->selectBetween('Some', 'fragment', $callback)->toString())
-        ->toBe('Some CHANGED fragment. Some repeated fragment. Some repeated fragment.');
-    expect(Vary::string($content)->selectBetweenFirstAndFirst('Some', 'fragment', $callback)->toString())
-        ->toBe('Some CHANGED fragment. Some repeated fragment. Some repeated fragment.');
-    expect(Vary::string($content)->selectBetweenFirstAndFirstIncluded('repeated', 'repeated', $callback)->toString())
-        ->toBe('Some CHANGED fragment. Some repeated fragment. Some repeated fragment.');
+    $variant->selectBetween('One', 'pie', expectVariantToBe(' apple '));
+    $variant->selectBetweenFirstAndFirst('One', 'pie', expectVariantToBe(' apple '));
+    $variant->selectBetweenFirstAndFirstIncluded('One', 'pie', expectVariantToBe('One apple pie'));
 
     // Between first and last.
-    expect(Vary::string($content)->selectBetweenFirstAndLast('Some', 'fragment', $callback)->toString())
-        ->toBe('Some CHANGED fragment. Some CHANGED fragment. Some CHANGED fragment.');
-    expect(Vary::string($content)->selectBetweenFirstAndLastIncluded('repeated', 'repeated', $callback)->toString())
-        ->toBe('Some CHANGED fragment. Some CHANGED fragment. Some CHANGED fragment.');
+    $variant->selectBetweenFirstAndLast('One', 'pie', expectVariantToBe(' apple pie. One humble pie. Two berry '));
+    $variant->selectBetweenFirstAndLastIncluded('One', 'pie', expectVariantToBe('One apple pie. One humble pie. Two berry pie'));
 
     // Between last and first.
-    expect(Vary::string($content)->selectBetweenLastAndFirst('Some', 'fragment', $callback)->toString())
-        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
-    expect(Vary::string($content)->selectBetweenLastAndFirstIncluded('repeated', 'repeated', $callback)->toString())
-        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
+    $variant->selectBetweenLastAndFirst('One', 'pie', expectVariantToBe(' humble '));
+    $variant->selectBetweenLastAndFirstIncluded('One', 'pie', expectVariantToBe('One humble pie'));
 
-    // Between last and last.
-    expect(Vary::string($content)->selectBetweenLastAndLast('Some', 'fragment', $callback)->toString())
-        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
-    expect(Vary::string($content)->selectBetweenLastAndLastIncluded('repeated', 'repeated', $callback)->toString())
-        ->toBe('Some repeated fragment. Some repeated fragment. Some CHANGED fragment.');
+    // Between last and first.
+    $variant->selectBetweenLastAndLast('One', 'pie', expectVariantToBe(' humble pie. Two berry '));
+    $variant->selectBetweenLastAndLastIncluded('One', 'pie', expectVariantToBe('One humble pie. Two berry pie'));
 });
 
-it('can update fragments before, after and between whitespaces', function () {
-    $content = "  \t\n  \r\n Hello Moto \n  \t";
-    $callback = fn (Variant $variant) => $variant->override('CHANGED');
+it('selects as much as it can when the any of the between texts could not be found', function () {
+    $variant = Vary::string('One apple pie. One humble pie. Two berry pies.');
 
-    expect(Vary::string($content)->selectBeforeWhitespace($callback)->toString())
-        ->toBe("CHANGED \n  \t");
-
-    expect(Vary::string($content)->selectAfterWhitespace($callback)->toString())
-        ->toBe("  \t\n  \r\n CHANGED");
-
-    expect(Vary::string($content)->selectBetweenWhitespace($callback)->toString())
-        ->toBe("  \t\n  \r\n CHANGED \n  \t");
+    $variant->selectBetweenLastAndFirstIncluded('One', 'NO_END', expectVariantToBe('One humble pie. Two berry pies.'));
+    $variant->selectBetweenLastAndFirstIncluded('NO_START', 'pie', expectVariantToBe('One apple pie'));
+    $variant->selectBetween('NO_START', 'NO_END', expectVariantToBe('One apple pie. One humble pie. Two berry pies.'));
+    Vary::string('')->selectBetween('NO_START', 'NO_END', expectVariantToBe(''));
 });
