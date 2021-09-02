@@ -48,6 +48,20 @@ it('can update lines from regex expressions', function () {
     END);
 });
 
+it('can update lines from regex expressions including the end of line', function () {
+    $content = <<<END
+        Perfection of character: to live your last day, every day,
+        without frenzy, or sloth, or pretense.
+    END;
+
+    $variant = Vary::string($content)
+        ->matchLine('character', fn (Variant $variant) => $variant->empty(), includeEol: true);
+
+    expect($variant->toString())->toBe(<<<END
+        without frenzy, or sloth, or pretense.
+    END);
+});
+
 it('can update lines by providing their content without whitespaces', function () {
     $content = <<<END
         Perfection of sloth: to live your last day, every day,

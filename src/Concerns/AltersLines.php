@@ -18,27 +18,30 @@ trait AltersLines
     public function firstLine(Closure $callback, bool $includeEol = false): static
     {
         return str_contains($this->value, PHP_EOL)
-            ? $this->before(PHP_EOL, $callback, included: $includeEol)
+            ? $this->selectBefore(PHP_EOL, $callback, included: $includeEol)
             : $this->tap($callback);
     }
 
     public function lastLine(Closure $callback, bool $includeEol = false): static
     {
         return str_contains($this->value, PHP_EOL)
-            ? $this->after(PHP_EOL, $callback, last: true, included: $includeEol)
+            ? $this->selectAfter(PHP_EOL, $callback, last: true, included: $includeEol)
             : $this->tap($callback);
     }
 
-    public function matchLine(string $pattern, Closure $callback, int $limit = -1): static
+    public function matchLine(string $pattern, Closure $callback, int $limit = -1, bool $includeEol = false): static
     {
-        return $this->match("/^.*$pattern.*$/m", $callback, null, $limit);
+        $regex = $includeEol ? "/^.*$pattern.*$\n?/m" : "/^.*$pattern.*$/m";
+
+        return $this->selectPattern($regex, $callback, null, $limit);
     }
 
-    public function updateLine(string $lineWithoutWhitespace, Closure $callback, int $limit = -1): static
+    public function updateLine(string $lineWithoutWhitespace, Closure $callback, int $limit = -1, bool $includeEol = false): static
     {
         $safeLine = preg_quote($lineWithoutWhitespace, '/');
+        $regex = $includeEol ? "/^\s*$safeLine\s*$\n?/m" : "/^\s*$safeLine\s*$/m";
 
-        return $this->match("/^\s*$safeLine\s*$/m", $callback, null, $limit);
+        return $this->selectPattern($regex, $callback, null, $limit);
     }
 
     public function appendLine(string $line, bool $keepIndent = false): static

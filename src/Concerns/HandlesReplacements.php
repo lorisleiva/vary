@@ -31,14 +31,14 @@ trait HandlesReplacements
 
     public function prependAfterWhitespace(string $prefix): static
     {
-        return $this->afterWhitespace(
+        return $this->selectAfterWhitespace(
             fn (Variant $variant) => $variant->prepend($prefix),
         );
     }
 
     public function appendBeforeWhitespace(string $suffix): static
     {
-        return $this->beforeWhitespace(
+        return $this->selectBeforeWhitespace(
             fn (Variant $variant) => $variant->append($suffix),
         );
     }

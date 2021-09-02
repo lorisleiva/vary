@@ -10,7 +10,7 @@ use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Concerns\AltersLines;
 use Lorisleiva\Vary\Concerns\AltersMethods;
 use Lorisleiva\Vary\Concerns\AltersProperties;
-use Lorisleiva\Vary\Concerns\HandlesFragments;
+use Lorisleiva\Vary\Concerns\ProvidesFragments;
 use Lorisleiva\Vary\Concerns\HandlesMustaches;
 use Lorisleiva\Vary\Concerns\HandlesReplacements;
 use Symfony\Component\VarDumper\VarDumper;
@@ -24,7 +24,7 @@ class Variant
     // Core Traits.
     use HandlesReplacements;
     use HandlesMustaches;
-    use HandlesFragments;
+    use ProvidesFragments;
     use AltersLines;
     use AltersProperties;
     use AltersMethods;
