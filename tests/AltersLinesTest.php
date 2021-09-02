@@ -391,31 +391,29 @@ it('deletes the EOL accordingly', function () {
         ->tap(expectVariantToBe(''));
 });
 
-// it('can remove the first line', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)->deleteFirstLine();
-//
-//     expect($variant->toString())->toBe(<<<END
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
-// it('can remove the last line', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)->deleteLastLine();
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of character: to live your last day, every day,
-//     END);
-// });
+it('removes the first line', function () {
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Last line.
+        END
+    );
+
+    $variant->deleteFirstLine()
+        ->tap(expectVariantToBe('Last line.'));
+});
+
+it('removes the last line', function () {
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Last line.
+        END
+    );
+
+    $variant->deleteLastLine()
+        ->tap(expectVariantToBe('First line.'));
+});
 
 it('deletes lines using regular expressions', function () {
     $variant = Vary::string(<<<END

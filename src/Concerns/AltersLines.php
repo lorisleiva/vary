@@ -145,15 +145,6 @@ trait AltersLines
             ->deletePlaceholderLines($placeholder);
     }
 
-    public function deleteLinePattern(string $pattern, int $limit = -1): static
-    {
-        $placeholder = $this->getRandomPlaceholder();
-        $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
-
-        return $this->selectLinePattern($pattern, $overrideCallback, limit: $limit)
-            ->deletePlaceholderLines($placeholder);
-    }
-
     public function deleteFirstLine(): static
     {
         return $this->selectFirstLine(
@@ -168,6 +159,15 @@ trait AltersLines
             callback: fn (Variant $variant) => $variant->empty(),
             includeEol: true,
         );
+    }
+
+    public function deleteLinePattern(string $pattern, int $limit = -1): static
+    {
+        $placeholder = $this->getRandomPlaceholder();
+        $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
+
+        return $this->selectLinePattern($pattern, $overrideCallback, limit: $limit)
+            ->deletePlaceholderLines($placeholder);
     }
 
     protected function deletePlaceholderLines(string $placeholder): static
