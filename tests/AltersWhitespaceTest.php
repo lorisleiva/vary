@@ -3,28 +3,29 @@
 use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
-it('can update fragments before, after and between whitespaces', function () {
-    $content = "  \t\n  \r\n Hello Moto \n  \t";
-    $callback = fn (Variant $variant) => $variant->override('CHANGED');
-
-    expect(Vary::string($content)->selectBeforeWhitespace($callback)->toString())
-        ->toBe("CHANGED \n  \t");
-
-    expect(Vary::string($content)->selectAfterWhitespace($callback)->toString())
-        ->toBe("  \t\n  \r\n CHANGED");
-
-    expect(Vary::string($content)->selectBetweenWhitespace($callback)->toString())
-        ->toBe("  \t\n  \r\n CHANGED \n  \t");
+it('selects a fragment before any whitespace', function () {
+    Vary::string("  \t\n  \r\n Hello Moto \n  \t")
+        ->selectBeforeWhitespace(expectVariantToBe("  \t\n  \r\n Hello Moto"));
 });
 
-it('can prepend some text after all whitespaces', function () {
-    $variant = Vary::string(" \t\n Hello World")->prependAfterWhitespace('// ');
-
-    expect($variant->toString())->toBe(" \t\n // Hello World");
+it('selects a fragment after any whitespace', function () {
+    Vary::string("  \t\n  \r\n Hello Moto \n  \t")
+        ->selectAfterWhitespace(expectVariantToBe("Hello Moto \n  \t"));
 });
 
-it('can append some text before all whitespaces', function () {
-    $variant = Vary::string("Hello World \t\n ")->appendBeforeWhitespace(';');
+it('selects a fragment between any whitespace', function () {
+    Vary::string("  \t\n  \r\n Hello Moto \n  \t")
+        ->selectBetweenWhitespace(expectVariantToBe("Hello Moto"));
+});
 
-    expect($variant->toString())->toBe("Hello World; \t\n ");
+it('prepends some text after any whitespace', function () {
+    Vary::string(" \t\n Hello World")
+        ->prependAfterWhitespace('// ')
+        ->tap(expectVariantToBe(" \t\n // Hello World"));
+});
+
+it('appends some text before any whitespace', function () {
+    Vary::string("Hello World \t\n ")
+        ->appendBeforeWhitespace(';')
+        ->tap(expectVariantToBe("Hello World; \t\n "));
 });
