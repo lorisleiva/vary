@@ -193,10 +193,10 @@ it('appends some lines whilst keeping the indentation of the first line', functi
 });
 
 it('ignores indentation and line jumps when the text is empty', function () {
-   Vary::string('')->appendLine('New Line', keepIndent: true)
+    Vary::string('')->appendLine('New Line', keepIndent: true)
        ->tap(expectVariantToBe('New Line'));
 
-   Vary::string('')->prependLine('New Line', keepIndent: true)
+    Vary::string('')->prependLine('New Line', keepIndent: true)
        ->tap(expectVariantToBe('New Line'));
 });
 
