@@ -44,16 +44,6 @@ class Variant
         $this->path = $path;
     }
 
-    public function getPath(): ?string
-    {
-        return $this->path;
-    }
-
-    public function toString(): string
-    {
-        return $this->value;
-    }
-
     #[Pure] public function __toString(): string
     {
         return $this->toString();
