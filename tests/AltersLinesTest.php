@@ -48,7 +48,8 @@ it('selects multiple lines by providing their content', function () {
 });
 
 it('selects the first and last lines', function () {
-    $variant = Vary::string(<<<END
+    $variant = Vary::string(
+        <<<END
         One apple pie.
         One humble pie.
         END
@@ -61,7 +62,8 @@ it('selects the first and last lines', function () {
 });
 
 it('selects lines using regular expressions', function () {
-    $variant = Vary::string(<<<END
+    $variant = Vary::string(
+        <<<END
         One apple pie.
         One humble pie.
         One apple TV.
