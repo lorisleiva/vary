@@ -3,11 +3,53 @@
 use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
+it('selects a line by providing its content', function () {
+    $variant = Vary::string(<<<END
+        One apple pie.
+        One humble pie.
+        One apple TV.
+    END);
+
+    // Select lines ignoring left and right whitespace.
+    $variant->selectLine('One apple pie.', expectVariantToBe("    One apple pie."));
+    $variant->selectLineWithEol('One apple pie.', expectVariantToBe("    One apple pie.\n"));
+    $variant->selectLineWithEol('One apple TV.', expectVariantToBe("    One apple TV."));
+
+    // Select lines including whitespaces.
+    $variant->selectExactLine('One apple pie.', expectVariantNotToBeCalled());
+    $variant->selectExactLine('    One apple pie.', expectVariantToBe("    One apple pie."));
+    $variant->selectExactLineWithEol('    One apple pie.', expectVariantToBe("    One apple pie.\n"));
+    $variant->selectExactLineWithEol('    One apple TV.', expectVariantToBe("    One apple TV."));
+});
+
+it('selects multiple lines by providing their content', function () {
+    $variant = Vary::string(<<<END
+        One apple pie.
+        One humble pie.
+        One apple pie.
+    END);
+
+    $variant->selectLine('One apple pie.', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe(<<<END
+            CHANGED
+                One humble pie.
+            CHANGED
+            END
+        ));
+
+    $variant->selectLineWithEol('One apple pie.', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe(<<<END
+            CHANGED    One humble pie.
+            CHANGED
+            END
+        ));
+});
+
 it('can select the first line', function () {
     $content = <<<END
         Hello
         Hello
-    END;
+        END;
 
     $variant = Vary::string($content)
         ->selectFirstLine(fn (Variant $variant) => $variant->replace('Hello', 'World'));
@@ -15,7 +57,7 @@ it('can select the first line', function () {
     expect($variant->toString())->toBe(<<<END
         World
         Hello
-    END);
+        END);
 });
 
 it('can select the last line', function () {
@@ -59,24 +101,6 @@ it('can update lines from regex expressions including the end of line', function
 
     expect($variant->toString())->toBe(<<<END
         without frenzy, or sloth, or pretense.
-    END);
-});
-
-it('can update lines by providing their content without whitespaces', function () {
-    $content = <<<END
-        Perfection of sloth: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)
-        ->selectLine(
-            'without frenzy, or sloth, or pretense.',
-            fn (Variant $variant) => $variant->replace('sloth', 'laziness'),
-        );
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of sloth: to live your last day, every day,
-        without frenzy, or laziness, or pretense.
     END);
 });
 

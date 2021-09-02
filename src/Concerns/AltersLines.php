@@ -8,12 +8,29 @@ use Lorisleiva\Vary\Variant;
 
 trait AltersLines
 {
-    public function selectLine(string $search, Closure $callback, int $limit = -1, bool $includeEol = false): static
+    public function selectLine(string $search, Closure $callback, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true): static
     {
         $safeSearch = preg_quote($search, '/');
-        $regex = $includeEol ? "/^\s*$safeSearch\s*$\n?/m" : "/^\s*$safeSearch\s*$/m";
+        $regex = $ignoreWhitespace
+            ? ($includeEol ? "/^\s*$safeSearch\s*$\n?/m" : "/^\s*$safeSearch\s*$/m")
+            : ($includeEol ? "/^$safeSearch$\n?/m" : "/^$safeSearch$/m");
 
         return $this->selectPattern($regex, $callback, null, $limit);
+    }
+
+    public function selectLineWithEol(string $search, Closure $callback, int $limit = -1): static
+    {
+        return $this->selectLine($search, $callback, $limit, includeEol: true);
+    }
+
+    public function selectExactLine(string $search, Closure $callback, int $limit = -1): static
+    {
+        return $this->selectLine($search, $callback, $limit, ignoreWhitespace: false);
+    }
+
+    public function selectExactLineWithEol(string $search, Closure $callback, int $limit = -1): static
+    {
+        return $this->selectLine($search, $callback, $limit, includeEol: true, ignoreWhitespace: false);
     }
 
     public function selectLinePattern(string $pattern, Closure $callback, int $limit = -1, bool $includeEol = false): static
@@ -27,14 +44,14 @@ trait AltersLines
     {
         return str_contains($this->value, PHP_EOL)
             ? $this->selectBefore(PHP_EOL, $callback, included: $includeEol)
-            : $this->tap($callback);
+            : $this->selectAll($callback);
     }
 
     public function selectLastLine(Closure $callback, bool $includeEol = false): static
     {
         return str_contains($this->value, PHP_EOL)
             ? $this->selectAfter(PHP_EOL, $callback, last: true, included: $includeEol)
-            : $this->tap($callback);
+            : $this->selectAll($callback);
     }
 
     public function prependLine(string $line, bool $keepIndent = false): static
@@ -67,10 +84,10 @@ trait AltersLines
         );
     }
 
-    public function addLineBeforePattern(string $search, string $line, bool $keepIndent = false): static
+    public function addLineBeforePattern(string $pattern, string $line, bool $keepIndent = false): static
     {
         return $this->selectLinePattern(
-            $search,
+            $pattern,
             fn (Variant $variant) => $variant->prependLine($line, $keepIndent),
         );
     }
@@ -83,10 +100,10 @@ trait AltersLines
         );
     }
 
-    public function addLineAfterPattern(string $search, string $line, bool $keepIndent = false): static
+    public function addLineAfterPattern(string $pattern, string $line, bool $keepIndent = false): static
     {
         return $this->selectLinePattern(
-            $search,
+            $pattern,
             fn (Variant $variant) => $variant->appendLine($line, $keepIndent)
         );
     }
@@ -100,12 +117,12 @@ trait AltersLines
             ->deletePlaceholderLines($placeholder);
     }
 
-    public function deleteLinePattern(string $search, int $limit = -1): static
+    public function deleteLinePattern(string $pattern, int $limit = -1): static
     {
         $placeholder = $this->getRandomPlaceholder();
         $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
 
-        return $this->selectLinePattern($search, $overrideCallback, $limit)
+        return $this->selectLinePattern($pattern, $overrideCallback, $limit)
             ->deletePlaceholderLines($placeholder);
     }
 
