@@ -3,7 +3,6 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
-use Illuminate\Support\Str;
 use Lorisleiva\Vary\Variant;
 
 trait AltersLines
@@ -12,10 +11,10 @@ trait AltersLines
     {
         $safeSearch = preg_quote($search, '/');
         $regex = $ignoreWhitespace
-            ? ($includeEol ? "/^\s*$safeSearch\s*$\n?/" : "/^\s*$safeSearch\s*$/")
-            : ($includeEol ? "/^$safeSearch$\n?/" : "/^$safeSearch$/");
+            ? ($includeEol ? "/^\s*$safeSearch\s*$\n?/m" : "/^\s*$safeSearch\s*$/m")
+            : ($includeEol ? "/^$safeSearch$\n?/m" : "/^$safeSearch$/m");
 
-        return $this->selectLinePattern($regex, $callback, null, $limit);
+        return $this->selectPattern($regex, $callback, null, $limit);
     }
 
     public function selectLineWithEol(string $search, Closure $callback, int $limit = -1): static
@@ -59,14 +58,12 @@ trait AltersLines
 
     public function selectAllLines(Closure $callback): static
     {
-        return $this->selectLinePattern('/^.*$/', $callback);
+        return $this->selectLinePattern('.*', $callback);
     }
 
     public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        $pattern = $this->ensureMultipleRegex($pattern);
-
-        return $this->selectPattern($pattern, $callback, $replace, $limit);
+        return $this->selectPattern("/^$pattern$/m", $callback, $replace, $limit);
     }
 
     public function prependLine(string $content, bool $keepIndent = false): static
@@ -141,8 +138,8 @@ trait AltersLines
         $safeSearch = preg_quote($search, '/');
         $safeSearch = $ignoreWhitespace ? "^\s*$safeSearch\s*$" : "^$safeSearch$";
 
-        return $this->selectLinePattern(
-            pattern: "/($safeSearch\n|\n$safeSearch|$safeSearch)/",
+        return $this->selectPattern(
+            pattern: "/($safeSearch\n|\n$safeSearch|$safeSearch)/m",
             callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
         );
@@ -166,33 +163,10 @@ trait AltersLines
 
     public function deleteLinePattern(string $pattern, int $limit = -1): static
     {
-        $placeholder = $this->getRandomPlaceholder();
-        $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
-
-        return $this->selectLinePattern($pattern, $overrideCallback, limit: $limit)
-            ->deletePlaceholderLines($placeholder);
-    }
-
-    protected function deletePlaceholderLines(string $placeholder): static
-    {
-        return $this->delete($placeholder . PHP_EOL)
-            ->delete(PHP_EOL . $placeholder)
-            ->delete($placeholder);
-    }
-
-    protected function getRandomPlaceholder(): string
-    {
-        return 'lorisleiva_vary_' . Str::random(32);
-    }
-
-    protected function ensureMultipleRegex(string $pattern): string
-    {
-        if (! $delimiter = $pattern[0] ?? null) {
-            return $pattern;
-        }
-
-        return Str::of($pattern)->afterLast($delimiter)->contains('m')
-            ? $pattern
-            : ($pattern . 'm');
+        return $this->selectPattern(
+            pattern: "/(^$pattern$\n|\n^$pattern$|^$pattern$)/m",
+            callback: fn (Variant $line) => $line->empty(),
+            limit: $limit,
+        );
     }
 }

@@ -86,13 +86,9 @@ it('selects lines using regular expressions', function () {
         END
     );
 
-    $variant->selectLinePattern('/^.*TV.*$/', expectVariantToBe('One apple TV.'));
-    $variant->selectLinePattern('/^.*TV.*$/m', expectVariantToBe('One apple TV.'));
-    $variant->selectLinePattern('/^.*TV.*$\n?/m', expectVariantToBe('One apple TV.'));
-    $variant->selectLinePattern('/^.*humble.*$\n?/m', expectVariantToBe("One humble pie.\n"));
-    $variant->selectLinePattern('/\n?^.*humble.*$/m', expectVariantToBe("\nOne humble pie."));
-
-    $variant->selectLinePattern('/^.*apple.*$/', overrideVariantTo('CHANGED'))
+    $variant->selectLinePattern('.*TV.*', expectVariantToBe('One apple TV.'));
+    $variant->selectLinePattern('.*humble.*', expectVariantToBe('One humble pie.'));
+    $variant->selectLinePattern('.*apple.*', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe(
             <<<END
             CHANGED
@@ -100,6 +96,9 @@ it('selects lines using regular expressions', function () {
             CHANGED
             END
         ));
+
+    // It has to match the entire line!
+    $variant->selectLinePattern('TV', expectVariantNotToBeCalled());
 });
 
 it('prepends some lines', function () {
@@ -263,7 +262,7 @@ it('adds some lines before other lines using regular expressions', function () {
 
     $variant
         ->addBeforeLinePattern(
-            pattern: '/^.*pie.*$/',
+            pattern: '.*pie.*',
             content: 'NEW LINE',
             keepIndent: true,
         )
@@ -340,7 +339,7 @@ it('adds some lines after other lines using regular expressions', function () {
 
     $variant
         ->addAfterLinePattern(
-            pattern: '/^.*pie.*$/',
+            pattern: '.*pie.*',
             content: 'NEW LINE',
             keepIndent: true,
         )
@@ -422,7 +421,7 @@ it('deletes lines using regular expressions', function () {
         One apple TV.
     END);
 
-    $variant->deleteLinePattern('/^.*pie.*$/')
+    $variant->deleteLinePattern('.*pie.*')
         ->tap(expectVariantToBe('    One apple TV.'));
 });
 
@@ -435,16 +434,16 @@ it('deletes the EOL accordingly using regular expressions', function () {
         END
     );
 
-    $variant->deleteLinePattern('/^First.*$/')
+    $variant->deleteLinePattern('First.*')
         ->tap(expectVariantToBe("Second line.\nLast line."));
 
-    $variant->deleteLinePattern('/^Second.*$/')
+    $variant->deleteLinePattern('Second.*')
         ->tap(expectVariantToBe("First line.\nLast line."));
 
-    $variant->deleteLinePattern('/^Last.*$/')
+    $variant->deleteLinePattern('Last.*')
         ->tap(expectVariantToBe("First line.\nSecond line."));
 
     Vary::string('One line only.')
-        ->deleteLinePattern('/^.*$/')
+        ->deleteLinePattern('.*')
         ->tap(expectVariantToBe(''));
 });
