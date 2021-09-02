@@ -12,8 +12,6 @@ use Lorisleiva\Vary\Concerns\AltersMethods;
 use Lorisleiva\Vary\Concerns\AltersMustaches;
 use Lorisleiva\Vary\Concerns\AltersProperties;
 use Lorisleiva\Vary\Concerns\AltersWhitespace;
-use Lorisleiva\Vary\Concerns\HandlesMustaches;
-use Lorisleiva\Vary\Concerns\HandlesReplacements;
 use Lorisleiva\Vary\Concerns\ProvidesAccessors;
 use Lorisleiva\Vary\Concerns\ProvidesFragments;
 use Lorisleiva\Vary\Concerns\ProvidesMutators;
