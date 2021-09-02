@@ -9,10 +9,14 @@ use JetBrains\PhpStorm\NoReturn;
 use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Concerns\AltersLines;
 use Lorisleiva\Vary\Concerns\AltersMethods;
+use Lorisleiva\Vary\Concerns\AltersMustaches;
 use Lorisleiva\Vary\Concerns\AltersProperties;
+use Lorisleiva\Vary\Concerns\AltersWhitespace;
 use Lorisleiva\Vary\Concerns\HandlesMustaches;
 use Lorisleiva\Vary\Concerns\HandlesReplacements;
+use Lorisleiva\Vary\Concerns\ProvidesAccessors;
 use Lorisleiva\Vary\Concerns\ProvidesFragments;
+use Lorisleiva\Vary\Concerns\ProvidesMutators;
 use Symfony\Component\VarDumper\VarDumper;
 
 class Variant
@@ -22,9 +26,13 @@ class Variant
     use Macroable;
 
     // Core Traits.
-    use HandlesReplacements;
-    use HandlesMustaches;
     use ProvidesFragments;
+    use ProvidesMutators;
+    use ProvidesAccessors;
+
+    // Syntactic sugar.
+    use AltersMustaches;
+    use AltersWhitespace;
     use AltersLines;
     use AltersProperties;
     use AltersMethods;
