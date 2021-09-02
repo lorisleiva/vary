@@ -354,72 +354,43 @@ it('adds some lines after other lines using regular expressions', function () {
         ));
 });
 
-// it('can add a line after another matched line', function () {
-//     $content = <<<END
-//         Perfection of sloth: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->addAfterLinePattern('sloth', 'New Line', keepIndent: true);
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of sloth: to live your last day, every day,
-//         New Line
-//         without frenzy, or sloth, or pretense.
-//         New Line
-//     END);
-// });
-//
-// it('can add a line before another line', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->addBeforeLine('without frenzy, or sloth, or pretense.', 'New Line');
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of character: to live your last day, every day,
-//     New Line
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
-// it('can add a line before another line whilst keeping its identation', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->addBeforeLine('without frenzy, or sloth, or pretense.', 'New Line', keepIndent: true);
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of character: to live your last day, every day,
-//         New Line
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
-// it('can add a line before another matched line', function () {
-//     $content = <<<END
-//         Perfection of sloth: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->addBeforeLinePattern('sloth', 'New Line', keepIndent: true);
-//
-//     expect($variant->toString())->toBe(<<<END
-//         New Line
-//         Perfection of sloth: to live your last day, every day,
-//         New Line
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
+it('deletes lines by providing their content', function () {
+    $variant = Vary::string(<<<END
+        One apple pie.
+        One humble pie.
+        One apple pie.
+    END);
+
+    $variant->deleteLine('One apple pie.')
+        ->tap(expectVariantToBe('    One humble pie.'));
+
+    $variant->deleteLine('    One apple pie.', ignoreWhitespace: false)
+        ->tap(expectVariantToBe('    One humble pie.'));
+});
+
+it('deletes the EOL accordingly', function () {
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    $variant->deleteLine('First line.')
+        ->tap(expectVariantToBe("Second line.\nLast line."));
+
+    $variant->deleteLine('Second line.')
+        ->tap(expectVariantToBe("First line.\nLast line."));
+
+    $variant->deleteLine('Last line.')
+        ->tap(expectVariantToBe("First line.\nSecond line."));
+
+    Vary::string('One line only.')
+        ->deleteLine('One line only.')
+        ->tap(expectVariantToBe(''));
+});
+
 // it('can remove the first line', function () {
 //     $content = <<<END
 //         Perfection of character: to live your last day, every day,
@@ -445,61 +416,37 @@ it('adds some lines after other lines using regular expressions', function () {
 //         Perfection of character: to live your last day, every day,
 //     END);
 // });
-//
-// it('can remove lines that matches the given text exactly', function () {
-//     $content = <<<END
-//         First Line
-//         Second Line
-//         Third Line
-//     END;
-//
-//     expect(Vary::string($content)->deleteLine('First Line')->toString())
-//         ->toBe(<<<END
-//             Second Line
-//             Third Line
-//         END);
-//
-//     expect(Vary::string($content)->deleteLine('Second Line')->toString())
-//         ->toBe(<<<END
-//             First Line
-//             Third Line
-//         END);
-//
-//     expect(Vary::string($content)->deleteLine('Third Line')->toString())
-//         ->toBe(<<<END
-//             First Line
-//             Second Line
-//         END);
-//
-//     expect(Vary::string('One line only')->deleteLine('One line only')->toString())
-//         ->toBe('');
-// });
-//
-// it('can remove lines that matches a given regex', function () {
-//     $content = <<<END
-//         First Line
-//         Second Line
-//         Third Line
-//     END;
-//
-//     expect(Vary::string($content)->deleteLinePattern('First')->toString())
-//         ->toBe(<<<END
-//             Second Line
-//             Third Line
-//         END);
-//
-//     expect(Vary::string($content)->deleteLinePattern('Second')->toString())
-//         ->toBe(<<<END
-//             First Line
-//             Third Line
-//         END);
-//
-//     expect(Vary::string($content)->deleteLinePattern('Third')->toString())
-//         ->toBe(<<<END
-//             First Line
-//             Second Line
-//         END);
-//
-//     expect(Vary::string('One line only')->deleteLinePattern('only')->toString())
-//         ->toBe('');
-// });
+
+it('deletes lines using regular expressions', function () {
+    $variant = Vary::string(<<<END
+        One apple pie.
+        One humble pie.
+        One apple TV.
+    END);
+
+    $variant->deleteLinePattern('/^.*pie.*$/')
+        ->tap(expectVariantToBe('    One apple TV.'));
+});
+
+it('deletes the EOL accordingly using regular expressions', function () {
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    $variant->deleteLinePattern('/^First.*$/')
+        ->tap(expectVariantToBe("Second line.\nLast line."));
+
+    $variant->deleteLinePattern('/^Second.*$/')
+        ->tap(expectVariantToBe("First line.\nLast line."));
+
+    $variant->deleteLinePattern('/^Last.*$/')
+        ->tap(expectVariantToBe("First line.\nSecond line."));
+
+    Vary::string('One line only.')
+        ->deleteLinePattern('/^.*$/')
+        ->tap(expectVariantToBe(''));
+});

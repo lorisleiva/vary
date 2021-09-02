@@ -136,12 +136,12 @@ trait AltersLines
         );
     }
 
-    public function deleteLine(string $search, int $limit = -1): static
+    public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): static
     {
         $placeholder = $this->getRandomPlaceholder();
         $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
 
-        return $this->selectLine($search, $overrideCallback, $limit)
+        return $this->selectLine($search, $overrideCallback, $limit, ignoreWhitespace: $ignoreWhitespace)
             ->deletePlaceholderLines($placeholder);
     }
 
