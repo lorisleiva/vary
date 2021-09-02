@@ -5,6 +5,7 @@ namespace Lorisleiva\Vary\Concerns;
 use Closure;
 use Illuminate\Support\Str;
 use JetBrains\PhpStorm\Pure;
+use Lorisleiva\Vary\Variant;
 
 trait ProvidesMutators
 {
@@ -26,6 +27,32 @@ trait ProvidesMutators
     #[Pure] public function append(string $suffix): static
     {
         return $this->new($this->value . $suffix);
+    }
+
+    public function addBefore(string $search, string $content, bool $last = false): static
+    {
+        if ($search === $this->value) {
+            return $this->prepend($content);
+        }
+
+        return $this->selectAfter($search, function (Variant $variant) use ($search, $content) {
+            return $search === $variant->toString() ? $variant : $variant->prepend($content);
+        }, last: $last, included: true);
+    }
+
+    public function addBeforeLast(string $search, string $content): static
+    {
+        return $this->addBefore($search, $content, last: true);
+    }
+
+    public function addBeforeAll(string $search, string $content): static
+    {
+        return $this;
+    }
+
+    public function addBeforePattern(string $pattern, string $content, int $limit = -1): static
+    {
+        //
     }
 
     public function replace(string | array $search, string | array $replace): static
@@ -71,16 +98,16 @@ trait ProvidesMutators
 
     #[Pure] public function deleteFirst(string $search): static
     {
-        return $this->new(Str::replaceFirst($search, '', $this->value));
+        return $this->replaceFirst($search, '');
     }
 
     #[Pure] public function deleteLast(string $search): static
     {
-        return $this->new(Str::replaceLast($search, '', $this->value));
+        return $this->replaceLast($search, '');
     }
 
     public function deletePattern(string $pattern, int $limit = -1): static
     {
-        return $this->new(preg_replace($pattern, '', $this->value, $limit));
+        return $this->replacePattern($pattern, '', $limit);
     }
 }

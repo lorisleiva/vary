@@ -26,6 +26,14 @@ it('appends some text', function () {
         ->tap(expectVariantToBe('Hello World'));
 });
 
+it('adds some text before some other text', function () {
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->addBefore('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble pie.'));
+    $variant->addBeforeLast('pie', 'hip')->tap(expectVariantToBe('One apple pie. One humble hippie.'));
+    // $variant->addBeforeAll('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
+});
+
 it('replaces all instances of one text with another', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
         ->replace('One', 'Two')
