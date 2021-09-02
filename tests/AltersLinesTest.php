@@ -30,7 +30,8 @@ it('selects multiple lines by providing their content', function () {
     END);
 
     $variant->selectLine('One apple pie.', overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe(<<<END
+        ->tap(expectVariantToBe(
+            <<<END
             CHANGED
                 One humble pie.
             CHANGED
@@ -38,7 +39,8 @@ it('selects multiple lines by providing their content', function () {
         ));
 
     $variant->selectLineWithEol('One apple pie.', overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe(<<<END
+        ->tap(expectVariantToBe(
+            <<<END
             CHANGED    One humble pie.
             CHANGED
             END
