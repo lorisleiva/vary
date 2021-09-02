@@ -8,19 +8,17 @@ trait AltersMustaches
     {
         $safeVariable = preg_quote($variable, '/');
 
-        return $this->new(preg_replace("/{{\s*$safeVariable\s*}}/", $value, $this->value, $limit));
+        return $this->replacePattern("/{{\s*$safeVariable\s*}}/", $value, $limit);
     }
 
     public function replaceAllMustaches(array $replacements): static
     {
-        $value = $this->value;
+        $variant = $this;
 
-        foreach ($replacements as $variable => $variableValue) {
-            $safeVariable = preg_quote($variable, '/');
-
-            $value = preg_replace("/{{\s*$safeVariable\s*}}/", $variableValue, $value);
+        foreach ($replacements as $variable => $value) {
+            $variant = $variant->replaceMustache($variable, $value);
         }
 
-        return $this->new($value);
+        return $variant;
     }
 }
