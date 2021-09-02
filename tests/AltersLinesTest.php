@@ -105,9 +105,9 @@ it('selects lines using regular expressions', function () {
 it('prepends some lines', function () {
     Vary::string(
         <<<END
-                One apple pie.
-                One humble pie.
-            END
+            One apple pie.
+            One humble pie.
+        END
     )
         ->prependLine(
             <<<END
@@ -127,9 +127,9 @@ it('prepends some lines', function () {
 it('prepends some lines whilst keeping the indentation of the first line', function () {
     Vary::string(
         <<<END
-                One apple pie.
-                One humble pie.
-            END
+            One apple pie.
+            One humble pie.
+        END
     )
         ->prependLine(
             <<<END
@@ -150,9 +150,9 @@ it('prepends some lines whilst keeping the indentation of the first line', funct
 it('appends some lines', function () {
     Vary::string(
         <<<END
-                One apple pie.
-                One humble pie.
-            END
+            One apple pie.
+            One humble pie.
+        END
     )
         ->appendLine(
             <<<END
@@ -169,12 +169,12 @@ it('appends some lines', function () {
         ));
 });
 
-it('appends some lines whilst keeping the indentation of the first line', function () {
+it('appends some lines whilst keeping the indentation of the last line', function () {
     Vary::string(
         <<<END
-                One apple pie.
-                One humble pie.
-            END
+            One apple pie.
+            One humble pie.
+        END
     )
         ->appendLine(
             <<<END
@@ -194,44 +194,166 @@ it('appends some lines whilst keeping the indentation of the first line', functi
 
 it('ignores indentation and line jumps when the text is empty', function () {
     Vary::string('')->appendLine('New Line', keepIndent: true)
-       ->tap(expectVariantToBe('New Line'));
+        ->tap(expectVariantToBe('New Line'));
 
     Vary::string('')->prependLine('New Line', keepIndent: true)
-       ->tap(expectVariantToBe('New Line'));
+        ->tap(expectVariantToBe('New Line'));
 });
 
-// it('can add a line after another line', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->addAfterLine('Perfection of character: to live your last day, every day,', 'New Line');
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of character: to live your last day, every day,
-//     New Line
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
-// it('can add a line after another line whilst keeping its identation', function () {
-//     $content = <<<END
-//         Perfection of character: to live your last day, every day,
-//         without frenzy, or sloth, or pretense.
-//     END;
-//
-//     $variant = Vary::string($content)
-//         ->addAfterLine('Perfection of character: to live your last day, every day,', 'New Line', keepIndent: true);
-//
-//     expect($variant->toString())->toBe(<<<END
-//         Perfection of character: to live your last day, every day,
-//         New Line
-//         without frenzy, or sloth, or pretense.
-//     END);
-// });
-//
+it('adds some lines before other lines', function () {
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    );
+
+    $variant
+        ->addBeforeLine(
+            search: 'One humble pie.',
+            content: <<<END
+            Two apple pie.
+            Two humble pie.
+            END
+        )
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+            Two apple pie.
+            Two humble pie.
+                One humble pie.
+            END
+        ));
+});
+
+it('adds some lines before other lines whilst keeping its indentation', function () {
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+                One humble pie.
+        END
+    );
+
+    $variant
+        ->addBeforeLine(
+            search: 'One humble pie.',
+            content: <<<END
+            Two apple pie.
+            Two humble pie.
+            END,
+            keepIndent: true,
+        )
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                    Two apple pie.
+                    Two humble pie.
+                    One humble pie.
+            END
+        ));
+});
+
+it('adds some lines before other lines using regular expressions', function () {
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    );
+
+    $variant
+        ->addBeforeLinePattern(
+            pattern: '/^.*pie.*$/',
+            content: 'NEW LINE',
+            keepIndent: true,
+        )
+        ->tap(expectVariantToBe(
+            <<<END
+                NEW LINE
+                One apple pie.
+                NEW LINE
+                One humble pie.
+            END
+        ));
+});
+
+it('adds some lines after other lines', function () {
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    );
+
+    $variant
+        ->addAfterLine(
+            search: 'One apple pie.',
+            content: <<<END
+            Two apple pie.
+            Two humble pie.
+            END
+        )
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+            Two apple pie.
+            Two humble pie.
+                One humble pie.
+            END
+        ));
+});
+
+it('adds some lines after other lines whilst keeping its indentation', function () {
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+                One humble pie.
+        END
+    );
+
+    $variant
+        ->addAfterLine(
+            search: 'One apple pie.',
+            content: <<<END
+            Two apple pie.
+            Two humble pie.
+            END,
+            keepIndent: true,
+        )
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                Two apple pie.
+                Two humble pie.
+                    One humble pie.
+            END
+        ));
+});
+
+it('adds some lines after other lines using regular expressions', function () {
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    );
+
+    $variant
+        ->addAfterLinePattern(
+            pattern: '/^.*pie.*$/',
+            content: 'NEW LINE',
+            keepIndent: true,
+        )
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                NEW LINE
+                One humble pie.
+                NEW LINE
+            END
+        ));
+});
+
 // it('can add a line after another matched line', function () {
 //     $content = <<<END
 //         Perfection of sloth: to live your last day, every day,

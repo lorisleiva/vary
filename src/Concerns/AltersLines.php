@@ -101,11 +101,12 @@ trait AltersLines
         });
     }
 
-    public function addBeforeLine(string $search, string $content, bool $keepIndent = false): static
+    public function addBeforeLine(string $search, string $content, bool $keepIndent = false, bool $ignoreWhitespace = true): static
     {
         return $this->selectLine(
-            $search,
-            fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
+            search: $search,
+            callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
+            ignoreWhitespace: $ignoreWhitespace,
         );
     }
 
