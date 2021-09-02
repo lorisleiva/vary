@@ -28,3 +28,13 @@ it('appends some text before any whitespace', function () {
         ->appendBeforeWhitespace(';')
         ->tap(expectVariantToBe("Hello World; \t\n "));
 });
+
+it('returns any whitespace at the left of the content', function () {
+    expect(Vary::string(" \t\n \r Hello World \t\n ")->getLeftWhitespace())->toBe(" \t\n \r ");
+    expect(Vary::string("Hello World")->getLeftWhitespace())->toBe('');
+});
+
+it('returns any whitespace at the right of the content', function () {
+    expect(Vary::string(" \t\n \r Hello World \t\n ")->getRightWhitespace())->toBe(" \t\n ");
+    expect(Vary::string("Hello World")->getRightWhitespace())->toBe('');
+});
