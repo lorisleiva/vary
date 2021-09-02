@@ -41,7 +41,7 @@ trait ProvidesFragments
         $next = fn (string $fragment) => $this->evaluateFragment($fragment, $callback);
         $newReplace = fn ($matches) => $replace($matches, $next);
 
-        return $this->replaceMatches($pattern, $newReplace, $limit);
+        return $this->replacePattern($pattern, $newReplace, $limit);
     }
 
     public function selectPatternFirstGroup(string $pattern, Closure $callback, int $limit = -1): static

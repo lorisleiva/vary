@@ -68,7 +68,7 @@ trait ProvidesMutators
         return $this->new(Str::replaceLast($search, $replace, $this->value));
     }
 
-    public function replaceMatches(string $pattern, Closure | string $replace, int $limit = -1): static
+    public function replacePattern(string $pattern, Closure | string $replace, int $limit = -1): static
     {
         if ($replace instanceof Closure) {
             return $this->new(preg_replace_callback($pattern, $replace, $this->value, $limit));
@@ -94,7 +94,7 @@ trait ProvidesMutators
         return $this->new(Str::replaceLast($search, '', $this->value));
     }
 
-    public function deleteMatches(string $pattern, int $limit = -1): static
+    public function deletePattern(string $pattern, int $limit = -1): static
     {
         return $this->new(preg_replace($pattern, '', $this->value, $limit));
     }

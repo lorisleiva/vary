@@ -23,4 +23,18 @@ trait AltersWhitespace
             fn (Variant $variant) => $variant->selectBeforeWhitespace($callback)
         );
     }
+
+    public function getLeftWhitespace(): string
+    {
+        preg_match('/^(\s*)/', $this->value, $matches);
+
+        return $matches[1] ?? '';
+    }
+
+    public function getRightWhitespace(): string
+    {
+        preg_match('/(\s*)$/', $this->value, $matches);
+
+        return $matches[1] ?? '';
+    }
 }

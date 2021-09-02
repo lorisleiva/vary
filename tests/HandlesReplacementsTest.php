@@ -134,7 +134,7 @@ it('can replace text using regular expressions', function () {
         without frenzy, or sloth, or pretense.
     END;
 
-    $variant = Vary::string($content)->replaceMatches('/\s\w+(\sday)/', '$1');
+    $variant = Vary::string($content)->replacePattern('/\s\w+(\sday)/', '$1');
 
     expect($variant->toString())->toBe(<<<END
         Perfection of character: to live your day, day,
@@ -148,7 +148,7 @@ it('can replace text using regular expressions and a callback', function () {
         without frenzy, or sloth, or pretense.
     END;
 
-    $variant = Vary::string($content)->replaceMatches('/\s\w+(\sday)/', function ($matches) {
+    $variant = Vary::string($content)->replacePattern('/\s\w+(\sday)/', function ($matches) {
         return $matches[1];
     });
 
@@ -198,7 +198,7 @@ it('can delete instances of text that match a given regex', function () {
         without frenzy, or sloth, or pretense.
     END;
 
-    expect(Vary::string($content)->deleteMatches('/\s(day|or)/')->toString())->toBe(<<<END
+    expect(Vary::string($content)->deletePattern('/\s(day|or)/')->toString())->toBe(<<<END
         Perfection of character: to live your last, every,
         without frenzy, sloth, pretense.
     END);

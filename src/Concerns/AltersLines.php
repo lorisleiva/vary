@@ -8,109 +8,86 @@ use Lorisleiva\Vary\Variant;
 
 trait AltersLines
 {
-    public function getIndentation(): string
+    public function selectLine(string $search, Closure $callback, int $limit = -1, bool $includeEol = false): static
     {
-        preg_match('/^(\s*)/', $this->value, $matches);
+        $safeSearch = preg_quote($search, '/');
+        $regex = $includeEol ? "/^\s*$safeSearch\s*$\n?/m" : "/^\s*$safeSearch\s*$/m";
 
-        return $matches[1] ?? '';
+        return $this->selectPattern($regex, $callback, null, $limit);
     }
 
-    public function firstLine(Closure $callback, bool $includeEol = false): static
-    {
-        return str_contains($this->value, PHP_EOL)
-            ? $this->selectBefore(PHP_EOL, $callback, included: $includeEol)
-            : $this->tap($callback);
-    }
-
-    public function lastLine(Closure $callback, bool $includeEol = false): static
-    {
-        return str_contains($this->value, PHP_EOL)
-            ? $this->selectAfter(PHP_EOL, $callback, last: true, included: $includeEol)
-            : $this->tap($callback);
-    }
-
-    public function matchLine(string $pattern, Closure $callback, int $limit = -1, bool $includeEol = false): static
+    public function selectLinePattern(string $pattern, Closure $callback, int $limit = -1, bool $includeEol = false): static
     {
         $regex = $includeEol ? "/^.*$pattern.*$\n?/m" : "/^.*$pattern.*$/m";
 
         return $this->selectPattern($regex, $callback, null, $limit);
     }
 
-    public function updateLine(string $lineWithoutWhitespace, Closure $callback, int $limit = -1, bool $includeEol = false): static
+    public function selectFirstLine(Closure $callback, bool $includeEol = false): static
     {
-        $safeLine = preg_quote($lineWithoutWhitespace, '/');
-        $regex = $includeEol ? "/^\s*$safeLine\s*$\n?/m" : "/^\s*$safeLine\s*$/m";
-
-        return $this->selectPattern($regex, $callback, null, $limit);
+        return str_contains($this->value, PHP_EOL)
+            ? $this->selectBefore(PHP_EOL, $callback, included: $includeEol)
+            : $this->tap($callback);
     }
 
-    public function appendLine(string $line, bool $keepIndent = false): static
+    public function selectLastLine(Closure $callback, bool $includeEol = false): static
     {
-        $lineJump = $this->value ? PHP_EOL : '';
-
-        return $this->lastLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
-            $indent = $keepIndent ? $variant->getIndentation() : '';
-
-            return $variant->append("$lineJump$indent$line");
-        });
+        return str_contains($this->value, PHP_EOL)
+            ? $this->selectAfter(PHP_EOL, $callback, last: true, included: $includeEol)
+            : $this->tap($callback);
     }
 
     public function prependLine(string $line, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? PHP_EOL : '';
 
-        return $this->firstLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
-            $indent = $keepIndent ? $variant->getIndentation() : '';
+        return $this->selectFirstLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
+            $indent = $keepIndent ? $variant->getLeftWhitespace() : '';
 
             return $variant->prepend("$indent$line$lineJump");
         });
     }
 
-    public function addLineAfter(string $search, string $line, bool $keepIndent = false): static
+    public function appendLine(string $line, bool $keepIndent = false): static
     {
-        return $this->updateLine(
-            $search,
-            fn (Variant $variant) => $variant->appendLine($line, $keepIndent)
-        );
-    }
+        $lineJump = $this->value ? PHP_EOL : '';
 
-    public function addLineAfterMatches(string $search, string $line, bool $keepIndent = false): static
-    {
-        return $this->matchLine(
-            $search,
-            fn (Variant $variant) => $variant->appendLine($line, $keepIndent)
-        );
+        return $this->selectLastLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
+            $indent = $keepIndent ? $variant->getLeftWhitespace() : '';
+
+            return $variant->append("$lineJump$indent$line");
+        });
     }
 
     public function addLineBefore(string $search, string $line, bool $keepIndent = false): static
     {
-        return $this->updateLine(
+        return $this->selectLine(
             $search,
             fn (Variant $variant) => $variant->prependLine($line, $keepIndent),
         );
     }
 
-    public function addLineBeforeMatches(string $search, string $line, bool $keepIndent = false): static
+    public function addLineBeforePattern(string $search, string $line, bool $keepIndent = false): static
     {
-        return $this->matchLine(
+        return $this->selectLinePattern(
             $search,
             fn (Variant $variant) => $variant->prependLine($line, $keepIndent),
         );
     }
 
-    public function deleteFirstLine(): static
+    public function addLineAfter(string $search, string $line, bool $keepIndent = false): static
     {
-        return $this->firstLine(
-            callback: fn (Variant $variant) => $variant->empty(),
-            includeEol: true,
+        return $this->selectLine(
+            $search,
+            fn (Variant $variant) => $variant->appendLine($line, $keepIndent)
         );
     }
 
-    public function deleteLastLine(): static
+    public function addLineAfterPattern(string $search, string $line, bool $keepIndent = false): static
     {
-        return $this->lastLine(
-            callback: fn (Variant $variant) => $variant->empty(),
-            includeEol: true,
+        return $this->selectLinePattern(
+            $search,
+            fn (Variant $variant) => $variant->appendLine($line, $keepIndent)
         );
     }
 
@@ -119,17 +96,33 @@ trait AltersLines
         $placeholder = $this->getRandomPlaceholder();
         $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
 
-        return $this->updateLine($search, $overrideCallback, $limit)
+        return $this->selectLine($search, $overrideCallback, $limit)
             ->deletePlaceholderLines($placeholder);
     }
 
-    public function deleteLineMatches(string $search, int $limit = -1): static
+    public function deleteLinePattern(string $search, int $limit = -1): static
     {
         $placeholder = $this->getRandomPlaceholder();
         $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
 
-        return $this->matchLine($search, $overrideCallback, $limit)
+        return $this->selectLinePattern($search, $overrideCallback, $limit)
             ->deletePlaceholderLines($placeholder);
+    }
+
+    public function deleteFirstLine(): static
+    {
+        return $this->selectFirstLine(
+            callback: fn (Variant $variant) => $variant->empty(),
+            includeEol: true,
+        );
+    }
+
+    public function deleteLastLine(): static
+    {
+        return $this->selectLastLine(
+            callback: fn (Variant $variant) => $variant->empty(),
+            includeEol: true,
+        );
     }
 
     protected function deletePlaceholderLines(string $placeholder): static

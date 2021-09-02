@@ -10,7 +10,7 @@ it('can select the first line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->firstLine(fn (Variant $variant) => $variant->replace('Hello', 'World'));
+        ->selectFirstLine(fn (Variant $variant) => $variant->replace('Hello', 'World'));
 
     expect($variant->toString())->toBe(<<<END
         World
@@ -25,7 +25,7 @@ it('can select the last line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->lastLine(fn (Variant $variant) => $variant->replace('Hello', 'World'));
+        ->selectLastLine(fn (Variant $variant) => $variant->replace('Hello', 'World'));
 
     expect($variant->toString())->toBe(<<<END
         Hello
@@ -40,7 +40,7 @@ it('can update lines from regex expressions', function () {
     END;
 
     $variant = Vary::string($content)
-        ->matchLine('frenzy', fn (Variant $variant) => $variant->replace('sloth', 'laziness'));
+        ->selectLinePattern('frenzy', fn (Variant $variant) => $variant->replace('sloth', 'laziness'));
 
     expect($variant->toString())->toBe(<<<END
         Perfection of sloth: to live your last day, every day,
@@ -55,7 +55,7 @@ it('can update lines from regex expressions including the end of line', function
     END;
 
     $variant = Vary::string($content)
-        ->matchLine('character', fn (Variant $variant) => $variant->empty(), includeEol: true);
+        ->selectLinePattern('character', fn (Variant $variant) => $variant->empty(), includeEol: true);
 
     expect($variant->toString())->toBe(<<<END
         without frenzy, or sloth, or pretense.
@@ -69,7 +69,7 @@ it('can update lines by providing their content without whitespaces', function (
     END;
 
     $variant = Vary::string($content)
-        ->updateLine(
+        ->selectLine(
             'without frenzy, or sloth, or pretense.',
             fn (Variant $variant) => $variant->replace('sloth', 'laziness'),
         );
@@ -187,7 +187,7 @@ it('can add a line after another matched line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineAfterMatches('sloth', 'New Line', keepIndent: true);
+        ->addLineAfterPattern('sloth', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         Perfection of sloth: to live your last day, every day,
@@ -236,7 +236,7 @@ it('can add a line before another matched line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineBeforeMatches('sloth', 'New Line', keepIndent: true);
+        ->addLineBeforePattern('sloth', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         New Line
@@ -308,24 +308,24 @@ it('can remove lines that matches a given regex', function () {
         Third Line
     END;
 
-    expect(Vary::string($content)->deleteLineMatches('First')->toString())
+    expect(Vary::string($content)->deleteLinePattern('First')->toString())
         ->toBe(<<<END
             Second Line
             Third Line
         END);
 
-    expect(Vary::string($content)->deleteLineMatches('Second')->toString())
+    expect(Vary::string($content)->deleteLinePattern('Second')->toString())
         ->toBe(<<<END
             First Line
             Third Line
         END);
 
-    expect(Vary::string($content)->deleteLineMatches('Third')->toString())
+    expect(Vary::string($content)->deleteLinePattern('Third')->toString())
         ->toBe(<<<END
             First Line
             Second Line
         END);
 
-    expect(Vary::string('One line only')->deleteLineMatches('only')->toString())
+    expect(Vary::string('One line only')->deleteLinePattern('only')->toString())
         ->toBe('');
 });
