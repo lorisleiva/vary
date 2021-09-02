@@ -54,29 +54,29 @@ trait AltersLines
             : $this->selectAll($callback);
     }
 
-    public function prependLine(string $line, bool $keepIndent = false): static
+    public function prependLine(string $content, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? PHP_EOL : '';
 
-        return $this->selectFirstLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
+        return $this->selectFirstLine(function (Variant $variant) use ($lineJump, $content, $keepIndent) {
             $indent = $keepIndent ? $variant->getLeftWhitespace() : '';
 
-            return $variant->prepend("$indent$line$lineJump");
+            return $variant->prepend("$indent$content$lineJump");
         });
     }
 
-    public function appendLine(string $line, bool $keepIndent = false): static
+    public function appendLine(string $content, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? PHP_EOL : '';
 
-        return $this->selectLastLine(function (Variant $variant) use ($lineJump, $line, $keepIndent) {
+        return $this->selectLastLine(function (Variant $variant) use ($lineJump, $content, $keepIndent) {
             $indent = $keepIndent ? $variant->getLeftWhitespace() : '';
 
-            return $variant->append("$lineJump$indent$line");
+            return $variant->append("$lineJump$indent$content");
         });
     }
 
-    public function addLineBefore(string $search, string $line, bool $keepIndent = false): static
+    public function addBeforeLine(string $search, string $line, bool $keepIndent = false): static
     {
         return $this->selectLine(
             $search,
@@ -84,7 +84,7 @@ trait AltersLines
         );
     }
 
-    public function addLineBeforePattern(string $pattern, string $line, bool $keepIndent = false): static
+    public function addBeforeLinePattern(string $pattern, string $line, bool $keepIndent = false): static
     {
         return $this->selectLinePattern(
             $pattern,
@@ -92,7 +92,7 @@ trait AltersLines
         );
     }
 
-    public function addLineAfter(string $search, string $line, bool $keepIndent = false): static
+    public function addAfterLine(string $search, string $line, bool $keepIndent = false): static
     {
         return $this->selectLine(
             $search,
@@ -100,7 +100,7 @@ trait AltersLines
         );
     }
 
-    public function addLineAfterPattern(string $pattern, string $line, bool $keepIndent = false): static
+    public function addAfterLinePattern(string $pattern, string $line, bool $keepIndent = false): static
     {
         return $this->selectLinePattern(
             $pattern,

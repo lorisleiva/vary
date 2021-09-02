@@ -181,7 +181,7 @@ it('can add a line after another line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineAfter('Perfection of character: to live your last day, every day,', 'New Line');
+        ->addAfterLine('Perfection of character: to live your last day, every day,', 'New Line');
 
     expect($variant->toString())->toBe(<<<END
         Perfection of character: to live your last day, every day,
@@ -197,7 +197,7 @@ it('can add a line after another line whilst keeping its identation', function (
     END;
 
     $variant = Vary::string($content)
-        ->addLineAfter('Perfection of character: to live your last day, every day,', 'New Line', keepIndent: true);
+        ->addAfterLine('Perfection of character: to live your last day, every day,', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         Perfection of character: to live your last day, every day,
@@ -213,7 +213,7 @@ it('can add a line after another matched line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineAfterPattern('sloth', 'New Line', keepIndent: true);
+        ->addAfterLinePattern('sloth', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         Perfection of sloth: to live your last day, every day,
@@ -230,7 +230,7 @@ it('can add a line before another line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineBefore('without frenzy, or sloth, or pretense.', 'New Line');
+        ->addBeforeLine('without frenzy, or sloth, or pretense.', 'New Line');
 
     expect($variant->toString())->toBe(<<<END
         Perfection of character: to live your last day, every day,
@@ -246,7 +246,7 @@ it('can add a line before another line whilst keeping its identation', function 
     END;
 
     $variant = Vary::string($content)
-        ->addLineBefore('without frenzy, or sloth, or pretense.', 'New Line', keepIndent: true);
+        ->addBeforeLine('without frenzy, or sloth, or pretense.', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         Perfection of character: to live your last day, every day,
@@ -262,7 +262,7 @@ it('can add a line before another matched line', function () {
     END;
 
     $variant = Vary::string($content)
-        ->addLineBeforePattern('sloth', 'New Line', keepIndent: true);
+        ->addBeforeLinePattern('sloth', 'New Line', keepIndent: true);
 
     expect($variant->toString())->toBe(<<<END
         New Line
