@@ -12,6 +12,7 @@ function expectVariantToBe(string $expected): Closure
 {
     return function (Variant $variant) use ($expected) {
         expect((string) $variant)->toBe($expected);
+
         return $variant;
     };
 }
