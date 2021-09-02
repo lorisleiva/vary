@@ -63,77 +63,33 @@ it('replaces multiple instances of one text with a sequence of other texts', fun
 });
 
 it('replaces text using regular expressions', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->replacePattern('/\s\w+(\sday)/', '$1');
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your day, day,
-        without frenzy, or sloth, or pretense.
-    END);
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replacePattern('/(pie|TV)/', 'super $1')
+        ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
 });
 
 it('replaces text using regular expressions and a callback', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->replacePattern('/\s\w+(\sday)/', function ($matches) {
-        return $matches[1];
-    });
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your day, day,
-        without frenzy, or sloth, or pretense.
-    END);
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replacePattern('/(pie|TV)/', fn (array $matches) => "super $matches[1]")
+        ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
 });
 
-it('can delete all instances of one text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
+it('deletes all instances of one or many given texts', function () {
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
-    expect(Vary::string($content)->delete(' day')->toString())->toBe(<<<END
-        Perfection of character: to live your last, every,
-        without frenzy, or sloth, or pretense.
-    END);
-
-    expect(Vary::string($content)->delete([' day', ' or'])->toString())->toBe(<<<END
-        Perfection of character: to live your last, every,
-        without frenzy, sloth, pretense.
-    END);
+    $variant->delete('One ')->tap(expectVariantToBe('apple pie. humble pie. apple TV.'));
+    $variant->delete(['One ', ' pie'])->tap(expectVariantToBe('apple. humble. apple TV.'));
 });
 
-it('can delete the first or last instance of one text', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
+it('deletes the first or last instance of a given text', function () {
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
-    expect(Vary::string($content)->deleteFirst(' day')->toString())->toBe(<<<END
-        Perfection of character: to live your last, every day,
-        without frenzy, or sloth, or pretense.
-    END);
-
-    expect(Vary::string($content)->deleteLast(' day')->toString())->toBe(<<<END
-        Perfection of character: to live your last day, every,
-        without frenzy, or sloth, or pretense.
-    END);
+    $variant->deleteFirst(' pie')->tap(expectVariantToBe('One apple. One humble pie. One apple TV.'));
+    $variant->deleteLast(' pie')->tap(expectVariantToBe('One apple pie. One humble. One apple TV.'));
 });
 
-it('can delete instances of text that match a given regex', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    expect(Vary::string($content)->deletePattern('/\s(day|or)/')->toString())->toBe(<<<END
-        Perfection of character: to live your last, every,
-        without frenzy, sloth, pretense.
-    END);
+it('deletes text using regular expressions', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->deletePattern('/ (pie|TV)/')
+        ->tap(expectVariantToBe('One apple. One humble. One apple.'));
 });
