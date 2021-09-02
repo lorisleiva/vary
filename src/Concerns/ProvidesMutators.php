@@ -29,20 +29,6 @@ trait ProvidesMutators
         return $this->new($this->value . $suffix);
     }
 
-    public function prependAfterWhitespace(string $prefix): static
-    {
-        return $this->selectAfterWhitespace(
-            fn (Variant $variant) => $variant->prepend($prefix),
-        );
-    }
-
-    public function appendBeforeWhitespace(string $suffix): static
-    {
-        return $this->selectBeforeWhitespace(
-            fn (Variant $variant) => $variant->append($suffix),
-        );
-    }
-
     public function replace(string | array $search, string | array $replace): static
     {
         return $this->new(Str::replace($search, $replace, $this->value));

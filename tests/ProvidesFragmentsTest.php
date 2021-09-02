@@ -1,5 +1,6 @@
 <?php
 
+use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
 it('selects all of its content', function () {
@@ -32,6 +33,15 @@ it('selects multiple fragments from a given pattern', function () {
     Vary::string('You can also commit injustice by doing nothing.')
         ->selectPattern('/also|(doing.*)/', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe('You can CHANGED commit injustice by CHANGED'));
+});
+
+it('updates matched fragments using a custom replace callback', function () {
+    $replaceCallback = fn (array $matches, Closure $next) => $matches[1] . $next($matches[2]) . $matches[3];
+    $uppercaseCallback = fn (Variant $variant) => strtoupper($variant);
+
+    Vary::string('You can also commit injustice by doing nothing.')
+        ->selectPattern('/You can al(so)(.*) by(.*)/', $uppercaseCallback, $replaceCallback)
+        ->tap(expectVariantToBe('so COMMIT INJUSTICE doing nothing.'));
 });
 
 it('selects a fragment using the first group of a given pattern', function () {

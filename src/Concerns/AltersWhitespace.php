@@ -24,6 +24,20 @@ trait AltersWhitespace
         );
     }
 
+    public function prependAfterWhitespace(string $prefix): static
+    {
+        return $this->selectAfterWhitespace(
+            fn (Variant $variant) => $variant->prepend($prefix),
+        );
+    }
+
+    public function appendBeforeWhitespace(string $suffix): static
+    {
+        return $this->selectBeforeWhitespace(
+            fn (Variant $variant) => $variant->append($suffix),
+        );
+    }
+
     public function getLeftWhitespace(): string
     {
         preg_match('/^(\s*)/', $this->value, $matches);

@@ -2,133 +2,67 @@
 
 use Lorisleiva\Vary\Vary;
 
-it('can empty the entire text', function () {
-    $variant = Vary::string('Some text')->empty();
-
-    expect($variant->toString())->toBe('');
+it('empties the entire content', function () {
+    Vary::string('Some text')
+        ->empty()
+        ->tap(expectVariantToBe(''));
 });
 
-it('can override the entire text', function () {
-    $variant = Vary::string('Some text')->override('Hello World');
-
-    expect($variant->toString())->toBe('Hello World');
+it('overrides the entire content', function () {
+    Vary::string('Some text')
+        ->override('Hello World')
+        ->tap(expectVariantToBe('Hello World'));
 });
 
-it('can prepend some text', function () {
-    $variant = Vary::string('World')->prepend('Hello ');
-
-    expect($variant->toString())->toBe('Hello World');
+it('prepends some text', function () {
+    Vary::string('World')
+        ->prepend('Hello ')
+        ->tap(expectVariantToBe('Hello World'));
 });
 
-it('can append some text', function () {
-    $variant = Vary::string('World')->append(' Hello');
-
-    expect($variant->toString())->toBe('World Hello');
+it('appends some text', function () {
+    Vary::string('Hello')
+        ->append(' World')
+        ->tap(expectVariantToBe('Hello World'));
 });
 
-it('can prepend some text after all whitespaces', function () {
-    $variant = Vary::string(" \t\n Hello World")->prependAfterWhitespace('// ');
-
-    expect($variant->toString())->toBe(" \t\n // Hello World");
+it('replaces all instances of one text with another', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replace('One', 'Two')
+        ->tap(expectVariantToBe('Two apple pie. Two humble pie. Two apple TV.'));
 });
 
-it('can append some text before all whitespaces', function () {
-    $variant = Vary::string("Hello World \t\n ")->appendBeforeWhitespace(';');
-
-    expect($variant->toString())->toBe("Hello World; \t\n ");
+it('replaces multiple instances at onces', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replace(['One', 'pie'], ['Two', 'tarts'])
+        ->tap(expectVariantToBe('Two apple tarts. Two humble tarts. Two apple TV.'));
 });
 
-it('can replace all instances of one text with another', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->replace('day', 'week');
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last week, every week,
-        without frenzy, or sloth, or pretense.
-    END);
+it('replaces multiple instances at onces by providing a key/value array', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceAll(['One' => 'Two', 'pie' => 'tarts'])
+        ->tap(expectVariantToBe('Two apple tarts. Two humble tarts. Two apple TV.'));
 });
 
-it('can replace multiple instances at onces', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $search = ['frenzy', 'sloth', 'pretense'];
-    $replace = ['hysteria', 'laziness', 'excuses'];
-    $variant = Vary::string($content)->replace($search, $replace);
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last day, every day,
-        without hysteria, or laziness, or excuses.
-    END);
+it('replaces only the first instance of one text with another', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceFirst('One', 'Two')
+        ->tap(expectVariantToBe('Two apple pie. One humble pie. One apple TV.'));
 });
 
-it('can replace multiple instances at onces by providing a key/value array', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->replaceAll([
-        'frenzy' => 'hysteria',
-        'sloth' => 'laziness',
-        'pretense' => 'excuses',
-    ]);
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last day, every day,
-        without hysteria, or laziness, or excuses.
-    END);
+it('replaces only the last instance of one text with another', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceLast('One', 'Two')
+        ->tap(expectVariantToBe('One apple pie. One humble pie. Two apple TV.'));
 });
 
-it('can replace only the first instance of one text with another', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->replaceFirst('day', 'week');
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last week, every day,
-        without frenzy, or sloth, or pretense.
-    END);
+it('replaces multiple instances of one text with a sequence of other texts', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceSequentially('One', ['Two', 'Three'])
+        ->tap(expectVariantToBe('Two apple pie. Three humble pie. One apple TV.'));
 });
 
-it('can replace only the last instance of one text with another', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->replaceLast('day', 'week');
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last day, every week,
-        without frenzy, or sloth, or pretense.
-    END);
-});
-
-it('can replace multiple instances of one text with a sequence of other texts', function () {
-    $content = <<<END
-        Perfection of character: to live your last day, every day,
-        without frenzy, or sloth, or pretense.
-    END;
-
-    $variant = Vary::string($content)->replaceSequentially('day', ['week', 'minute']);
-
-    expect($variant->toString())->toBe(<<<END
-        Perfection of character: to live your last week, every minute,
-        without frenzy, or sloth, or pretense.
-    END);
-});
-
-it('can replace text using regular expressions', function () {
+it('replaces text using regular expressions', function () {
     $content = <<<END
         Perfection of character: to live your last day, every day,
         without frenzy, or sloth, or pretense.
@@ -142,7 +76,7 @@ it('can replace text using regular expressions', function () {
     END);
 });
 
-it('can replace text using regular expressions and a callback', function () {
+it('replaces text using regular expressions and a callback', function () {
     $content = <<<END
         Perfection of character: to live your last day, every day,
         without frenzy, or sloth, or pretense.

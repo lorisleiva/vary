@@ -16,3 +16,15 @@ it('can update fragments before, after and between whitespaces', function () {
     expect(Vary::string($content)->selectBetweenWhitespace($callback)->toString())
         ->toBe("  \t\n  \r\n CHANGED \n  \t");
 });
+
+it('can prepend some text after all whitespaces', function () {
+    $variant = Vary::string(" \t\n Hello World")->prependAfterWhitespace('// ');
+
+    expect($variant->toString())->toBe(" \t\n // Hello World");
+});
+
+it('can append some text before all whitespaces', function () {
+    $variant = Vary::string("Hello World \t\n ")->appendBeforeWhitespace(';');
+
+    expect($variant->toString())->toBe("Hello World; \t\n ");
+});
