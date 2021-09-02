@@ -1,6 +1,5 @@
 <?php
 
-use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
 it('selects a fragment before any whitespace', function () {
