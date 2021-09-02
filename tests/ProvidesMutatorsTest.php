@@ -29,28 +29,28 @@ it('appends some text', function () {
 it('adds some text before some other text', function () {
     $variant = Vary::string('One apple pie. One humble pie.');
 
-    $variant->addBefore('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble pie.'));
+    $variant->addBefore('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
+    $variant->addBeforeFirst('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble pie.'));
     $variant->addBeforeLast('pie', 'hip')->tap(expectVariantToBe('One apple pie. One humble hippie.'));
-    $variant->addBeforeAll('pie', 'hip')->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
 });
 
 it('prepends the text when adding text before the entire content', function () {
     $variant = Vary::string('Hello World');
 
     $variant->addBefore('Hello World', 'Say: ')->tap(expectVariantToBe('Say: Hello World'));
+    $variant->addBeforeFirst('Hello World', 'Say: ')->tap(expectVariantToBe('Say: Hello World'));
     $variant->addBeforeLast('Hello World', 'Say: ')->tap(expectVariantToBe('Say: Hello World'));
-    $variant->addBeforeAll('Hello World', 'Say: ')->tap(expectVariantToBe('Say: Hello World'));
 });
 
 it('does not add text before some text that is not found', function () {
     $variant = Vary::string('Hello World');
 
     $variant->addBefore('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    $variant->addBeforeFirst('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
     $variant->addBeforeLast('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
-    $variant->addBeforeAll('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
     Vary::string('')->addBefore('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+    Vary::string('')->addBeforeFirst('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
     Vary::string('')->addBeforeLast('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
-    Vary::string('')->addBeforeAll('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
 });
 
 it('adds some text before a given pattern', function () {
@@ -76,28 +76,28 @@ it('adds some text before the first group of a given pattern', function () {
 it('adds some text after some other text', function () {
     $variant = Vary::string('One apple pie. One humble pie.');
 
-    $variant->addAfter('pie', 'rcing')->tap(expectVariantToBe('One apple piercing. One humble pie.'));
+    $variant->addAfter('pie', 'rcing')->tap(expectVariantToBe('One apple piercing. One humble piercing.'));
+    $variant->addAfterFirst('pie', 'rcing')->tap(expectVariantToBe('One apple piercing. One humble pie.'));
     $variant->addAfterLast('pie', 'rcing')->tap(expectVariantToBe('One apple pie. One humble piercing.'));
-    $variant->addAfterAll('pie', 'rcing')->tap(expectVariantToBe('One apple piercing. One humble piercing.'));
 });
 
 it('appends the text when adding text after the entire content', function () {
     $variant = Vary::string('Hello World');
 
     $variant->addAfter('Hello World', '!')->tap(expectVariantToBe('Hello World!'));
+    $variant->addAfterFirst('Hello World', '!')->tap(expectVariantToBe('Hello World!'));
     $variant->addAfterLast('Hello World', '!')->tap(expectVariantToBe('Hello World!'));
-    $variant->addAfterAll('Hello World', '!')->tap(expectVariantToBe('Hello World!'));
 });
 
 it('does not add text after some text that is not found', function () {
     $variant = Vary::string('Hello World');
 
     $variant->addAfter('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
+    $variant->addAfterFirst('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
     $variant->addAfterLast('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
-    $variant->addAfterAll('NOT_FOUND', 'Test')->tap(expectVariantToBe('Hello World'));
     Vary::string('')->addAfter('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
+    Vary::string('')->addAfterFirst('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
     Vary::string('')->addAfterLast('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
-    Vary::string('')->addAfterAll('NOT_FOUND', 'Test')->tap(expectVariantToBe(''));
 });
 
 it('adds some text after a given pattern', function () {
@@ -186,4 +186,10 @@ it('deletes text using regular expressions', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
         ->deletePattern('/ (pie|TV)/')
         ->tap(expectVariantToBe('One apple. One humble. One apple.'));
+});
+
+it('deletes text using the first group of a regular expression', function () {
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->deletePatternFirstGroup('/One(.*?) pie./')
+        ->tap(expectVariantToBe('One pie. One pie. One apple TV.'));
 });

@@ -29,7 +29,12 @@ trait ProvidesMutators
         return $this->new($this->value . $suffix);
     }
 
-    #[Pure] public function addBefore(string $search, string $content): static
+    public function addBefore(string $search, string $content): static
+    {
+        return $this->replace($search, $content . $search);
+    }
+
+    #[Pure] public function addBeforeFirst(string $search, string $content): static
     {
         return $this->replaceFirst($search, $content . $search);
     }
@@ -37,11 +42,6 @@ trait ProvidesMutators
     #[Pure] public function addBeforeLast(string $search, string $content): static
     {
         return $this->replaceLast($search, $content . $search);
-    }
-
-    public function addBeforeAll(string $search, string $content): static
-    {
-        return $this->replace($search, $content . $search);
     }
 
     public function addBeforePattern(string $pattern, string $content, int $limit = -1): static
@@ -62,7 +62,12 @@ trait ProvidesMutators
         );
     }
 
-    #[Pure] public function addAfter(string $search, string $content): static
+    public function addAfter(string $search, string $content): static
+    {
+        return $this->replace($search, $search . $content);
+    }
+
+    #[Pure] public function addAfterFirst(string $search, string $content): static
     {
         return $this->replaceFirst($search, $search . $content);
     }
@@ -70,11 +75,6 @@ trait ProvidesMutators
     #[Pure] public function addAfterLast(string $search, string $content): static
     {
         return $this->replaceLast($search, $search . $content);
-    }
-
-    public function addAfterAll(string $search, string $content): static
-    {
-        return $this->replace($search, $search . $content);
     }
 
     public function addAfterPattern(string $pattern, string $content, int $limit = -1): static
@@ -149,5 +149,14 @@ trait ProvidesMutators
     public function deletePattern(string $pattern, int $limit = -1): static
     {
         return $this->replacePattern($pattern, '', $limit);
+    }
+
+    public function deletePatternFirstGroup(string $pattern, int $limit = -1): static
+    {
+        return $this->selectPatternFirstGroup(
+            pattern: $pattern,
+            callback: fn (Variant $variant) => $variant->empty(),
+            limit: $limit,
+        );
     }
 }
