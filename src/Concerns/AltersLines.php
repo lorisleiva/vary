@@ -12,10 +12,10 @@ trait AltersLines
     {
         $safeSearch = preg_quote($search, '/');
         $regex = $ignoreWhitespace
-            ? ($includeEol ? "/^\s*$safeSearch\s*$\n?/m" : "/^\s*$safeSearch\s*$/m")
-            : ($includeEol ? "/^$safeSearch$\n?/m" : "/^$safeSearch$/m");
+            ? ($includeEol ? "/^\s*$safeSearch\s*$\n?/" : "/^\s*$safeSearch\s*$/")
+            : ($includeEol ? "/^$safeSearch$\n?/" : "/^$safeSearch$/");
 
-        return $this->selectPattern($regex, $callback, null, $limit);
+        return $this->selectLinePattern($regex, $callback, null, $limit);
     }
 
     public function selectLineWithEol(string $search, Closure $callback, int $limit = -1): static
@@ -138,11 +138,14 @@ trait AltersLines
 
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): static
     {
-        $placeholder = $this->getRandomPlaceholder();
-        $overrideCallback = fn (Variant $variant) => $variant->override($placeholder);
+        $safeSearch = preg_quote($search, '/');
+        $safeSearch = $ignoreWhitespace ? "^\s*$safeSearch\s*$" : "^$safeSearch$";
 
-        return $this->selectLine($search, $overrideCallback, $limit, ignoreWhitespace: $ignoreWhitespace)
-            ->deletePlaceholderLines($placeholder);
+        return $this->selectLinePattern(
+            pattern: "/($safeSearch\n|\n$safeSearch|$safeSearch)/",
+            callback: fn (Variant $line) => $line->empty(),
+            limit: $limit,
+        );
     }
 
     public function deleteFirstLine(): static
