@@ -1,6 +1,20 @@
 <?php
 
 use Illuminate\Filesystem\Filesystem;
+use Lorisleiva\Vary\Variant;
+
+function expectString($any)
+{
+    return expect((string) $any);
+}
+
+function expectVariantToBe(string $expected): Closure
+{
+    return function (Variant $variant) use ($expected) {
+        expect((string) $variant)->toBe($expected);
+        return $variant;
+    };
+}
 
 function stubs(string $path): string
 {

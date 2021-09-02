@@ -17,7 +17,7 @@ trait ProvidesFragments
 
     public function tap(Closure $callback): static
     {
-        return $this->selectSelf($callback);
+        return $this->selectAll($callback);
     }
 
     public function select(string $search, Closure $callback, int $limit = -1): static
@@ -27,7 +27,7 @@ trait ProvidesFragments
         return $this->selectPattern("/$safeSearch/", $callback, limit: $limit);
     }
 
-    public function selectSelf(Closure $callback): static
+    public function selectAll(Closure $callback): static
     {
         $newValue = $this->evaluateFragment($this->value, $callback);
 

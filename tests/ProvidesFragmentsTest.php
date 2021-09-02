@@ -3,11 +3,14 @@
 use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
-it('can tap its own value', function () {
-    $variant = Vary::string('Hello World')
-        ->tap(fn (Variant $variant) => $variant->replace('World', 'Moto'));
+it('selects all of its value', function () {
+    // Either via the "selectAll" method.
+    Vary::string('Hello World')
+        ->selectAll(expectVariantToBe('Hello World'));
 
-    expect($variant->toString())->toBe('Hello Moto');
+    // Or via the "tap" alias method.
+    Vary::string('Hello World')
+        ->tap(expectVariantToBe('Hello World'));
 });
 
 it('can update a fragment before a given text', function () {
