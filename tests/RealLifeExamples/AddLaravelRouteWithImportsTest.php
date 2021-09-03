@@ -23,7 +23,7 @@ it('adds Laravel routes with their use statements', function () {
         Route::get('articles/{article}', FetchArticleController::class)->name('articles.show');
         PHP;
 
-    // When
+    // When we add two routes and their imports.
     $variant = Vary::string($content)
         ->appendLine(
             <<<PHP
@@ -31,15 +31,15 @@ it('adds Laravel routes with their use statements', function () {
             Route::post('articles', StoreArticleController::class)->name('articles.store');
             PHP
         )
-        ->selectPattern('/(?:use [^;]+;$\n?)+/m', function (Variant $variant) {
-            return $variant->append(<<<PHP
+        ->selectPattern('/(?:use [^;]+;$\n)*(?:use [^;]+;$)/m', function (Variant $variant) {
+            return $variant->appendLine(<<<PHP
                 use App\Http\Controllers\CreateArticleController;
                 use App\Http\Controllers\StoreArticleController;
-
-                PHP);
+                PHP
+            );
         });
 
-    // Then
+    // Then the routes file has been correctly updated.
     $expected = <<<PHP
         <?php
 
