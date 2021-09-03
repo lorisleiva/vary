@@ -32,7 +32,8 @@ it('adds Laravel routes with their use statements', function () {
             PHP
         )
         ->selectPattern('/(?:use [^;]+;$\n)*(?:use [^;]+;$)/m', function (Variant $variant) {
-            return $variant->appendLine(<<<PHP
+            return $variant->appendLine(
+                <<<PHP
                 use App\Http\Controllers\CreateArticleController;
                 use App\Http\Controllers\StoreArticleController;
                 PHP
