@@ -110,8 +110,8 @@ it('selects all when the before text could not be found', function () {
         ->tap(expectVariantToBe('CHANGED'));
 
     Vary::string('')->selectBefore('NOT_FOUND', expectVariantToBe(''));
-    // Vary::string('')->selectBefore('NOT_FOUND', overrideVariantTo('CHANGED'))
-    //     ->tap(expectVariantToBe('CHANGED'));
+    Vary::string('')->selectBefore('NOT_FOUND', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
 });
 
 it('updates a fragment before a given text without affecting the rest', function () {
@@ -124,17 +124,56 @@ it('selects a fragment after a given text', function () {
     $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
     $variant->selectAfter('One', expectVariantToBe(' apple pie. One humble pie. One apple TV.'));
+    $variant->selectAfter('One', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('OneCHANGED'));
+
     $variant->selectAfterIncluded('One', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectAfterIncluded('One', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
+
     $variant->selectAfterLast('One', expectVariantToBe(' apple TV.'));
+    $variant->selectAfterLast('One', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('One apple pie. One humble pie. OneCHANGED'));
+
     $variant->selectAfterLastIncluded('One', expectVariantToBe('One apple TV.'));
+    $variant->selectAfterLastIncluded('One', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('One apple pie. One humble pie. CHANGED'));
+});
+
+it('replaces an empty fragment after a given text', function () {
+    $variant = Vary::string('content-');
+
+    $variant->selectAfter('-', expectVariantToBe(''));
+    $variant->selectAfter('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('content-CHANGED'));
+
+    $variant->selectAfterIncluded('-', expectVariantToBe('-'));
+    $variant->selectAfterIncluded('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('contentCHANGED'));
+
+    $variant->selectAfterLast('-', expectVariantToBe(''));
+    $variant->selectAfterLast('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('content-CHANGED'));
+
+    $variant->selectAfterLastIncluded('-', expectVariantToBe('-'));
+    $variant->selectAfterLastIncluded('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('contentCHANGED'));
 });
 
 it('selects all when the after text could not be found', function () {
     $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
     $variant->selectAfter('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectAfter('NOT_FOUND', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
+
     $variant->selectAfterIncluded('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectAfterIncluded('NOT_FOUND', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
+
     Vary::string('')->selectAfter('NOT_FOUND', expectVariantToBe(''));
+    Vary::string('')->selectAfter('NOT_FOUND', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
 });
 
 it('updates a fragment after a given text without affecting the rest', function () {

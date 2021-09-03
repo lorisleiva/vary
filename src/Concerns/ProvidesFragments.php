@@ -100,7 +100,9 @@ trait ProvidesFragments
 
         $newValue = $this->evaluateFragment($oldValue, $callback);
 
-        return $this->replaceLast($oldValue, $newValue);
+        return $oldValue === ''
+            ? $this->append($newValue)
+            : $this->replaceLast($oldValue, $newValue);
     }
 
     public function selectAfterLast(string $search, Closure $callback): static
