@@ -1,6 +1,5 @@
 <?php
 
-use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
 it('adds Laravel routes with their use statements', function () {
