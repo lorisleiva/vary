@@ -68,7 +68,9 @@ trait ProvidesFragments
 
         $newValue = $this->evaluateFragment($oldValue, $callback);
 
-        return $this->replaceFirst($oldValue, $newValue);
+        return $oldValue === ''
+            ? $this->prepend($newValue)
+            : $this->replaceFirst($oldValue, $newValue);
     }
 
     public function selectBeforeLast(string $search, Closure $callback): static

@@ -8,9 +8,8 @@ use Illuminate\Support\Traits\Macroable;
 use JetBrains\PhpStorm\NoReturn;
 use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Concerns\AltersLines;
-use Lorisleiva\Vary\Concerns\AltersMethods;
+use Lorisleiva\Vary\Concerns\AltersPhpFiles;
 use Lorisleiva\Vary\Concerns\AltersMustaches;
-use Lorisleiva\Vary\Concerns\AltersProperties;
 use Lorisleiva\Vary\Concerns\AltersWhitespace;
 use Lorisleiva\Vary\Concerns\ProvidesAccessors;
 use Lorisleiva\Vary\Concerns\ProvidesFragments;
@@ -32,8 +31,7 @@ class Variant
     use AltersMustaches;
     use AltersWhitespace;
     use AltersLines;
-    use AltersProperties;
-    use AltersMethods;
+    use AltersPhpFiles;
 
     protected string $value;
     protected ?string $path;

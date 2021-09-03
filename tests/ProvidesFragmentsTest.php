@@ -62,17 +62,56 @@ it('selects a fragment before a given text', function () {
     $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
     $variant->selectBefore('pie', expectVariantToBe('One apple '));
+    $variant->selectBefore('pie', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGEDpie. One humble pie. One apple TV.'));
+
     $variant->selectBeforeIncluded('pie', expectVariantToBe('One apple pie'));
+    $variant->selectBeforeIncluded('pie', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED. One humble pie. One apple TV.'));
+
     $variant->selectBeforeLast('pie', expectVariantToBe('One apple pie. One humble '));
+    $variant->selectBeforeLast('pie', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGEDpie. One apple TV.'));
+
     $variant->selectBeforeLastIncluded('pie', expectVariantToBe('One apple pie. One humble pie'));
+    $variant->selectBeforeLastIncluded('pie', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED. One apple TV.'));
+});
+
+it('replaces an empty fragment before a given text', function () {
+    $variant = Vary::string('-content');
+
+    $variant->selectBefore('-', expectVariantToBe(''));
+    $variant->selectBefore('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED-content'));
+
+    $variant->selectBeforeIncluded('-', expectVariantToBe('-'));
+    $variant->selectBeforeIncluded('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGEDcontent'));
+
+    $variant->selectBeforeLast('-', expectVariantToBe(''));
+    $variant->selectBeforeLast('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED-content'));
+
+    $variant->selectBeforeLastIncluded('-', expectVariantToBe('-'));
+    $variant->selectBeforeLastIncluded('-', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGEDcontent'));
 });
 
 it('selects all when the before text could not be found', function () {
     $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
     $variant->selectBefore('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectBefore('NOT_FOUND', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
+
     $variant->selectBeforeIncluded('NOT_FOUND', expectVariantToBe('One apple pie. One humble pie. One apple TV.'));
+    $variant->selectBeforeIncluded('NOT_FOUND', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
+
     Vary::string('')->selectBefore('NOT_FOUND', expectVariantToBe(''));
+    // Vary::string('')->selectBefore('NOT_FOUND', overrideVariantTo('CHANGED'))
+    //     ->tap(expectVariantToBe('CHANGED'));
 });
 
 it('updates a fragment before a given text without affecting the rest', function () {

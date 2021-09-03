@@ -2,7 +2,7 @@
 
 namespace Lorisleiva\Vary\Concerns;
 
-trait AltersProperties
+trait AltersPhpFiles
 {
     //
 }
