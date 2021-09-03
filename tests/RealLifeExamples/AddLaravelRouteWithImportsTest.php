@@ -31,14 +31,14 @@ it('adds Laravel routes with their use statements', function () {
             Route::post('articles', StoreArticleController::class)->name('articles.store');
             PHP
         )
-        ->selectPattern('/(?:use [^;]+;$\n)*(?:use [^;]+;$)/m', function (Variant $variant) {
-            return $variant->appendLine(
-                <<<PHP
+        ->appendLineInPattern(
+            pattern: '/(?:use [^;]+;$\n)*(?:use [^;]+;$)/m',
+            content: <<<PHP
                 use App\Http\Controllers\CreateArticleController;
                 use App\Http\Controllers\StoreArticleController;
-                PHP
-            );
-        });
+                PHP,
+            keepIndent: true,
+        );
 
     // Then the routes file has been correctly updated.
     $expected = <<<PHP
