@@ -25,27 +25,19 @@ it('adds Laravel routes with their use statements', function () {
 
     // When
     $variant = Vary::string($content)
-        // ->appendLine(
-        //     <<<PHP
-        //     Route::get('articles/new', CreateArticleController::class)->name('articles.create');
-        //     Route::post('articles', StoreArticleController::class)->name('articles.store');
-        //     PHP
-        // )
+        ->appendLine(
+            <<<PHP
+            Route::get('articles/new', CreateArticleController::class)->name('articles.create');
+            Route::post('articles', StoreArticleController::class)->name('articles.store');
+            PHP
+        )
         ->selectPattern('/(?:use [^;]+;$\n?)+/m', function (Variant $variant) {
-            return $variant->appendLine(<<<PHP
+            return $variant->append(<<<PHP
                 use App\Http\Controllers\CreateArticleController;
                 use App\Http\Controllers\StoreArticleController;
+
                 PHP);
-        })
-        // ->addAfterPattern(
-        //     pattern: '/(?:use [^;]+;$\n?)+/m',
-        //     content: <<<PHP
-        //         use App\Http\Controllers\CreateArticleController;
-        //         use App\Http\Controllers\StoreArticleController;
-        //
-        //         PHP,
-        // )
-    ;
+        });
 
     // Then
     $expected = <<<PHP
@@ -71,4 +63,4 @@ it('adds Laravel routes with their use statements', function () {
         PHP;
 
     expectString($variant)->toBe($expected);
-})->skip();
+});
