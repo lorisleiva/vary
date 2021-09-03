@@ -151,6 +151,26 @@ it('prepends some lines whilst keeping the indentation of the first line', funct
         ));
 });
 
+it('prepends some lines within a matched pattern', function () {
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->prependLineInPattern(
+            pattern: '/^.*humble.*$/m',
+            content: 'NEW LINE',
+            keepIndent: true,
+        )->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                NEW LINE
+                One humble pie.
+            END
+        ));
+});
+
 it('appends some lines', function () {
     Vary::string(
         <<<END
@@ -192,6 +212,26 @@ it('appends some lines whilst keeping the indentation of the last line', functio
                 One humble pie.
                 Two apple pie.
                 Two humble pie.
+            END
+        ));
+});
+
+it('appends some lines within a matched pattern', function () {
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->appendLineInPattern(
+            pattern: '/^.*apple.*$/m',
+            content: 'NEW LINE',
+            keepIndent: true,
+        )->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                NEW LINE
+                One humble pie.
             END
         ));
 });

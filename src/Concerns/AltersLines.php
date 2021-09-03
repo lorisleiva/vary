@@ -94,6 +94,16 @@ trait AltersLines
         });
     }
 
+    public function prependLineInPattern(string $pattern, string $content, bool $keepIndent = false, ?Closure $replace = null, int $limit = -1): static
+    {
+        return $this->selectPattern(
+            pattern: $pattern,
+            callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
+            replace: $replace,
+            limit: $limit,
+        );
+    }
+
     public function appendLine(string $content, bool $keepIndent = false): static
     {
         $lineJump = $this->value ? PHP_EOL : '';
@@ -108,6 +118,16 @@ trait AltersLines
 
             return $variant->append("$lineJump$content");
         });
+    }
+
+    public function appendLineInPattern(string $pattern, string $content, bool $keepIndent = false, ?Closure $replace = null, int $limit = -1): static
+    {
+        return $this->selectPattern(
+            pattern: $pattern,
+            callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
+            replace: $replace,
+            limit: $limit,
+        );
     }
 
     public function addBeforeLine(string $search, string $content, bool $keepIndent = false, bool $ignoreWhitespace = true): static
