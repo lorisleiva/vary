@@ -1,5 +1,6 @@
 <?php
 
+use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
 it('adds Laravel routes with their use statements', function () {
@@ -37,18 +38,21 @@ it('adds Laravel routes with their use statements', function () {
                 use App\Http\Controllers\StoreArticleController;
                 PHP,
             keepIndent: true,
-        );
+        )
+        ->selectPattern('/(?:use [^;]+;$\n)*(?:use [^;]+;$)/m', function (Variant $variant) {
+            return $variant->sortLines();
+        });
 
     // Then the routes file has been correctly updated.
     $expected = <<<PHP
         <?php
 
-        use App\Http\Controllers\ListAllArticlesController;
+        use App\Http\Controllers\CreateArticleController;
         use App\Http\Controllers\FetchArticleController;
+        use App\Http\Controllers\ListAllArticlesController;
+        use App\Http\Controllers\StoreArticleController;
         use Illuminate\Support\Facades\Auth;
         use Illuminate\Support\Facades\Route;
-        use App\Http\Controllers\CreateArticleController;
-        use App\Http\Controllers\StoreArticleController;
 
         Auth::routes();
 
