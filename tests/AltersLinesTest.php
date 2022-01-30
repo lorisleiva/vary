@@ -492,3 +492,25 @@ it('deletes the EOL accordingly using regular expressions', function () {
         ->deleteLinePattern('.*')
         ->tap(expectVariantToBe(''));
 });
+
+it('returns all lines in the content', function () {
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getAllLines())->toBe([
+        'First line.',
+        'Second line.',
+        'Last line.',
+    ]);
+
+    expect($variant->getAllLinesWithEol())->toBe([
+        'First line.' . PHP_EOL,
+        'Second line.' . PHP_EOL,
+        'Last line.',
+    ]);
+});

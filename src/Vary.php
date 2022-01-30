@@ -7,7 +7,7 @@ use JetBrains\PhpStorm\Pure;
 
 class Vary
 {
-    public static function file(string $path): Variant
+    #[Pure] public static function file(string $path): Variant
     {
         $value = file_exists($path) ? file_get_contents($path) : '';
 

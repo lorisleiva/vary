@@ -202,4 +202,22 @@ trait AltersLines
             limit: $limit,
         );
     }
+
+    public function getAllLines(bool $includeEol = false): array
+    {
+        $lines = explode(PHP_EOL, $this->value);
+
+        if ($includeEol) {
+            $lastLine = array_pop($lines);
+            $lines = array_map(fn (string $line) => $line . PHP_EOL, $lines);
+            $lines[] = $lastLine;
+        }
+
+        return $lines;
+    }
+
+    public function getAllLinesWithEol(): array
+    {
+        return $this->getAllLines(true);
+    }
 }
