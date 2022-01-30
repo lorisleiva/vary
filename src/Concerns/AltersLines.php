@@ -3,6 +3,8 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
+use Illuminate\Support\Str;
+use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Variant;
 
 trait AltersLines
@@ -201,6 +203,31 @@ trait AltersLines
             callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
         );
+    }
+
+    public function getFirstLine(bool $includeEol = false): string
+    {
+        if (! str_contains($this->value, PHP_EOL)) {
+            return $this->value;
+        }
+
+        $line = Str::before($this->value, PHP_EOL);
+
+        return $includeEol ? $line . PHP_EOL : $line;
+    }
+
+    public function getFirstLineWithEol(): string
+    {
+        return $this->getFirstLine(true);
+    }
+
+    public function getLastLine(): string
+    {
+        if (! str_contains($this->value, PHP_EOL)) {
+            return $this->value;
+        }
+
+        return Str::afterLast($this->value, PHP_EOL);
     }
 
     public function getAllLines(bool $includeEol = false): array

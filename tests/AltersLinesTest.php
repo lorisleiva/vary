@@ -493,6 +493,20 @@ it('deletes the EOL accordingly using regular expressions', function () {
         ->tap(expectVariantToBe(''));
 });
 
+it('returns the first and last lines of the content', function () {
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getFirstLine())->toBe('First line.');
+    expect($variant->getFirstLineWithEol())->toBe("First line.\n");
+    expect($variant->getLastLine())->toBe('Last line.');
+});
+
 it('returns all lines in the content', function () {
     $variant = Vary::string(
         <<<END
