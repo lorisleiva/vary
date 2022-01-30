@@ -3,6 +3,7 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Lorisleiva\Vary\Variant;
 
@@ -202,6 +203,29 @@ trait AltersLines
             callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
         );
+    }
+
+    public function sortLines(?Closure $callback = null): static
+    {
+        $lines = $this->getAllLines();
+
+        if ($hasTrailingEol = Arr::last($lines) === '') {
+            array_pop($lines);
+        }
+
+        $sortedLines = Arr::sort($lines, $callback);
+
+        if ($hasTrailingEol) {
+            $sortedLines[] = '';
+        }
+
+        return $this->new(join(PHP_EOL, $sortedLines));
+    }
+
+
+    public function sortLinesByLength(): static
+    {
+        return $this->sortLines(fn (string $value) => strlen($value));
     }
 
     public function getFirstLine(bool $includeEol = false): string

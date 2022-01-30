@@ -493,6 +493,70 @@ it('deletes the EOL accordingly using regular expressions', function () {
         ->tap(expectVariantToBe(''));
 });
 
+it('sorts all lines by alphabetical order', function () {
+    Vary::string(
+        <<<END
+        Some line.
+        Another line.
+        New line.
+        END
+    )
+        ->sortLines()
+        ->tap(expectVariantToBe(
+            <<<END
+            Another line.
+            New line.
+            Some line.
+            END
+        ));
+
+    Vary::string("D\nA\nC\nB\n")
+        ->sortLines()
+        ->tap(expectVariantToBe("A\nB\nC\nD\n"));
+});
+
+it('sorts all lines by length', function () {
+    Vary::string(
+        <<<END
+        Some line.
+        Another line.
+        New line.
+        END
+    )
+        ->sortLinesByLength()
+        ->tap(expectVariantToBe(
+            <<<END
+            New line.
+            Some line.
+            Another line.
+            END
+        ));
+
+    Vary::string("DDDD\nA\nCCC\nBB\n")
+        ->sortLines()
+        ->tap(expectVariantToBe("A\nBB\nCCC\nDDDD\n"));
+});
+
+it('sorts all lines by a given custom order', function () {
+    Vary::string(
+        <<<END
+        A. Some line. [3]
+        B. Some line. [1]
+        C. Some line. [2]
+
+        END
+    )
+        ->sortLines(fn (string $value) => substr($value, -3))
+        ->tap(expectVariantToBe(
+            <<<END
+            B. Some line. [1]
+            C. Some line. [2]
+            A. Some line. [3]
+
+            END
+        ));
+});
+
 it('returns the first and last lines of the content', function () {
     $variant = Vary::string(
         <<<END
