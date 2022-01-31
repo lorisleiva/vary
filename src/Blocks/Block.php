@@ -46,7 +46,7 @@ class Block
 
     public function prependBeforeEach(string $prefix, int $limit = -1): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->prepend($prefix), limit: $limit);
+        return $this->select(fn (Variant $variant) => $variant->prepend($prefix), limit: $limit);
     }
 
     public function prependLines(string $content, bool $keepIndent = false): Variant
@@ -56,7 +56,7 @@ class Block
 
     public function prependLinesBeforeEach(string $content, bool $keepIndent = false, int $limit = -1): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->prependLine($content, $keepIndent), limit: $limit);
+        return $this->select(fn (Variant $variant) => $variant->prependLine($content, $keepIndent), limit: $limit);
     }
 
     public function append(string $suffix): Variant
@@ -66,7 +66,7 @@ class Block
 
     public function appendAfterEach(string $suffix, int $limit = -1): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->append($suffix), limit: $limit);
+        return $this->select(fn (Variant $variant) => $variant->append($suffix), limit: $limit);
     }
 
     public function appendLines(string $content, bool $keepIndent = false): Variant
@@ -76,17 +76,17 @@ class Block
 
     public function appendLinesAfterEach(string $content, bool $keepIndent = false, int $limit = -1): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->appendLine($content, $keepIndent), limit: $limit);
+        return $this->select(fn (Variant $variant) => $variant->appendLine($content, $keepIndent), limit: $limit);
     }
 
     public function replace(string $search, string $replace): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->replace($search, $replace));
+        return $this->select(fn (Variant $variant) => $variant->replace($search, $replace));
     }
 
     public function replaceAll(array $replacements): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->replaceAll($replacements));
+        return $this->select(fn (Variant $variant) => $variant->replaceAll($replacements));
     }
 
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): Variant
