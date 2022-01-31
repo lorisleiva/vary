@@ -3,6 +3,8 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
+use Lorisleiva\Vary\Variant;
+use function strlen;
 
 trait AltersPhpFiles
 {
@@ -19,5 +21,17 @@ trait AltersPhpFiles
     public function selectPhpImportsWithEol(Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
         return $this->selectPhpImports($callback, $replace, $limit, true);
+    }
+
+    public function sortPhpImports(?Closure $callback = null): static
+    {
+        return $this->selectPhpImports(function (Variant $variant) use ($callback) {
+            return $variant->sortLines($callback);
+        });
+    }
+
+    public function sortPhpImportsByLength(): static
+    {
+        return $this->sortPhpImports(fn (string $value) => strlen($value));
     }
 }

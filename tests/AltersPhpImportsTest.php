@@ -75,3 +75,51 @@ it('does not select trait imports as PHP import statements', function () {
             PHP
         ));
 });
+
+it('sorts PHP import statements', function () {
+    $useStatements = <<<PHP
+        use Illuminate\Support\Str;
+        use App\Http\Controllers\FetchArticleController;
+        use Illuminate\Support\Facades\Route;
+
+        use App\Models\User;
+        use App\Models\Article;
+        PHP;
+
+    Vary::string($useStatements)
+        ->sortPhpImports()
+        ->tap(expectVariantToBe(
+            <<<PHP
+            use App\Http\Controllers\FetchArticleController;
+            use Illuminate\Support\Facades\Route;
+            use Illuminate\Support\Str;
+
+            use App\Models\Article;
+            use App\Models\User;
+            PHP
+        ));
+});
+
+it('sorts PHP import statements by length', function () {
+    $useStatements = <<<PHP
+        use Illuminate\Support\Str;
+        use App\Http\Controllers\FetchArticleController;
+        use Illuminate\Support\Facades\Route;
+
+        use App\Models\Article;
+        use App\Models\User;
+        PHP;
+
+    Vary::string($useStatements)
+        ->sortPhpImportsByLength()
+        ->tap(expectVariantToBe(
+            <<<PHP
+            use Illuminate\Support\Str;
+            use Illuminate\Support\Facades\Route;
+            use App\Http\Controllers\FetchArticleController;
+
+            use App\Models\User;
+            use App\Models\Article;
+            PHP
+        ));
+});
