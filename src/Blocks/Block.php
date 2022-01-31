@@ -12,7 +12,7 @@ class Block
     protected string $pattern;
     protected string $allowedPattern;
 
-    public function __construct(Variant $variant, string $pattern, string $allowedPattern = '\n')
+    public function __construct(Variant $variant, string $pattern, string $allowedPattern = '\s')
     {
         $this->variant = $variant;
         $this->pattern = $pattern;

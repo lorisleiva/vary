@@ -9,9 +9,9 @@ class PhpBlock extends Block
 {
     #[Pure] public function __construct(Variant $variant, string $pattern)
     {
-        $lineComment = '\s*\/\/.*$';
-        $blockComment = '\s*(?:\/\*(?:[^*]|(?:\*[^\/]))*\*\/)\s*';
-        $newLine = '\n';
+        $lineComment = '\/\/.*$';
+        $blockComment = '\/\*(?:[^*]|(?:\*[^\/]))*\*\/';
+        $newLine = '\s';
 
         parent::__construct($variant, $pattern, "{$newLine}|{$lineComment}|{$blockComment}");
     }

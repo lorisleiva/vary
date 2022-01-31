@@ -3,12 +3,18 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
+use Lorisleiva\Vary\Blocks\Block;
 use Lorisleiva\Vary\Variant;
 
 trait AltersPhpFiles
 {
     protected static string $phpImportsPattern = '/(?:^use [^;]+;$\n)*(?:^use [^;]+;$)/m';
     protected static string $phpImportsPatternWithEol = '/(?:^use [^;]+;$\n)*(?:^use [^;]+;$\n?)/m';
+    
+    protected function getPhpImportsBlock(): Block
+    {
+        return new Block($this, '^use [^;]+;$');
+    }
 
     public function selectPhpImports(Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): static
     {
@@ -64,7 +70,7 @@ trait AltersPhpFiles
         if (empty($imports)) {
             return $this->selectPhpImportsWithEol(fn (Variant $variant) => $variant->empty());
         }
-        
+
         $imports = array_map(fn (string $import) => "use {$import};", $imports);
 
         return $this->selectPhpImportsWithEol(function (Variant $variant) use ($imports) {
