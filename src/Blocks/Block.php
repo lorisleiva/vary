@@ -44,7 +44,7 @@ class Block
         $value = join(PHP_EOL, $values) . PHP_EOL;
 
         return $this->select(
-            callback: fn(Variant $variant) => $variant->prepend($value),
+            callback: fn (Variant $variant) => $variant->prepend($value),
             limit: 1,
         );
     }
@@ -53,7 +53,7 @@ class Block
     {
         $value = join(PHP_EOL, $values) . PHP_EOL;
 
-        return $this->select(fn(Variant $variant) => $variant->prepend($value));
+        return $this->select(fn (Variant $variant) => $variant->prepend($value));
     }
 
     public function append(string ...$values): Variant
@@ -61,7 +61,7 @@ class Block
         $value = PHP_EOL . join(PHP_EOL, $values);
 
         return $this->select(
-            callback: fn(Variant $variant) => $variant->append($value),
+            callback: fn (Variant $variant) => $variant->append($value),
             limit: 1,
         );
     }
@@ -70,17 +70,17 @@ class Block
     {
         $value = PHP_EOL . join(PHP_EOL, $values);
 
-        return $this->select(fn(Variant $variant) => $variant->append($value));
+        return $this->select(fn (Variant $variant) => $variant->append($value));
     }
 
     public function replace(string $search, string $replace): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->replace($search, $replace));
+        return $this->select(fn (Variant $variant) => $variant->replace($search, $replace));
     }
 
     public function replaceAll(array $replacements): Variant
     {
-        return $this->select(fn(Variant $variant) => $variant->replaceAll($replacements));
+        return $this->select(fn (Variant $variant) => $variant->replaceAll($replacements));
     }
 
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): Variant
