@@ -121,6 +121,14 @@ it('deletes lines inside blocks', function () {
             EOL
         ));
 
+    $block->deleteLines(['Hello Loris!', 'Hello World,'])
+        ->tap(expectVariantToBe(
+            <<<EOL
+            Hiya, my name is Loris.
+            Did Loris say hello?
+            EOL
+        ));
+
     $block->deleteLinePattern('Hello.*')
         ->tap(expectVariantToBe(
             <<<EOL

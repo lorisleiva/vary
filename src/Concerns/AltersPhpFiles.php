@@ -41,40 +41,26 @@ trait AltersPhpFiles
         $imports = array_map(fn (string $import) => "use {$import};", $imports);
         $imports = join(PHP_EOL, $imports);
 
-        return $this->selectPhpImports(
-            callback: fn (Variant $variant) => $variant->append(PHP_EOL . $imports),
-            limit: 1,
-        );
+        return $this->getPhpImportsBlock()->appendLines($imports);
     }
 
     public function replacePhpImport(string $search, string $replace): static
     {
-        return $this->selectPhpImports(function (Variant $variant) use ($search, $replace) {
-            return $variant->replace($search, $replace);
-        });
+        return $this->getPhpImportsBlock()->replace($search, $replace);
     }
 
     public function replacePhpImports(array $replacements): static
     {
-        return $this->selectPhpImports(function (Variant $variant) use ($replacements) {
-            return $variant->replaceAll($replacements);
-        });
+        return $this->getPhpImportsBlock()->replaceAll($replacements);
     }
 
     public function deletePhpImports(string ...$imports): static
     {
         if (empty($imports)) {
-            return $this->selectPhpImportsWithEol(fn (Variant $variant) => $variant->empty());
+            return $this->getPhpImportsBlock()->empty();
         }
 
         $imports = array_map(fn (string $import) => "use {$import};", $imports);
-
-        return $this->selectPhpImportsWithEol(function (Variant $variant) use ($imports) {
-            foreach ($imports as $import) {
-                $variant = $variant->deleteLine($import);
-            }
-
-            return $variant;
-        });
+        return $this->getPhpImportsBlock()->deleteLines($imports);
     }
 }
