@@ -136,7 +136,7 @@ it('adds PHP imports', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->addPhpImport(Arr::class, Str::class)
+        ->addPhpImports(Arr::class, Str::class)
         ->tap(expectVariantToBe(
             <<<PHP
             use Illuminate\Support\Str;
@@ -150,10 +150,47 @@ it('adds PHP imports', function () {
         ));
 
     Vary::string("use Illuminate\Support\Str;")
-        ->addPhpImport(Arr::class)
+        ->addPhpImports(Arr::class)
         ->tap(expectVariantToBe(
             <<<PHP
             use Illuminate\Support\Str;
+            use Illuminate\Support\Arr;
+            PHP
+        ));
+});
+
+it('replaces PHP imports', function () {
+    $useStatements = <<<PHP
+        use Illuminate\Support\Str;
+        use App\Http\Controllers\FetchArticleController;
+
+        use App\Models\Article;
+        use Illuminate\Support\Str;
+        PHP;
+
+    Vary::string($useStatements)
+        ->replacePhpImport(Str::class, Arr::class)
+        ->tap(expectVariantToBe(
+            <<<PHP
+            use Illuminate\Support\Arr;
+            use App\Http\Controllers\FetchArticleController;
+
+            use App\Models\Article;
+            use Illuminate\Support\Arr;
+            PHP
+        ));
+
+    Vary::string($useStatements)
+        ->replacePhpImports([
+            Str::class => Arr::class,
+            'App\Models\Article' => 'App\Models\Post',
+        ])
+        ->tap(expectVariantToBe(
+            <<<PHP
+            use Illuminate\Support\Arr;
+            use App\Http\Controllers\FetchArticleController;
+
+            use App\Models\Post;
             use Illuminate\Support\Arr;
             PHP
         ));

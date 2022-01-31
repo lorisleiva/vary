@@ -4,7 +4,6 @@ namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
 use Lorisleiva\Vary\Variant;
-use function strlen;
 
 trait AltersPhpFiles
 {
@@ -35,7 +34,7 @@ trait AltersPhpFiles
         return $this->sortPhpImports(fn (string $value) => strlen($value));
     }
 
-    public function addPhpImport(string ...$imports): static
+    public function addPhpImports(string ...$imports): static
     {
         $imports = array_map(fn (string $import) => "use {$import};", $imports);
         $imports = join(PHP_EOL, $imports);
@@ -44,5 +43,19 @@ trait AltersPhpFiles
             callback: fn (Variant $variant) => $variant->append(PHP_EOL . $imports),
             limit: 1,
         );
+    }
+
+    public function replacePhpImport(string $search, string $replace): static
+    {
+        return $this->selectPhpImports(function (Variant $variant) use ($search, $replace) {
+            return $variant->replace($search, $replace);
+        });
+    }
+
+    public function replacePhpImports(array $replacements): static
+    {
+        return $this->selectPhpImports(function (Variant $variant) use ($replacements) {
+            return $variant->replaceAll($replacements);
+        });
     }
 }
