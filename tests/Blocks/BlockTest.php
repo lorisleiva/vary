@@ -51,7 +51,27 @@ it('selects blocks of patterned items', function () {
         ->tap(expectVariantToBe("CHANGEDBCHANGEDC"));
 });
 
-it('deletes blocks of patterned items', function () {
+it('prepends content before blocks', function () {
+    $variant = Vary::string("A\nB\nA");
+    $block = new Block($variant, 'A');
+
+    $block->prepend('1')->tap(expectVariantToBe("1A\nB\nA"));
+    $block->prependBeforeEach('1')->tap(expectVariantToBe("1A\nB\n1A"));
+    $block->prependLines('1')->tap(expectVariantToBe("1\nA\nB\nA"));
+    $block->prependLinesBeforeEach('1')->tap(expectVariantToBe("1\nA\nB\n1\nA"));
+});
+
+it('appends content after blocks', function () {
+    $variant = Vary::string("A\nB\nA");
+    $block = new Block($variant, 'A');
+
+    $block->append('1')->tap(expectVariantToBe("A1\nB\nA"));
+    $block->appendAfterEach('1')->tap(expectVariantToBe("A1\nB\nA1"));
+    $block->appendLines('1')->tap(expectVariantToBe("A\n1\nB\nA"));
+    $block->appendLinesAfterEach('1')->tap(expectVariantToBe("A\n1\nB\nA\n1"));
+});
+
+it('empties blocks of patterned items', function () {
     $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
     $block = new Block($variant, 'A');
 

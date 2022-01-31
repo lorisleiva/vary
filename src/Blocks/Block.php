@@ -39,48 +39,54 @@ class Block
         return $this->select($callback, $replace, $limit, true);
     }
 
-    public function prepend(string ...$values): Variant
+    public function prepend(string $prefix): Variant
     {
-        $value = join(PHP_EOL, $values) . PHP_EOL;
-
-        return $this->select(
-            callback: fn (Variant $variant) => $variant->prepend($value),
-            limit: 1,
-        );
+        return $this->prependBeforeEach($prefix, 1);
     }
 
-    public function prependBeforeEach(string ...$values): Variant
+    public function prependBeforeEach(string $prefix, int $limit = -1): Variant
     {
-        $value = join(PHP_EOL, $values) . PHP_EOL;
-
-        return $this->select(fn (Variant $variant) => $variant->prepend($value));
+        return $this->select(fn(Variant $variant) => $variant->prepend($prefix), limit: $limit);
     }
 
-    public function append(string ...$values): Variant
+    public function prependLines(string $content, bool $keepIndent = false): Variant
     {
-        $value = PHP_EOL . join(PHP_EOL, $values);
-
-        return $this->select(
-            callback: fn (Variant $variant) => $variant->append($value),
-            limit: 1,
-        );
+        return $this->prependLinesBeforeEach($content, $keepIndent, 1);
     }
 
-    public function appendAfterEach(string ...$values): Variant
+    public function prependLinesBeforeEach(string $content, bool $keepIndent = false, int $limit = -1): Variant
     {
-        $value = PHP_EOL . join(PHP_EOL, $values);
+        return $this->select(fn(Variant $variant) => $variant->prependLine($content, $keepIndent), limit: $limit);
+    }
 
-        return $this->select(fn (Variant $variant) => $variant->append($value));
+    public function append(string $suffix): Variant
+    {
+        return $this->appendAfterEach($suffix, 1);
+    }
+
+    public function appendAfterEach(string $suffix, int $limit = -1): Variant
+    {
+        return $this->select(fn(Variant $variant) => $variant->append($suffix), limit: $limit);
+    }
+
+    public function appendLines(string $content, bool $keepIndent = false): Variant
+    {
+        return $this->appendLinesAfterEach($content, $keepIndent, 1);
+    }
+
+    public function appendLinesAfterEach(string $content, bool $keepIndent = false, int $limit = -1): Variant
+    {
+        return $this->select(fn(Variant $variant) => $variant->appendLine($content, $keepIndent), limit: $limit);
     }
 
     public function replace(string $search, string $replace): Variant
     {
-        return $this->select(fn (Variant $variant) => $variant->replace($search, $replace));
+        return $this->select(fn(Variant $variant) => $variant->replace($search, $replace));
     }
 
     public function replaceAll(array $replacements): Variant
     {
-        return $this->select(fn (Variant $variant) => $variant->replaceAll($replacements));
+        return $this->select(fn(Variant $variant) => $variant->replaceAll($replacements));
     }
 
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): Variant
