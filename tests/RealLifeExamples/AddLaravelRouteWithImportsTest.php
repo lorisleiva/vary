@@ -39,9 +39,7 @@ it('adds Laravel routes with their use statements', function () {
                 PHP,
             keepIndent: true,
         )
-        ->selectPattern('/(?:use [^;]+;$\n)*(?:use [^;]+;$)/m', function (Variant $variant) {
-            return $variant->sortLines();
-        });
+        ->sortPhpImports();
 
     // Then the routes file has been correctly updated.
     $expected = <<<PHP
