@@ -22,7 +22,7 @@ class Block
         // ^use [^;]+;$
 
         return sprintf(
-            '/%3$s(?:%1$s%2$s)*(?:%1$s%3$s)/m',
+            '/%3$s(?:%1$s(?:%2$s)*)*(?:%1$s%3$s)/m',
             $this->pattern,
             $this->allowedPattern,
             $includeEol ? '\n?' : ''
@@ -34,8 +34,18 @@ class Block
         return $this->variant->match($this->getPattern($includeEol));
     }
 
+    public function firstWithEol(): string
+    {
+        return $this->first(true);
+    }
+
     public function all(bool $includeEol = false): array
     {
         return $this->variant->matchAll($this->getPattern($includeEol));
+    }
+
+    public function allWithEol(): array
+    {
+        return $this->all(true);
     }
 }
