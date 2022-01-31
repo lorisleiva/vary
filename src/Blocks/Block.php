@@ -94,6 +94,11 @@ class Block
         return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLine($search, $limit, $ignoreWhitespace));
     }
 
+    public function deleteLinePattern(string $pattern, int $limit = -1): Variant
+    {
+        return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLinePattern($pattern, $limit));
+    }
+
     public function empty(): Variant
     {
         return $this->selectWithEol(function (Variant $variant) {

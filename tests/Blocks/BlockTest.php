@@ -120,6 +120,14 @@ it('deletes lines inside blocks', function () {
             Did Loris say hello?
             EOL
         ));
+
+    $block->deleteLinePattern('Hello.*')
+        ->tap(expectVariantToBe(
+            <<<EOL
+            Hiya, my name is Loris.
+            Did Loris say hello?
+            EOL
+        ));
 });
 
 it('empties blocks of patterned items', function () {
