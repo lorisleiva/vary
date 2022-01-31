@@ -433,6 +433,14 @@ it('deletes the EOL accordingly', function () {
     Vary::string('One line only.')
         ->deleteLine('One line only.')
         ->tap(expectVariantToBe(''));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLine('Second line.')
+        ->tap(expectVariantToBe("First line.\n"));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLine('First line.')
+        ->tap(expectVariantToBe("Second line.\n"));
 });
 
 it('removes the first line', function () {
@@ -491,6 +499,14 @@ it('deletes the EOL accordingly using regular expressions', function () {
     Vary::string('One line only.')
         ->deleteLinePattern('.*')
         ->tap(expectVariantToBe(''));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLinePattern('Second.*')
+        ->tap(expectVariantToBe("First line.\n"));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLinePattern('First.*')
+        ->tap(expectVariantToBe("Second line.\n"));
 });
 
 it('sorts all lines by alphabetical order', function () {

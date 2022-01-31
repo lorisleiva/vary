@@ -12,9 +12,10 @@ trait AltersLines
     public function selectLine(string $search, Closure $callback, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true): static
     {
         $safeSearch = preg_quote($search, '/');
+        $spaces = '[^\S\r\n]*';
         $regex = $ignoreWhitespace
-            ? ($includeEol ? "/^\s*$safeSearch\s*$\n?/m" : "/^\s*$safeSearch\s*$/m")
-            : ($includeEol ? "/^$safeSearch$\n?/m" : "/^$safeSearch$/m");
+            ? ($includeEol ? "/^{$spaces}{$safeSearch}{$spaces}$\n?/m" : "/^{$spaces}{$safeSearch}{$spaces}$/m")
+            : ($includeEol ? "/^{$safeSearch}$\n?/m" : "/^{$safeSearch}$/m");
 
         return $this->selectPattern($regex, $callback, null, $limit);
     }
@@ -170,8 +171,9 @@ trait AltersLines
 
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): static
     {
+        $spaces = '[^\S\r\n]*';
         $safeSearch = preg_quote($search, '/');
-        $safeSearch = $ignoreWhitespace ? "^\s*$safeSearch\s*$" : "^$safeSearch$";
+        $safeSearch = $ignoreWhitespace ? "^{$spaces}{$safeSearch}{$spaces}$" : "^{$safeSearch}$";
 
         return $this->selectPattern(
             pattern: "/($safeSearch\n|\n$safeSearch|$safeSearch)/m",
