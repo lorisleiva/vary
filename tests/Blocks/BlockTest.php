@@ -71,6 +71,44 @@ it('appends content after blocks', function () {
     $block->appendLinesAfterEach('1')->tap(expectVariantToBe("A\n1\nB\nA\n1"));
 });
 
+it('replaces content inside blocks', function () {
+    $variant = Vary::string(
+        <<<EOL
+        Hello World,
+        Hello Loris!
+        Hiya, my name is Loris.
+        Did Loris say hello?
+        EOL
+    );
+    $block = new Block($variant, '^.*[Hh]ello.*$');
+
+    $block->replace('Loris', 'Will')->tap(expectVariantToBe(
+        <<<EOL
+        Hello World,
+        Hello Will!
+        Hiya, my name is Loris.
+        Did Will say hello?
+        EOL
+    ));
+
+    $block->replaceAll(['Loris' => 'Will'])->tap(expectVariantToBe(
+        <<<EOL
+        Hello World,
+        Hello Will!
+        Hiya, my name is Loris.
+        Did Will say hello?
+        EOL
+    ));
+});
+
+//it('deletes lines inside blocks', function () {
+//    $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
+//    $block = new Block($variant, 'A');
+//
+//    $block->deleteLine('A')
+//        ->tap(expectVariantToBe("B\nC"));
+//});
+
 it('empties blocks of patterned items', function () {
     $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
     $block = new Block($variant, 'A');
