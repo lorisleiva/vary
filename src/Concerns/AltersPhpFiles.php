@@ -58,4 +58,21 @@ trait AltersPhpFiles
             return $variant->replaceAll($replacements);
         });
     }
+
+    public function deletePhpImports(string ...$imports): static
+    {
+        if (empty($imports)) {
+            return $this->selectPhpImportsWithEol(fn (Variant $variant) => $variant->empty());
+        }
+        
+        $imports = array_map(fn (string $import) => "use {$import};", $imports);
+
+        return $this->selectPhpImportsWithEol(function (Variant $variant) use ($imports) {
+            foreach ($imports as $import) {
+                $variant = $variant->deleteLine($import);
+            }
+
+            return $variant;
+        });
+    }
 }

@@ -195,3 +195,32 @@ it('replaces PHP imports', function () {
             PHP
         ));
 });
+
+it('deletes PHP imports', function () {
+    $useStatements = <<<PHP
+        use Illuminate\Support\Str;
+        use App\Http\Controllers\FetchArticleController;
+
+        use App\Models\Article;
+        use Illuminate\Support\Str;
+        PHP;
+
+    Vary::string($useStatements)
+        ->deletePhpImports(Str::class, 'App\Models\Article')
+        ->tap(expectVariantToBe(
+            <<<PHP
+            use App\Http\Controllers\FetchArticleController;
+
+
+            PHP
+        ));
+
+    Vary::string($useStatements)
+        ->deletePhpImports()
+        ->tap(expectVariantToBe(
+            <<<PHP
+
+
+            PHP
+        ));
+});
