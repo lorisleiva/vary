@@ -34,4 +34,15 @@ trait AltersPhpFiles
     {
         return $this->sortPhpImports(fn (string $value) => strlen($value));
     }
+
+    public function addPhpImport(string ...$imports): static
+    {
+        $imports = array_map(fn (string $import) => "use {$import};", $imports);
+        $imports = join(PHP_EOL, $imports);
+
+        return $this->selectPhpImports(
+            callback: fn (Variant $variant) => $variant->append(PHP_EOL . $imports),
+            limit: 1,
+        );
+    }
 }

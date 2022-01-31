@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Lorisleiva\Vary\Vary;
 
 it('selects PHP import statements', function () {
@@ -120,6 +122,39 @@ it('sorts PHP import statements by length', function () {
 
             use App\Models\User;
             use App\Models\Article;
+            PHP
+        ));
+});
+
+it('adds PHP imports', function () {
+    $useStatements = <<<PHP
+        use Illuminate\Support\Str;
+        use App\Http\Controllers\FetchArticleController;
+
+        use App\Models\Article;
+        use App\Models\User;
+        PHP;
+
+    Vary::string($useStatements)
+        ->addPhpImport(Arr::class, Str::class)
+        ->tap(expectVariantToBe(
+            <<<PHP
+            use Illuminate\Support\Str;
+            use App\Http\Controllers\FetchArticleController;
+            use Illuminate\Support\Arr;
+            use Illuminate\Support\Str;
+
+            use App\Models\Article;
+            use App\Models\User;
+            PHP
+        ));
+
+    Vary::string("use Illuminate\Support\Str;")
+        ->addPhpImport(Arr::class)
+        ->tap(expectVariantToBe(
+            <<<PHP
+            use Illuminate\Support\Str;
+            use Illuminate\Support\Arr;
             PHP
         ));
 });
