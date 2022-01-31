@@ -61,6 +61,7 @@ trait AltersPhpFiles
         }
 
         $imports = array_map(fn (string $import) => "use {$import};", $imports);
+
         return $this->getPhpImportsBlock()->deleteLines($imports);
     }
 }
