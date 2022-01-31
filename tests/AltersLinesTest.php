@@ -412,6 +412,17 @@ it('deletes lines by providing their content', function () {
         ->tap(expectVariantToBe('    One humble pie.'));
 });
 
+it('deletes multiple lines at the same time', function () {
+    $variant = Vary::string(<<<END
+        First line.
+        Second line.
+        Last line.
+    END);
+
+    $variant->deleteLines(['First line.', 'Second line.'])
+        ->tap(expectVariantToBe('    Last line.'));
+});
+
 it('deletes the EOL accordingly', function () {
     $variant = Vary::string(
         <<<END
