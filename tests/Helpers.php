@@ -34,6 +34,13 @@ function overrideVariantTo(string $text): Closure
     };
 }
 
+function emptyVariant(): Closure
+{
+    return function (Variant $variant) {
+        return $variant->empty();
+    };
+}
+
 function stubs(string $path): string
 {
     return __DIR__ . "/stubs/$path";
