@@ -12,7 +12,7 @@ class Block
     protected string $pattern;
     protected string $allowedPattern;
 
-    public function __construct(Variant $variant, string $pattern, string $allowedPattern = '\s')
+    public function __construct(Variant $variant, string $pattern, string $allowedPattern = '\s*')
     {
         $this->variant = $variant;
         $this->pattern = $pattern;
@@ -22,7 +22,7 @@ class Block
     public function getPattern(bool $includeEol = false): string
     {
         return sprintf(
-            '/%3$s(?:%1$s(?:%2$s)*)*(?:%1$s%3$s)/m',
+            '/%3$s(?:%1$s%2$s)*(?:%1$s%3$s)/m',
             $this->pattern,
             $this->allowedPattern,
             $includeEol ? '\n?' : ''

@@ -12,7 +12,8 @@ class PhpBlock extends Block
         $lineComment = '\/\/.*$';
         $blockComment = '\/\*(?:[^*]|(?:\*[^\/]))*\*\/';
         $newLine = '\s';
+        $allowedPattern = "(?:{$newLine}|{$lineComment}|{$blockComment})*";
 
-        parent::__construct($variant, $pattern, "{$newLine}|{$lineComment}|{$blockComment}");
+        parent::__construct($variant, $pattern, $allowedPattern);
     }
 }

@@ -3,24 +3,20 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
+use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Blocks\Block;
 use Lorisleiva\Vary\Variant;
 
 trait AltersPhpFiles
 {
-    protected static string $phpImportsPattern = '/(?:^use [^;]+;$\n)*(?:^use [^;]+;$)/m';
-    protected static string $phpImportsPatternWithEol = '/(?:^use [^;]+;$\n)*(?:^use [^;]+;$\n?)/m';
-    
-    protected function getPhpImportsBlock(): Block
+    #[Pure] protected function getPhpImportsBlock(): Block
     {
-        return new Block($this, '^use [^;]+;$');
+        return new Block($this, '^use [^;]+;$', '\n');
     }
 
     public function selectPhpImports(Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): static
     {
-        $pattern = $includeEol ? static::$phpImportsPatternWithEol : static::$phpImportsPattern;
-
-        return $this->selectPattern($pattern, $callback, $replace, $limit);
+        return $this->getPhpImportsBlock()->select($callback, $replace, $limit, $includeEol);
     }
 
     public function selectPhpImportsWithEol(Closure $callback, ?Closure $replace = null, int $limit = -1): static

@@ -32,7 +32,7 @@ it('parses more complex blocks of patterned items', function () {
 
 it('allows other patterns inside the block', function () {
     $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
-    $block = new Block($variant, 'A', '\n|B');
+    $block = new Block($variant, 'A', '(?:\n|B)*');
 
     expect($block->first())->toBe("A\nA\nB\nA\nA\nA");
     expect($block->all())->toBe(["A\nA\nB\nA\nA\nA"]);

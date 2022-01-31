@@ -27,6 +27,7 @@ it('selects PHP import statements', function () {
     Vary::string($useStatements)
         ->selectPhpImportsWithEol(expectVariantToBe(
             <<<PHP
+
             use App\Http\Controllers\FetchArticleController;
             use Illuminate\Support\Facades\Route;
             use Illuminate\Support\Str;
@@ -46,11 +47,13 @@ it('selects PHP import statements in multiple locations', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->selectPhpImportsWithEol(emptyVariant())
+        ->selectPhpImports(emptyVariant())
         ->tap(expectVariantToBe(
             <<<PHP
             // A
+
             // B
+
             // C
             PHP
         ));
@@ -211,7 +214,6 @@ it('deletes PHP imports', function () {
             <<<PHP
             use App\Http\Controllers\FetchArticleController;
 
-
             PHP
         ));
 
@@ -219,7 +221,6 @@ it('deletes PHP imports', function () {
         ->deletePhpImports()
         ->tap(expectVariantToBe(
             <<<PHP
-
 
             PHP
         ));
