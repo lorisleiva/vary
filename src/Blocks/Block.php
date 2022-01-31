@@ -29,47 +29,66 @@ class Block
         );
     }
 
-    public function select(Closure $callback, bool $includeEol = false): Variant
+    public function select(Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): Variant
     {
-        return $this->variant->selectPattern($this->getPattern($includeEol), $callback);
+        return $this->variant->selectPattern($this->getPattern($includeEol), $callback, $replace, $limit);
     }
 
-    public function selectWithEol(Closure $callback): Variant
+    public function selectWithEol(Closure $callback, ?Closure $replace = null, int $limit = -1): Variant
     {
-        return $this->select($callback, true);
+        return $this->select($callback, $replace, $limit, true);
     }
 
-    public function prepend(): Variant
+    public function prepend(string ...$values): Variant
     {
-        return $this->variant; // TODO
+        $value = join(PHP_EOL, $values) . PHP_EOL;
+
+        return $this->select(
+            callback: fn(Variant $variant) => $variant->prepend($value),
+            limit: 1,
+        );
     }
 
-    public function prependBeforeEach(): Variant
+    public function prependBeforeEach(string ...$values): Variant
     {
-        return $this->variant; // TODO
+        $value = join(PHP_EOL, $values) . PHP_EOL;
+
+        return $this->select(fn(Variant $variant) => $variant->prepend($value));
     }
 
-    public function append(): Variant
+    public function append(string ...$values): Variant
     {
-        return $this->variant; // TODO
+        $value = PHP_EOL . join(PHP_EOL, $values);
+
+        return $this->select(
+            callback: fn(Variant $variant) => $variant->append($value),
+            limit: 1,
+        );
     }
 
-    public function appendAfterEach(): Variant
+    public function appendAfterEach(string ...$values): Variant
     {
-        return $this->variant; // TODO
+        $value = PHP_EOL . join(PHP_EOL, $values);
+
+        return $this->select(fn(Variant $variant) => $variant->append($value));
     }
 
-    public function replace(): Variant
+    public function replace(string $search, string $replace): Variant
     {
-        return $this->variant; // TODO
+        return $this->select(fn(Variant $variant) => $variant->replace($search, $replace));
     }
 
-    public function replaceAll(): Variant
+    public function replaceAll(array $replacements): Variant
     {
-        return $this->variant; // TODO
+        return $this->select(fn(Variant $variant) => $variant->replaceAll($replacements));
     }
 
-    public function delete(): Variant
+    public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): Variant
+    {
+        return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLine($search, $limit, $ignoreWhitespace));
+    }
+
+    public function empty(): Variant
     {
         return $this->selectWithEol(function (Variant $variant) {
             $inside = Str::startsWith($variant, PHP_EOL)

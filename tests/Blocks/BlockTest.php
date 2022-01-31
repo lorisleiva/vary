@@ -55,6 +55,6 @@ it('deletes blocks of patterned items', function () {
     $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
     $block = new Block($variant, 'A');
 
-    $block->delete()
+    $block->empty()
         ->tap(expectVariantToBe("B\nC"));
 });
