@@ -119,93 +119,181 @@ test('addBeforeMatches', function () {
 });
 
 test('after', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->after('One')->tap(expectVariantToBe(' apple pie. One humble pie.'));
+    $variant->after('pie')->tap(expectVariantToBe('. One humble pie.'));
+    $variant->after('NOT_FOUND')->tap(expectVariantToBe('One apple pie. One humble pie.'));
 });
 
 test('afterLast', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->afterLast('One')->tap(expectVariantToBe(' humble pie.'));
+    $variant->afterLast('pie')->tap(expectVariantToBe('.'));
+    $variant->afterLast('NOT_FOUND')->tap(expectVariantToBe('One apple pie. One humble pie.'));
 });
 
 test('append', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->append(' And More Text')
+        ->tap(expectVariantToBe('Some Text And More Text'));
+
+    Vary::string('Some Text')->append(' And', ' More', ' Text')
+        ->tap(expectVariantToBe('Some Text And More Text'));
+
+    Vary::string('')->append('Foo')
+        ->tap(expectVariantToBe('Foo'));
 });
 
 test('ascii', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->ascii()
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string('Bonjour mon cœur, ça va?')->ascii()
+        ->tap(expectVariantToBe('Bonjour mon coeur, ca va?'));
+
+    Vary::string('Hey 👋')->ascii()
+        ->tap(expectVariantToBe('Hey '));
 });
 
 test('basename', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->basename()
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string('/Some/Path/To/A/File.php')->basename()
+        ->tap(expectVariantToBe('File.php'));
+
+    Vary::string('/Some/Path/To/A/File.php')->basename('.php')
+        ->tap(expectVariantToBe('File'));
+
+    Vary::string('~/Code/vary')->basename()
+        ->tap(expectVariantToBe('vary'));
 });
 
 test('before', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('Say: One apple pie. One humble pie.');
+
+    $variant->before('One')->tap(expectVariantToBe('Say: '));
+    $variant->before('Say:')->tap(expectVariantToBe(''));
+    $variant->before('pie')->tap(expectVariantToBe('Say: One apple '));
+    $variant->before('NOT_FOUND')->tap(expectVariantToBe('Say: One apple pie. One humble pie.'));
 });
 
 test('beforeLast', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('Say: One apple pie. One humble pie.');
+
+    $variant->beforeLast('One')->tap(expectVariantToBe('Say: One apple pie. '));
+    $variant->beforeLast('pie')->tap(expectVariantToBe('Say: One apple pie. One humble '));
+    $variant->beforeLast('NOT_FOUND')->tap(expectVariantToBe('Say: One apple pie. One humble pie.'));
 });
 
 test('between', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie.');
+
+    $variant->between('One', 'pie')->tap(expectVariantToBe(' apple pie. One humble '));
+    $variant->between('pie', 'One')->tap(expectVariantToBe('. '));
+    $variant->between('One', 'NOT_FOUND')->tap(expectVariantToBe(' apple pie. One humble pie.'));
+    $variant->between('NOT_FOUND', 'pie')->tap(expectVariantToBe('One apple pie. One humble '));
+    $variant->between('NOT_FOUND', 'NOT_FOUND')->tap(expectVariantToBe('One apple pie. One humble pie.'));
+    $variant->between('', '')->tap(expectVariantToBe('One apple pie. One humble pie.'));
 });
 
 test('camel', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('some-text')->camel()->tap(expectVariantToBe('someText'));
+    Vary::string('some_text')->camel()->tap(expectVariantToBe('someText'));
+    Vary::string('Some more text')->camel()->tap(expectVariantToBe('someMoreText'));
 });
 
 test('classBasename', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('App\Models\User')->classBasename()
+        ->tap(expectVariantToBe('User'));
 });
 
 test('delete', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->delete('One ')->tap(expectVariantToBe('apple pie. humble pie. apple TV.'));
+    $variant->delete(['One ', ' pie'])->tap(expectVariantToBe('apple. humble. apple TV.'));
 });
 
 test('deleteFirst', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->deleteFirst(' pie')->tap(expectVariantToBe('One apple. One humble pie. One apple TV.'));
+    $variant->deleteFirst('apple ')->tap(expectVariantToBe('One pie. One humble pie. One apple TV.'));
 });
 
 test('deleteLast', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->deleteLast(' pie')->tap(expectVariantToBe('One apple pie. One humble. One apple TV.'));
+    $variant->deleteLast(' apple')->tap(expectVariantToBe('One apple pie. One humble pie. One TV.'));
 });
 
 test('deleteMatches', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->deleteMatches('/ (?:pie|TV)/')
+        ->tap(expectVariantToBe('One apple. One humble. One apple.'));
+
+    $variant->deleteMatches('/One(.*?) pie./')
+        ->tap(expectVariantToBe('One pie. One pie. One apple TV.'));
 });
 
 test('dirname', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->dirname()
+        ->tap(expectVariantToBe('.'));
+
+    Vary::string('/Some/Path/To/A/File.php')->dirname()
+        ->tap(expectVariantToBe('/Some/Path/To/A'));
+
+    Vary::string('/Some/Path/To/A/File.php')->dirname(2)
+        ->tap(expectVariantToBe('/Some/Path/To'));
+
+    Vary::string('/Some/Path/To/A/File.php')->dirname(3)
+        ->tap(expectVariantToBe('/Some/Path'));
+
+    Vary::string('~/Code/vary')->dirname()
+        ->tap(expectVariantToBe('~/Code'));
 });
 
 test('empty', function () {
     Vary::string('Some Text')->empty()
         ->tap(expectVariantToBe(''));
+
+    Vary::string("\nSome Text\n")->empty()
+        ->tap(expectVariantToBe(''));
 });
 
 test('emptyFragment', function () {
-    Vary::string('Some Text')->empty()
+    Vary::string('Some Text')->emptyFragment()
         ->tap(expectVariantToBe(''));
+
+    Vary::string("Some Text\n")->emptyFragment()
+        ->tap(expectVariantToBe(''));
+
+    Vary::string("\nSome Text")->emptyFragment()
+        ->tap(expectVariantToBe(''));
+
+    // This ensures, if we try to remove a fragment in the middle
+    // of some content, the previous and next parts of the
+    // content do not lose the new line separating them.
+    Vary::string("\nSome Text\n")->emptyFragment()
+        ->tap(expectVariantToBe("\n"));
 });
 
 test('finish', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->finish(' Text')
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string('Some Magic')->finish(' Text')
+        ->tap(expectVariantToBe('Some Magic Text'));
+
+    Vary::string('https://example.com/api/v1/articles')->finish('/')
+        ->tap(expectVariantToBe('https://example.com/api/v1/articles/'));
+
+    Vary::string('https://example.com/api/v1/articles/')->finish('/')
+        ->tap(expectVariantToBe('https://example.com/api/v1/articles/'));
 });
 
 test('headline', function () {
@@ -249,8 +337,9 @@ test('match', function () {
 });
 
 test('override', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some text')
+        ->override('Hello World')
+        ->tap(expectVariantToBe('Hello World'));
 });
 
 test('padBoth', function () {
@@ -284,8 +373,14 @@ test('pluralStudly', function () {
 });
 
 test('prepend', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->prepend('I Present You ')
+        ->tap(expectVariantToBe('I Present You Some Text'));
+
+    Vary::string('Some Text')->prepend('I ', 'Present ', 'You ')
+        ->tap(expectVariantToBe('I Present You Some Text'));
+
+    Vary::string('')->prepend('Foo')
+        ->tap(expectVariantToBe('Foo'));
 });
 
 test('remove', function () {
@@ -354,8 +449,17 @@ test('snake', function () {
 });
 
 test('start', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->start('Some ')
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string('Magic Text')->start('Some ')
+        ->tap(expectVariantToBe('Some Magic Text'));
+
+    Vary::string('article/42')->start('/')
+        ->tap(expectVariantToBe('/article/42'));
+
+    Vary::string('/article/42')->start('/')
+        ->tap(expectVariantToBe('/article/42'));
 });
 
 test('stripTags', function () {
@@ -458,31 +562,6 @@ test('words', function () {
         ->tap(expectVariantToBe(''));
 });
 
-
-it('empties the entire content', function () {
-    Vary::string('Some text')
-        ->empty()
-        ->tap(expectVariantToBe(''));
-});
-
-it('overrides the entire content', function () {
-    Vary::string('Some text')
-        ->override('Hello World')
-        ->tap(expectVariantToBe('Hello World'));
-});
-
-it('prepends some text', function () {
-    Vary::string('World')
-        ->prepend('Hello ')
-        ->tap(expectVariantToBe('Hello World'));
-});
-
-it('appends some text', function () {
-    Vary::string('Hello')
-        ->append(' World')
-        ->tap(expectVariantToBe('Hello World'));
-});
-
 it('replaces all instances of one text with another', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
         ->replace('One', 'Two')
@@ -529,32 +608,6 @@ it('replaces text using regular expressions and a callback', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
         ->replaceMatches('/(pie|TV)/', fn (array $matches) => "super $matches[1]")
         ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
-});
-
-it('deletes all instances of one or many given texts', function () {
-    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
-
-    $variant->delete('One ')->tap(expectVariantToBe('apple pie. humble pie. apple TV.'));
-    $variant->delete(['One ', ' pie'])->tap(expectVariantToBe('apple. humble. apple TV.'));
-});
-
-it('deletes the first or last instance of a given text', function () {
-    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
-
-    $variant->deleteFirst(' pie')->tap(expectVariantToBe('One apple. One humble pie. One apple TV.'));
-    $variant->deleteLast(' pie')->tap(expectVariantToBe('One apple pie. One humble. One apple TV.'));
-});
-
-it('deletes text using regular expressions', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->deleteMatches('/ (?:pie|TV)/')
-        ->tap(expectVariantToBe('One apple. One humble. One apple.'));
-});
-
-it('deletes text using the first group of a regular expression', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->deleteMatches('/One(.*?) pie./')
-        ->tap(expectVariantToBe('One pie. One pie. One apple TV.'));
 });
 
 it('returns the text matching a given pattern', function () {
