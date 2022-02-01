@@ -3,13 +3,12 @@
 namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
-use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Blocks\Block;
 use Lorisleiva\Vary\Variant;
 
 trait AltersPhpFiles
 {
-    #[Pure] protected function getPhpImportsBlock(): Block
+    protected function getPhpImportsBlock(): Block
     {
         return new Block($this, '^use [^;]+;$', '\n');
     }

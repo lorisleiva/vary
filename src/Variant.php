@@ -6,7 +6,6 @@ use Exception;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use JetBrains\PhpStorm\NoReturn;
-use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Concerns\AltersLines;
 use Lorisleiva\Vary\Concerns\AltersMustaches;
 use Lorisleiva\Vary\Concerns\AltersPhpFiles;
@@ -42,12 +41,12 @@ class Variant
         $this->path = $path;
     }
 
-    #[Pure] public function __toString(): string
+    public function __toString(): string
     {
         return $this->toString();
     }
 
-    #[Pure] public function new(string $value): static
+    public function new(string $value): static
     {
         return new static($value, $this->path);
     }
