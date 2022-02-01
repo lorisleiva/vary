@@ -23,7 +23,7 @@ trait ProvidesMutators
         return $this->replaceLast($search, $search . $content);
     }
 
-    public function addAfterMatch(string $pattern, string $content, int $limit = -1): static
+    public function addAfterMatches(string $pattern, string $content, int $limit = -1): static
     {
         return $this->selectMatches(
             pattern: $pattern,
@@ -47,7 +47,7 @@ trait ProvidesMutators
         return $this->replaceLast($search, $content . $search);
     }
 
-    public function addBeforeMatch(string $pattern, string $content, int $limit = -1): static
+    public function addBeforeMatches(string $pattern, string $content, int $limit = -1): static
     {
         return $this->selectMatches(
             pattern: $pattern,

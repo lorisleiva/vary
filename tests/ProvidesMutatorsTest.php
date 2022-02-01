@@ -44,19 +44,19 @@ test('addAfterLast', function () {
         ->tap(expectVariantToBe(''));
 });
 
-test('addAfterMatch', function () {
+test('addAfterMatches', function () {
     $variant = Vary::string('One apple pie. One humble pie.');
 
-    $variant->addAfterMatch('/pie/', 'rcing')
+    $variant->addAfterMatches('/pie/', 'rcing')
         ->tap(expectVariantToBe('One apple piercing. One humble piercing.'));
 
-    $variant->addAfterMatch('/One .*? pie./', ' I said!')
+    $variant->addAfterMatches('/One .*? pie./', ' I said!')
         ->tap(expectVariantToBe('One apple pie. I said! One humble pie. I said!'));
 
-    $variant->addAfterMatch('/(.*) humble/', ' super')
+    $variant->addAfterMatches('/(.*) humble/', ' super')
         ->tap(expectVariantToBe('One apple pie. One super humble pie.'));
 
-    $variant->addAfterMatch('/One (.*?) pie./', '-ish')
+    $variant->addAfterMatches('/One (.*?) pie./', '-ish')
         ->tap(expectVariantToBe('One apple-ish pie. One humble-ish pie.'));
 });
 
@@ -102,19 +102,19 @@ test('addBeforeLast', function () {
         ->tap(expectVariantToBe(''));
 });
 
-test('addBeforeMatch', function () {
+test('addBeforeMatches', function () {
     $variant = Vary::string('One apple pie. One humble pie.');
 
-    $variant->addBeforeMatch('/pie/', 'hip')
+    $variant->addBeforeMatches('/pie/', 'hip')
         ->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
 
-    $variant->addBeforeMatch('/One .*? pie./', 'Say: ')
+    $variant->addBeforeMatches('/One .*? pie./', 'Say: ')
         ->tap(expectVariantToBe('Say: One apple pie. Say: One humble pie.'));
 
-    $variant->addBeforeMatch('/One (.*)/', 'or two ')
+    $variant->addBeforeMatches('/One (.*)/', 'or two ')
         ->tap(expectVariantToBe('One or two apple pie. One humble pie.'));
 
-    $variant->addBeforeMatch('/One (.*?) pie./', 'big ')
+    $variant->addBeforeMatches('/One (.*?) pie./', 'big ')
         ->tap(expectVariantToBe('One big apple pie. One big humble pie.'));
 });
 
