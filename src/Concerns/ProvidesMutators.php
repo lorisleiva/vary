@@ -179,11 +179,6 @@ trait ProvidesMutators
         return $this->new(ltrim(...array_merge([$this->value], func_get_args())));
     }
 
-    public function markdown(array $options = []): static
-    {
-        return $this->new(Str::markdown($this->value, $options));
-    }
-
     public function mask(string $character, int $index, ?int $length = null, string $encoding = 'UTF-8'): static
     {
         return $this->new(Str::mask($this->value, $character, $index, $length, $encoding));

@@ -1,5 +1,6 @@
 <?php
 
+use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
 test('addAfter', function () {
@@ -297,43 +298,67 @@ test('finish', function () {
 });
 
 test('headline', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('some text')->headline()
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string('some-text')->headline()
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string('someText')->headline()
+        ->tap(expectVariantToBe('Some Text'));
 });
 
 test('kebab', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->kebab()
+        ->tap(expectVariantToBe('some-text'));
+
+    Vary::string('someText')->kebab()
+        ->tap(expectVariantToBe('some-text'));
 });
 
 test('limit', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->limit(3)
+        ->tap(expectVariantToBe('Som...'));
+
+    Vary::string('Some Text')->limit(5)
+        ->tap(expectVariantToBe('Some...'));
+
+    Vary::string('Some Text')->limit(4, '[redacted]')
+        ->tap(expectVariantToBe('Some[redacted]'));
 });
 
 test('lower', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some MAGIC TeXt')->lower()
+        ->tap(expectVariantToBe('some magic text'));
 });
 
 test('ltrim', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
-});
+    Vary::string("   \n  \t Some Text")->ltrim()
+        ->tap(expectVariantToBe('Some Text'));
 
-test('markdown', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string(' Some Text')->ltrim('S ')
+        ->tap(expectVariantToBe('ome Text'));
+
+    Vary::string(' Some Text')->ltrim('SomeT ')
+        ->tap(expectVariantToBe('xt'));
 });
 
 test('mask', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->mask('*', 0)
+        ->tap(expectVariantToBe('*********'));
+
+    Vary::string('Some Text')->mask('*', 4)
+        ->tap(expectVariantToBe('Some*****'));
+
+    Vary::string('Some Text')->mask('*', 4, 2)
+        ->tap(expectVariantToBe('Some**ext'));
 });
 
 test('match', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->match('/One .*? pie/')->tap(expectVariantToBe('One apple pie'));
+    $variant->match('/One (.*?) pie/')->tap(expectVariantToBe('apple'));
 });
 
 test('override', function () {
@@ -343,23 +368,42 @@ test('override', function () {
 });
 
 test('padBoth', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->padBoth(15)
+        ->tap(expectVariantToBe('   Some Text   '));
+
+    Vary::string('Some Text')->padBoth(15, '-')
+        ->tap(expectVariantToBe('---Some Text---'));
+
+    Vary::string('Some Text')->padBoth(14, '=-')
+        ->tap(expectVariantToBe('=-Some Text=-='));
 });
 
 test('padLeft', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->padLeft(12)
+        ->tap(expectVariantToBe('   Some Text'));
+
+    Vary::string('Some Text')->padLeft(12, '-')
+        ->tap(expectVariantToBe('---Some Text'));
+
+    Vary::string('Some Text')->padLeft(12, '=-')
+        ->tap(expectVariantToBe('=-=Some Text'));
 });
 
 test('padRight', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->padRight(12)
+        ->tap(expectVariantToBe('Some Text   '));
+
+    Vary::string('Some Text')->padRight(12, '-')
+        ->tap(expectVariantToBe('Some Text---'));
+
+    Vary::string('Some Text')->padRight(12, '=-')
+        ->tap(expectVariantToBe('Some Text=-='));
 });
 
 test('pipe', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')
+        ->pipe(fn (Variant $variant) => $variant->override('CHANGED'))
+        ->tap(expectVariantToBe('CHANGED'));
 });
 
 test('plural', function () {
@@ -429,8 +473,14 @@ test('reverse', function () {
 });
 
 test('rtrim', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string("Some Text   \n  \t ")->rtrim()
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string('Some Text ')->rtrim('t ')
+        ->tap(expectVariantToBe('Some Tex'));
+
+    Vary::string('Some Text ')->rtrim('Text ')
+        ->tap(expectVariantToBe('Som'));
 });
 
 test('singular', function () {
@@ -608,11 +658,4 @@ it('replaces text using regular expressions and a callback', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
         ->replaceMatches('/(pie|TV)/', fn (array $matches) => "super $matches[1]")
         ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
-});
-
-it('returns the text matching a given pattern', function () {
-    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
-
-    $variant->match('/One .*? pie/')->tap(expectVariantToBe('One apple pie'));
-    $variant->match('/One (.*?) pie/')->tap(expectVariantToBe('apple'));
 });

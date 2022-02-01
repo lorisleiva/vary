@@ -5,6 +5,7 @@ namespace Lorisleiva\Vary;
 use Exception;
 use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
+use Illuminate\Support\Traits\Tappable;
 use JetBrains\PhpStorm\NoReturn;
 use Lorisleiva\Vary\Concerns\AltersLines;
 use Lorisleiva\Vary\Concerns\AltersMustaches;
@@ -19,6 +20,7 @@ class Variant
 {
     // Extendable.
     use Conditionable;
+    use Tappable;
     use Macroable;
 
     // Core Traits.

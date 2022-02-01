@@ -211,7 +211,7 @@ trait AltersLines
     {
         return str_contains($this->value, PHP_EOL)
             ? $this->selectBefore(PHP_EOL, $callback, included: $includeEol)
-            : $this->selectAll($callback);
+            : $this->pipe($callback);
     }
 
     public function selectFirstLineWithEol(Closure $callback): static
@@ -223,7 +223,7 @@ trait AltersLines
     {
         return str_contains($this->value, PHP_EOL)
             ? $this->selectAfter(PHP_EOL, $callback, last: true, included: $includeEol)
-            : $this->selectAll($callback);
+            : $this->pipe($callback);
     }
 
     public function selectLastLineWithEol(Closure $callback): static

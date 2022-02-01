@@ -47,13 +47,6 @@ trait ProvidesFragments
         return $this->selectAfter($search, $callback, last: true, included: true);
     }
 
-    public function selectAll(Closure $callback): static
-    {
-        $newValue = $this->evaluateFragment($this->value, $callback);
-
-        return $this->new($newValue);
-    }
-
     public function selectBefore(string $search, Closure $callback, bool $last = false, bool $included = false): static
     {
         $oldValue = $last
@@ -158,11 +151,6 @@ trait ProvidesFragments
         $newReplace = fn ($matches) => $replace($matches, $next);
 
         return $this->replaceMatches($pattern, $newReplace, $limit);
-    }
-
-    public function tap(Closure $callback): static
-    {
-        return $this->selectAll($callback);
     }
 
     protected function evaluateFragment(string $oldValue, Closure $callback): string

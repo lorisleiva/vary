@@ -3,16 +3,6 @@
 use Lorisleiva\Vary\Variant;
 use Lorisleiva\Vary\Vary;
 
-it('selects all of its content', function () {
-    // Either via the "selectAll" method.
-    Vary::string('Hello World')
-        ->selectAll(expectVariantToBe('Hello World'));
-
-    // Or via the "tap" alias method.
-    Vary::string('Hello World')
-        ->tap(expectVariantToBe('Hello World'));
-});
-
 it('selects a given fragment of text', function () {
     Vary::string('Hello World')
         ->select('World', expectVariantToBe('World'));
