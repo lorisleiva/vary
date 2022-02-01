@@ -581,58 +581,124 @@ test('upper', function () {
 });
 
 test('whenContains', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenContains('Text', $true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenContains('NOT_FOUND', $true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenContainsAll', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenContainsAll(['Some', 'Text'], $true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenContainsAll(['NOT_FOUND', 'Text'], $true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenEmpty', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('')->whenEmpty($true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenEmpty($true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenEndsWith', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenEndsWith('Text', $true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenEndsWith('Some', $true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenExactly', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenExactly('Some Text', $true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenExactly('some text', $true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenIs', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenIs('Some*', $true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenIs('Some', $true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenIsAscii', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenIsAscii($true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('👋')->whenIsAscii($true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenIsUuid', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('86536eb2-bafd-4deb-a95d-0d0c33e165d5')->whenIsUuid($true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenIsUuid($true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenNotEmpty', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenNotEmpty($true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('')->whenNotEmpty($true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenStartsWith', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenStartsWith('Some', $true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenStartsWith('Text', $true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('whenTest', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $true = fn (Variant $variant) => $variant->override('TRUE');
+    $false = fn (Variant $variant) => $variant->override('FALSE');
+
+    Vary::string('Some Text')->whenTest('/^Some\s\w{4}$/', $true, $false)
+        ->tap(expectVariantToBe('TRUE'));
+
+    Vary::string('Some Text')->whenTest('/^Some\d+$/', $true, $false)
+        ->tap(expectVariantToBe('FALSE'));
 });
 
 test('words', function () {
