@@ -23,18 +23,9 @@ trait ProvidesMutators
         return $this->replaceLast($search, $search . $content);
     }
 
-    public function addAfterPattern(string $pattern, string $content, int $limit = -1): static
+    public function addAfterMatch(string $pattern, string $content, int $limit = -1): static
     {
-        return $this->selectMatch(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->append($content),
-            limit: $limit,
-        );
-    }
-
-    public function addAfterPatternFirstGroup(string $pattern, string $content, int $limit = -1): static
-    {
-        return $this->selectMatch(
+        return $this->selectMatches(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->append($content),
             limit: $limit,
@@ -56,18 +47,9 @@ trait ProvidesMutators
         return $this->replaceLast($search, $content . $search);
     }
 
-    public function addBeforePattern(string $pattern, string $content, int $limit = -1): static
+    public function addBeforeMatch(string $pattern, string $content, int $limit = -1): static
     {
-        return $this->selectMatch(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->prepend($content),
-            limit: $limit,
-        );
-    }
-
-    public function addBeforePatternFirstGroup(string $pattern, string $content, int $limit = -1): static
-    {
-        return $this->selectMatch(
+        return $this->selectMatches(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->prepend($content),
             limit: $limit,
@@ -141,14 +123,9 @@ trait ProvidesMutators
         return $this->replaceLast($search, '');
     }
 
-    public function deletePattern(string $pattern, int $limit = -1): static
+    public function deleteMatches(string $pattern, int $limit = -1): static
     {
-        return $this->replacePattern($pattern, '', $limit);
-    }
-
-    public function deletePatternFirstGroup(string $pattern, int $limit = -1): static
-    {
-        return $this->selectMatch(
+        return $this->selectMatches(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->empty(),
             limit: $limit,
@@ -287,7 +264,7 @@ trait ProvidesMutators
         return $this->new(Str::replaceLast($search, $replace, $this->value));
     }
 
-    public function replacePattern(string $pattern, Closure|string $replace, int $limit = -1): static
+    public function replaceMatches(string $pattern, Closure|string $replace, int $limit = -1): static
     {
         return $this->new(Str::of($this->value)->replaceMatches($pattern, $replace, $limit));
     }

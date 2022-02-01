@@ -19,6 +19,6 @@ trait AltersMustaches
     {
         $safeVariable = preg_quote($variable, '/');
 
-        return $this->replacePattern("/{{\s*$safeVariable\s*}}/", $value, $limit);
+        return $this->replaceMatches("/{{\s*$safeVariable\s*}}/", $value, $limit);
     }
 }

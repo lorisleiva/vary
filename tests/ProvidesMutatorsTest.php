@@ -44,23 +44,19 @@ test('addAfterLast', function () {
         ->tap(expectVariantToBe(''));
 });
 
-test('addAfterPattern', function () {
+test('addAfterMatch', function () {
     $variant = Vary::string('One apple pie. One humble pie.');
 
-    $variant->addAfterPattern('/pie/', 'rcing')
+    $variant->addAfterMatch('/pie/', 'rcing')
         ->tap(expectVariantToBe('One apple piercing. One humble piercing.'));
 
-    $variant->addAfterPattern('/One .*? pie./', ' I said!')
+    $variant->addAfterMatch('/One .*? pie./', ' I said!')
         ->tap(expectVariantToBe('One apple pie. I said! One humble pie. I said!'));
-});
 
-test('addAfterPatternFirstGroup', function () {
-    $variant = Vary::string('One apple pie. One humble pie.');
-
-    $variant->addAfterPatternFirstGroup('/(.*) humble/', ' super')
+    $variant->addAfterMatch('/(.*) humble/', ' super')
         ->tap(expectVariantToBe('One apple pie. One super humble pie.'));
 
-    $variant->addAfterPatternFirstGroup('/One (.*?) pie./', '-ish')
+    $variant->addAfterMatch('/One (.*?) pie./', '-ish')
         ->tap(expectVariantToBe('One apple-ish pie. One humble-ish pie.'));
 });
 
@@ -106,23 +102,19 @@ test('addBeforeLast', function () {
         ->tap(expectVariantToBe(''));
 });
 
-test('addBeforePattern', function () {
+test('addBeforeMatch', function () {
     $variant = Vary::string('One apple pie. One humble pie.');
 
-    $variant->addBeforePattern('/pie/', 'hip')
+    $variant->addBeforeMatch('/pie/', 'hip')
         ->tap(expectVariantToBe('One apple hippie. One humble hippie.'));
 
-    $variant->addBeforePattern('/One .*? pie./', 'Say: ')
+    $variant->addBeforeMatch('/One .*? pie./', 'Say: ')
         ->tap(expectVariantToBe('Say: One apple pie. Say: One humble pie.'));
-});
 
-test('addBeforePatternFirstGroup', function () {
-    $variant = Vary::string('One apple pie. One humble pie.');
-
-    $variant->addBeforePatternFirstGroup('/One (.*)/', 'or two ')
+    $variant->addBeforeMatch('/One (.*)/', 'or two ')
         ->tap(expectVariantToBe('One or two apple pie. One humble pie.'));
 
-    $variant->addBeforePatternFirstGroup('/One (.*?) pie./', 'big ')
+    $variant->addBeforeMatch('/One (.*?) pie./', 'big ')
         ->tap(expectVariantToBe('One big apple pie. One big humble pie.'));
 });
 
@@ -191,12 +183,7 @@ test('deleteLast', function () {
         ->tap(expectVariantToBe(''));
 });
 
-test('deletePattern', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
-});
-
-test('deletePatternFirstGroup', function () {
+test('deleteMatches', function () {
     Vary::string('Some Text')->empty()
         ->tap(expectVariantToBe(''));
 });
@@ -331,7 +318,7 @@ test('replaceLast', function () {
         ->tap(expectVariantToBe(''));
 });
 
-test('replacePattern', function () {
+test('replaceMatches', function () {
     Vary::string('Some Text')->empty()
         ->tap(expectVariantToBe(''));
 });
@@ -534,13 +521,13 @@ it('replaces multiple instances of one text with a sequence of other texts', fun
 
 it('replaces text using regular expressions', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replacePattern('/(pie|TV)/', 'super $1')
+        ->replaceMatches('/(pie|TV)/', 'super $1')
         ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
 });
 
 it('replaces text using regular expressions and a callback', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replacePattern('/(pie|TV)/', fn (array $matches) => "super $matches[1]")
+        ->replaceMatches('/(pie|TV)/', fn (array $matches) => "super $matches[1]")
         ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
 });
 
@@ -560,13 +547,13 @@ it('deletes the first or last instance of a given text', function () {
 
 it('deletes text using regular expressions', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->deletePattern('/ (pie|TV)/')
+        ->deleteMatches('/ (?:pie|TV)/')
         ->tap(expectVariantToBe('One apple. One humble. One apple.'));
 });
 
 it('deletes text using the first group of a regular expression', function () {
     Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->deletePatternFirstGroup('/One(.*?) pie./')
+        ->deleteMatches('/One(.*?) pie./')
         ->tap(expectVariantToBe('One pie. One pie. One apple TV.'));
 });
 

@@ -120,7 +120,7 @@ class Block
 
     public function select(Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): Variant
     {
-        return $this->variant->selectMatch($this->getPattern($includeEol), $callback, $replace, $limit);
+        return $this->variant->selectMatches($this->getPattern($includeEol), $callback, $replace, $limit);
     }
 
     public function selectWithEol(Closure $callback, ?Closure $replace = null, int $limit = -1): Variant

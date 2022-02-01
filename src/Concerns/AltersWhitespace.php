@@ -37,12 +37,12 @@ trait AltersWhitespace
 
     public function selectAfterWhitespace(Closure $callback): static
     {
-        return $this->selectMatch('/^\s*(.*)$/s', $callback);
+        return $this->selectMatches('/^\s*(.*)$/s', $callback);
     }
 
     public function selectBeforeWhitespace(Closure $callback): static
     {
-        return $this->selectMatch('/^(.*?)\s*$/s', $callback);
+        return $this->selectMatches('/^(.*?)\s*$/s', $callback);
     }
 
     public function selectBetweenWhitespace(Closure $callback): static

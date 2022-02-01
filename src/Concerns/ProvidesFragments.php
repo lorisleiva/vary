@@ -12,7 +12,7 @@ trait ProvidesFragments
     {
         $safeSearch = preg_quote($search, '/');
 
-        return $this->selectMatch("/$safeSearch/", $callback, limit: $limit);
+        return $this->selectMatches("/$safeSearch/", $callback, limit: $limit);
     }
 
     public function selectAfter(string $search, Closure $callback, bool $last = false, bool $included = false): static
@@ -141,7 +141,7 @@ trait ProvidesFragments
         return $this->selectBetween($from, $to, $callback, fromLast: true, fromIncluded: true, toLast: true, toIncluded: true);
     }
 
-    public function selectMatch(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectMatches(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
         $replace = $replace ?? function (array $matches, Closure $next) {
             if (! isset($matches[1])) {
@@ -157,7 +157,7 @@ trait ProvidesFragments
         $next = fn (string $fragment) => $this->evaluateFragment($fragment, $callback);
         $newReplace = fn ($matches) => $replace($matches, $next);
 
-        return $this->replacePattern($pattern, $newReplace, $limit);
+        return $this->replaceMatches($pattern, $newReplace, $limit);
     }
 
     public function tap(Closure $callback): static
