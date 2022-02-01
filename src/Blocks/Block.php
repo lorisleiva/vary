@@ -106,12 +106,7 @@ class Block
 
     public function empty(): Variant
     {
-        return $this->selectWithEol(function (Variant $variant) {
-            $inside = Str::startsWith($variant, PHP_EOL)
-                && Str::endsWith($variant, PHP_EOL);
-
-            return $inside ? $variant->override(PHP_EOL) : $variant->empty();
-        });
+        return $this->selectWithEol(fn (Variant $variant) => $variant->emptyFragment());
     }
 
     public function first(bool $includeEol = false): string

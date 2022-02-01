@@ -13,6 +13,13 @@ trait ProvidesMutators
         return $this->new('');
     }
 
+    public function emptyFragment(): static
+    {
+        $inside = $this->startsWith(PHP_EOL) && $this->endsWith(PHP_EOL);
+
+        return $inside ? $this->override(PHP_EOL) : $this->empty();
+    }
+
     public function override(string $content): static
     {
         return $this->new($content);
