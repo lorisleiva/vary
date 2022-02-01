@@ -8,21 +8,70 @@ use Lorisleiva\Vary\Variant;
 
 trait ProvidesMutators
 {
-    public function empty(): static
+    public function addAfter(string $search, string $content): static
     {
-        return $this->new('');
+        return $this->replace($search, $search . $content);
     }
 
-    public function emptyFragment(): static
+    public function addAfterFirst(string $search, string $content): static
     {
-        $inside = $this->startsWith(PHP_EOL) && $this->endsWith(PHP_EOL);
-
-        return $inside ? $this->override(PHP_EOL) : $this->empty();
+        return $this->replaceFirst($search, $search . $content);
     }
 
-    public function override(string $content): static
+    public function addAfterLast(string $search, string $content): static
     {
-        return $this->new($content);
+        return $this->replaceLast($search, $search . $content);
+    }
+
+    public function addAfterPattern(string $pattern, string $content, int $limit = -1): static
+    {
+        return $this->selectPattern(
+            pattern: $pattern,
+            callback: fn(Variant $variant) => $variant->append($content),
+            limit: $limit,
+        );
+    }
+
+    public function addAfterPatternFirstGroup(string $pattern, string $content, int $limit = -1): static
+    {
+        return $this->selectPatternFirstGroup(
+            pattern: $pattern,
+            callback: fn(Variant $variant) => $variant->append($content),
+            limit: $limit,
+        );
+    }
+
+    public function addBefore(string $search, string $content): static
+    {
+        return $this->replace($search, $content . $search);
+    }
+
+    public function addBeforeFirst(string $search, string $content): static
+    {
+        return $this->replaceFirst($search, $content . $search);
+    }
+
+    public function addBeforeLast(string $search, string $content): static
+    {
+        return $this->replaceLast($search, $content . $search);
+    }
+
+    public function addBeforePattern(string $pattern, string $content, int $limit = -1): static
+    {
+        return $this->selectPattern(
+            pattern: $pattern,
+            callback: fn(Variant $variant) => $variant->prepend($content),
+            limit: $limit,
+        );
+    }
+
+    public function addBeforePatternFirstGroup(string $pattern, string $content, int $limit = -1): static
+    {
+        return $this->selectPatternFirstGroup(
+            pattern: $pattern,
+            callback: fn(Variant $variant) => $variant->prepend($content),
+            limit: $limit,
+        );
     }
 
     public function after(string $search): static
@@ -37,7 +86,7 @@ trait ProvidesMutators
 
     public function append(string ...$values): static
     {
-        return $this->new($this->value.implode('', $values));
+        return $this->new($this->value . implode('', $values));
     }
 
     public function ascii(string $language = 'en'): static
@@ -48,11 +97,6 @@ trait ProvidesMutators
     public function basename(string $suffix = ''): static
     {
         return $this->new(basename($this->value, $suffix));
-    }
-
-    public function classBasename(): static
-    {
-        return $this->new(class_basename($this->value));
     }
 
     public function before(string $search): static
@@ -75,14 +119,67 @@ trait ProvidesMutators
         return $this->new(Str::camel($this->value));
     }
 
+    public function classBasename(): static
+    {
+        return $this->new(class_basename($this->value));
+    }
+
+    public function delete(string|array $search): static
+    {
+        $replace = is_array($search) ? array_pad([], count($search), '') : '';
+
+        return $this->replace($search, $replace);
+    }
+
+    public function deleteFirst(string $search): static
+    {
+        return $this->replaceFirst($search, '');
+    }
+
+    public function deleteLast(string $search): static
+    {
+        return $this->replaceLast($search, '');
+    }
+
+    public function deletePattern(string $pattern, int $limit = -1): static
+    {
+        return $this->replacePattern($pattern, '', $limit);
+    }
+
+    public function deletePatternFirstGroup(string $pattern, int $limit = -1): static
+    {
+        return $this->selectPatternFirstGroup(
+            pattern: $pattern,
+            callback: fn(Variant $variant) => $variant->empty(),
+            limit: $limit,
+        );
+    }
+
     public function dirname(int $levels = 1): static
     {
         return $this->new(dirname($this->value, $levels));
     }
 
+    public function empty(): static
+    {
+        return $this->new('');
+    }
+
+    public function emptyFragment(): static
+    {
+        $inside = $this->startsWith(PHP_EOL) && $this->endsWith(PHP_EOL);
+
+        return $inside ? $this->override(PHP_EOL) : $this->empty();
+    }
+
     public function finish(string $cap): static
     {
         return $this->new(Str::finish($this->value, $cap));
+    }
+
+    public function headline(): static
+    {
+        return $this->new(Str::headline($this->value));
     }
 
     public function kebab(): static
@@ -100,6 +197,11 @@ trait ProvidesMutators
         return $this->new(Str::lower($this->value));
     }
 
+    public function ltrim(?string $characters = null): static
+    {
+        return $this->new(ltrim(...array_merge([$this->value], func_get_args())));
+    }
+
     public function markdown(array $options = []): static
     {
         return $this->new(Str::markdown($this->value, $options));
@@ -113,6 +215,11 @@ trait ProvidesMutators
     public function match(string $pattern): static
     {
         return $this->new(Str::match($pattern, $this->value));
+    }
+
+    public function override(string $content): static
+    {
+        return $this->new($content);
     }
 
     public function padBoth(int $length, string $pad = ' '): static
@@ -147,17 +254,12 @@ trait ProvidesMutators
 
     public function prepend(string ...$values): static
     {
-        return $this->new(implode('', $values).$this->value);
+        return $this->new(implode('', $values) . $this->value);
     }
 
-    public function remove(string | array $search, bool $caseSensitive = true): static
+    public function remove(string|array $search, bool $caseSensitive = true): static
     {
         return $this->new(Str::remove($search, $this->value, $caseSensitive));
-    }
-
-    public function reverse(): static
-    {
-        return $this->new(Str::reverse($this->value));
     }
 
     public function repeat(int $times): static
@@ -165,7 +267,7 @@ trait ProvidesMutators
         return $this->new(Str::repeat($this->value, $times));
     }
 
-    public function replace(string | array $search, string | array $replace): static
+    public function replace(string|array $search, string|array $replace): static
     {
         return $this->new(Str::replace($search, $replace, $this->value));
     }
@@ -173,11 +275,6 @@ trait ProvidesMutators
     public function replaceAll(array $replacements): static
     {
         return $this->replace(array_keys($replacements), array_values($replacements));
-    }
-
-    public function replaceSequentially(string $search, array $replace): static
-    {
-        return $this->new(Str::replaceArray($search, $replace, $this->value));
     }
 
     public function replaceFirst(string $search, string $replace): static
@@ -190,34 +287,24 @@ trait ProvidesMutators
         return $this->new(Str::replaceLast($search, $replace, $this->value));
     }
 
-    public function replacePattern(string $pattern, Closure | string $replace, int $limit = -1): static
+    public function replacePattern(string $pattern, Closure|string $replace, int $limit = -1): static
     {
         return $this->new(Str::of($this->value)->replaceMatches($pattern, $replace, $limit));
     }
 
-    public function start(string $prefix): static
+    public function replaceSequentially(string $search, array $replace): static
     {
-        return $this->new(Str::start($this->value, $prefix));
+        return $this->new(Str::replaceArray($search, $replace, $this->value));
     }
 
-    public function stripTags(?string $allowedTags = null): static
+    public function reverse(): static
     {
-        return $this->new(strip_tags($this->value, $allowedTags));
+        return $this->new(Str::reverse($this->value));
     }
 
-    public function upper(): static
+    public function rtrim(?string $characters = null): static
     {
-        return $this->new(Str::upper($this->value));
-    }
-
-    public function title(): static
-    {
-        return $this->new(Str::title($this->value));
-    }
-
-    public function headline(): static
-    {
-        return $this->new(Str::headline($this->value));
+        return $this->new(rtrim(...array_merge([$this->value], func_get_args())));
     }
 
     public function singular(): static
@@ -235,6 +322,16 @@ trait ProvidesMutators
         return $this->new(Str::snake($this->value, $delimiter));
     }
 
+    public function start(string $prefix): static
+    {
+        return $this->new(Str::start($this->value, $prefix));
+    }
+
+    public function stripTags(?string $allowedTags = null): static
+    {
+        return $this->new(strip_tags($this->value, $allowedTags));
+    }
+
     public function studly(): static
     {
         return $this->new(Str::studly($this->value));
@@ -245,9 +342,14 @@ trait ProvidesMutators
         return $this->new(Str::substr($this->value, $start, $length));
     }
 
-    public function substrReplace(string | array $replace, int | array $offset = 0, int | array | null $length = null): static
+    public function substrReplace(string|array $replace, int|array $offset = 0, int|array|null $length = null): static
     {
-        return $this->new((string) Str::substrReplace($this->value, $replace, $offset, $length));
+        return $this->new((string)Str::substrReplace($this->value, $replace, $offset, $length));
+    }
+
+    public function title(): static
+    {
+        return $this->new(Str::title($this->value));
     }
 
     public function trim(?string $characters = null): static
@@ -255,22 +357,17 @@ trait ProvidesMutators
         return $this->new(trim(...array_merge([$this->value], func_get_args())));
     }
 
-    public function ltrim(?string $characters = null): static
-    {
-        return $this->new(ltrim(...array_merge([$this->value], func_get_args())));
-    }
-
-    public function rtrim(?string $characters = null): static
-    {
-        return $this->new(rtrim(...array_merge([$this->value], func_get_args())));
-    }
-
     public function ucfirst(): static
     {
         return $this->new(Str::ucfirst($this->value));
     }
 
-    public function whenContains(string | array $needles, callable $callback, ?callable $default = null): static
+    public function upper(): static
+    {
+        return $this->new(Str::upper($this->value));
+    }
+
+    public function whenContains(string|array $needles, callable $callback, ?callable $default = null): static
     {
         return $this->when($this->contains($needles), $callback, $default);
     }
@@ -285,12 +382,7 @@ trait ProvidesMutators
         return $this->when($this->isEmpty(), $callback, $default);
     }
 
-    public function whenNotEmpty(callable $callback, ?callable $default = null): static
-    {
-        return $this->when($this->isNotEmpty(), $callback, $default);
-    }
-
-    public function whenEndsWith(string | array $needles, callable $callback, ?callable $default = null): static
+    public function whenEndsWith(string|array $needles, callable $callback, ?callable $default = null): static
     {
         return $this->when($this->endsWith($needles), $callback, $default);
     }
@@ -300,7 +392,7 @@ trait ProvidesMutators
         return $this->when($this->exactly($value), $callback, $default);
     }
 
-    public function whenIs(string | array $pattern, callable $callback, ?callable $default = null): static
+    public function whenIs(string|array $pattern, callable $callback, ?callable $default = null): static
     {
         return $this->when($this->is($pattern), $callback, $default);
     }
@@ -315,7 +407,12 @@ trait ProvidesMutators
         return $this->when($this->isUuid(), $callback, $default);
     }
 
-    public function whenStartsWith(string | array $needles, callable $callback, ?callable $default = null): static
+    public function whenNotEmpty(callable $callback, ?callable $default = null): static
+    {
+        return $this->when($this->isNotEmpty(), $callback, $default);
+    }
+
+    public function whenStartsWith(string|array $needles, callable $callback, ?callable $default = null): static
     {
         return $this->when($this->startsWith($needles), $callback, $default);
     }
@@ -328,102 +425,5 @@ trait ProvidesMutators
     public function words(int $words = 100, string $end = '...'): static
     {
         return $this->new(Str::words($this->value, $words, $end));
-    }
-
-    public function addBefore(string $search, string $content): static
-    {
-        return $this->replace($search, $content . $search);
-    }
-
-    public function addBeforeFirst(string $search, string $content): static
-    {
-        return $this->replaceFirst($search, $content . $search);
-    }
-
-    public function addBeforeLast(string $search, string $content): static
-    {
-        return $this->replaceLast($search, $content . $search);
-    }
-
-    public function addBeforePattern(string $pattern, string $content, int $limit = -1): static
-    {
-        return $this->selectPattern(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->prepend($content),
-            limit: $limit,
-        );
-    }
-
-    public function addBeforePatternFirstGroup(string $pattern, string $content, int $limit = -1): static
-    {
-        return $this->selectPatternFirstGroup(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->prepend($content),
-            limit: $limit,
-        );
-    }
-
-    public function addAfter(string $search, string $content): static
-    {
-        return $this->replace($search, $search . $content);
-    }
-
-    public function addAfterFirst(string $search, string $content): static
-    {
-        return $this->replaceFirst($search, $search . $content);
-    }
-
-    public function addAfterLast(string $search, string $content): static
-    {
-        return $this->replaceLast($search, $search . $content);
-    }
-
-    public function addAfterPattern(string $pattern, string $content, int $limit = -1): static
-    {
-        return $this->selectPattern(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->append($content),
-            limit: $limit,
-        );
-    }
-
-    public function addAfterPatternFirstGroup(string $pattern, string $content, int $limit = -1): static
-    {
-        return $this->selectPatternFirstGroup(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->append($content),
-            limit: $limit,
-        );
-    }
-
-    public function delete(string | array $search): static
-    {
-        $replace = is_array($search) ? array_pad([], count($search), '') : '';
-
-        return $this->replace($search, $replace);
-    }
-
-    public function deleteFirst(string $search): static
-    {
-        return $this->replaceFirst($search, '');
-    }
-
-    public function deleteLast(string $search): static
-    {
-        return $this->replaceLast($search, '');
-    }
-
-    public function deletePattern(string $pattern, int $limit = -1): static
-    {
-        return $this->replacePattern($pattern, '', $limit);
-    }
-
-    public function deletePatternFirstGroup(string $pattern, int $limit = -1): static
-    {
-        return $this->selectPatternFirstGroup(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->empty(),
-            limit: $limit,
-        );
     }
 }

@@ -6,17 +6,7 @@ use Illuminate\Support\Str;
 
 trait ProvidesAccessors
 {
-    public function getPath(): ?string
-    {
-        return $this->path;
-    }
-
-    public function toString(): string
-    {
-        return $this->value;
-    }
-
-    public function contains(string | array $needles): bool
+    public function contains(string|array $needles): bool
     {
         return Str::contains($this->value, $needles);
     }
@@ -26,7 +16,7 @@ trait ProvidesAccessors
         return Str::containsAll($this->value, $needles);
     }
 
-    public function endsWith(string | array $needles): bool
+    public function endsWith(string|array $needles): bool
     {
         return Str::endsWith($this->value, $needles);
     }
@@ -41,12 +31,12 @@ trait ProvidesAccessors
         return explode($delimiter, $this->value, $limit);
     }
 
-    public function split(string | int $pattern, int $limit = -1, int $flags = 0): array
+    public function getPath(): ?string
     {
-        return Str::of($this->value)->split($pattern, $limit, $flags)->toArray();
+        return $this->path;
     }
 
-    public function is(string | array $pattern): bool
+    public function is(string|array $pattern): bool
     {
         return Str::is($pattern, $this->value);
     }
@@ -56,11 +46,6 @@ trait ProvidesAccessors
         return Str::isAscii($this->value);
     }
 
-    public function isUuid(): bool
-    {
-        return Str::isUuid($this->value);
-    }
-
     public function isEmpty(): bool
     {
         return $this->value === '';
@@ -68,7 +53,12 @@ trait ProvidesAccessors
 
     public function isNotEmpty(): bool
     {
-        return ! $this->isEmpty();
+        return !$this->isEmpty();
+    }
+
+    public function isUuid(): bool
+    {
+        return Str::isUuid($this->value);
     }
 
     public function length(string $encoding = null): int
@@ -81,17 +71,17 @@ trait ProvidesAccessors
         return Str::matchAll($pattern, $this->value)->toArray();
     }
 
-    public function test(string $pattern): bool
-    {
-        return $this->match($pattern)->isNotEmpty();
-    }
-
     public function scan(string $format): array
     {
         return sscanf($this->value, $format);
     }
 
-    public function startsWith(string | array $needles): bool
+    public function split(string|int $pattern, int $limit = -1, int $flags = 0): array
+    {
+        return Str::of($this->value)->split($pattern, $limit, $flags)->toArray();
+    }
+
+    public function startsWith(string|array $needles): bool
     {
         return Str::startsWith($this->value, $needles);
     }
@@ -99,6 +89,16 @@ trait ProvidesAccessors
     public function substrCount(string $needle, ?int $offset = null, ?int $length = null): int
     {
         return Str::substrCount($this->value, $needle, $offset ?? 0, $length);
+    }
+
+    public function test(string $pattern): bool
+    {
+        return $this->match($pattern)->isNotEmpty();
+    }
+
+    public function toString(): string
+    {
+        return $this->value;
     }
 
     public function ucsplit(): array

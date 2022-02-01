@@ -8,84 +8,11 @@ use Lorisleiva\Vary\Variant;
 
 trait ProvidesFragments
 {
-    protected function evaluateFragment(string $oldValue, Closure $callback): string
-    {
-        $newValue = $callback(new static($oldValue));
-
-        return $newValue instanceof Variant ? $newValue->toString() : $newValue;
-    }
-
-    public function tap(Closure $callback): static
-    {
-        return $this->selectAll($callback);
-    }
-
     public function select(string $search, Closure $callback, int $limit = -1): static
     {
         $safeSearch = preg_quote($search, '/');
 
         return $this->selectPattern("/$safeSearch/", $callback, limit: $limit);
-    }
-
-    public function selectAll(Closure $callback): static
-    {
-        $newValue = $this->evaluateFragment($this->value, $callback);
-
-        return $this->new($newValue);
-    }
-
-    public function selectPattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
-    {
-        $replace = $replace ?? fn (array $matches, Closure $next) => $next($matches[0]);
-
-        $next = fn (string $fragment) => $this->evaluateFragment($fragment, $callback);
-        $newReplace = fn ($matches) => $replace($matches, $next);
-
-        return $this->replacePattern($pattern, $newReplace, $limit);
-    }
-
-    public function selectPatternFirstGroup(string $pattern, Closure $callback, int $limit = -1): static
-    {
-        $replace = function (array $matches, Closure $next) {
-            $before = Str::before($matches[0], $matches[1]);
-            $after = Str::after($matches[0], $matches[1]);
-
-            return $before . $next($matches[1]) . $after;
-        };
-
-        return $this->selectPattern($pattern, $callback, $replace, $limit);
-    }
-
-    public function selectBefore(string $search, Closure $callback, bool $last = false, bool $included = false): static
-    {
-        $oldValue = $last
-            ? Str::beforeLast($this->value, $search)
-            : Str::before($this->value, $search);
-
-        if ($included && $oldValue !== $this->value) {
-            $oldValue = $oldValue . $search;
-        }
-
-        $newValue = $this->evaluateFragment($oldValue, $callback);
-
-        return $oldValue === ''
-            ? $this->prepend($newValue)
-            : $this->replaceFirst($oldValue, $newValue);
-    }
-
-    public function selectBeforeLast(string $search, Closure $callback): static
-    {
-        return $this->selectBefore($search, $callback, last: true);
-    }
-
-    public function selectBeforeIncluded(string $search, Closure $callback): static
-    {
-        return $this->selectBefore($search, $callback, included: true);
-    }
-
-    public function selectBeforeLastIncluded(string $search, Closure $callback): static
-    {
-        return $this->selectBefore($search, $callback, last: true, included: true);
     }
 
     public function selectAfter(string $search, Closure $callback, bool $last = false, bool $included = false): static
@@ -105,14 +32,14 @@ trait ProvidesFragments
             : $this->replaceLast($oldValue, $newValue);
     }
 
-    public function selectAfterLast(string $search, Closure $callback): static
-    {
-        return $this->selectAfter($search, $callback, last: true);
-    }
-
     public function selectAfterIncluded(string $search, Closure $callback): static
     {
         return $this->selectAfter($search, $callback, included: true);
+    }
+
+    public function selectAfterLast(string $search, Closure $callback): static
+    {
+        return $this->selectAfter($search, $callback, last: true);
     }
 
     public function selectAfterLastIncluded(string $search, Closure $callback): static
@@ -120,11 +47,50 @@ trait ProvidesFragments
         return $this->selectAfter($search, $callback, last: true, included: true);
     }
 
+    public function selectAll(Closure $callback): static
+    {
+        $newValue = $this->evaluateFragment($this->value, $callback);
+
+        return $this->new($newValue);
+    }
+
+    public function selectBefore(string $search, Closure $callback, bool $last = false, bool $included = false): static
+    {
+        $oldValue = $last
+            ? Str::beforeLast($this->value, $search)
+            : Str::before($this->value, $search);
+
+        if ($included && $oldValue !== $this->value) {
+            $oldValue = $oldValue . $search;
+        }
+
+        $newValue = $this->evaluateFragment($oldValue, $callback);
+
+        return $oldValue === ''
+            ? $this->prepend($newValue)
+            : $this->replaceFirst($oldValue, $newValue);
+    }
+
+    public function selectBeforeIncluded(string $search, Closure $callback): static
+    {
+        return $this->selectBefore($search, $callback, included: true);
+    }
+
+    public function selectBeforeLast(string $search, Closure $callback): static
+    {
+        return $this->selectBefore($search, $callback, last: true);
+    }
+
+    public function selectBeforeLastIncluded(string $search, Closure $callback): static
+    {
+        return $this->selectBefore($search, $callback, last: true, included: true);
+    }
+
     public function selectBetween(string $from, string $to, Closure $callback, bool $fromLast = false, bool $fromIncluded = false, bool $toLast = false, bool $toIncluded = false): static
     {
         return $this->selectAfter(
             search: $from,
-            callback: fn (Variant $variant) => $variant->selectBefore(
+            callback: fn(Variant $variant) => $variant->selectBefore(
                 search: $to,
                 callback: $callback,
                 last: $toLast,
@@ -173,5 +139,39 @@ trait ProvidesFragments
     public function selectBetweenLastAndLastIncluded(string $from, string $to, Closure $callback): static
     {
         return $this->selectBetween($from, $to, $callback, fromLast: true, fromIncluded: true, toLast: true, toIncluded: true);
+    }
+
+    public function selectPattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    {
+        $replace = $replace ?? fn(array $matches, Closure $next) => $next($matches[0]);
+
+        $next = fn(string $fragment) => $this->evaluateFragment($fragment, $callback);
+        $newReplace = fn($matches) => $replace($matches, $next);
+
+        return $this->replacePattern($pattern, $newReplace, $limit);
+    }
+
+    public function selectPatternFirstGroup(string $pattern, Closure $callback, int $limit = -1): static
+    {
+        $replace = function (array $matches, Closure $next) {
+            $before = Str::before($matches[0], $matches[1]);
+            $after = Str::after($matches[0], $matches[1]);
+
+            return $before . $next($matches[1]) . $after;
+        };
+
+        return $this->selectPattern($pattern, $callback, $replace, $limit);
+    }
+
+    public function tap(Closure $callback): static
+    {
+        return $this->selectAll($callback);
+    }
+
+    protected function evaluateFragment(string $oldValue, Closure $callback): string
+    {
+        $newValue = $callback(new static($oldValue));
+
+        return $newValue instanceof Variant ? $newValue->toString() : $newValue;
     }
 }
