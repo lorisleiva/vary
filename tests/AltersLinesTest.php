@@ -485,7 +485,7 @@ it('deletes lines using regular expressions', function () {
         One apple TV.
     END);
 
-    $variant->deleteLinePattern('.*pie.*')
+    $variant->deleteLineMatches('.*pie.*')
         ->tap(expectVariantToBe('    One apple TV.'));
 });
 
@@ -498,25 +498,25 @@ it('deletes the EOL accordingly using regular expressions', function () {
         END
     );
 
-    $variant->deleteLinePattern('First.*')
+    $variant->deleteLineMatches('First.*')
         ->tap(expectVariantToBe("Second line.\nLast line."));
 
-    $variant->deleteLinePattern('Second.*')
+    $variant->deleteLineMatches('Second.*')
         ->tap(expectVariantToBe("First line.\nLast line."));
 
-    $variant->deleteLinePattern('Last.*')
+    $variant->deleteLineMatches('Last.*')
         ->tap(expectVariantToBe("First line.\nSecond line."));
 
     Vary::string('One line only.')
-        ->deleteLinePattern('.*')
+        ->deleteLineMatches('.*')
         ->tap(expectVariantToBe(''));
 
     Vary::string("First line.\nSecond line.\n")
-        ->deleteLinePattern('Second.*')
+        ->deleteLineMatches('Second.*')
         ->tap(expectVariantToBe("First line.\n"));
 
     Vary::string("First line.\nSecond line.\n")
-        ->deleteLinePattern('First.*')
+        ->deleteLineMatches('First.*')
         ->tap(expectVariantToBe("Second line.\n"));
 });
 

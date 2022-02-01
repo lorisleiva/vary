@@ -100,7 +100,7 @@ trait AltersLines
         );
     }
 
-    public function deleteLinePattern(string $pattern, int $limit = -1): static
+    public function deleteLineMatches(string $pattern, int $limit = -1): static
     {
         return $this->selectMatches(
             pattern: "/(^$pattern$\n|\n^$pattern$|^$pattern$)/m",

@@ -55,7 +55,7 @@ class Block
 
     public function deleteLinePattern(string $pattern, int $limit = -1): Variant
     {
-        return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLinePattern($pattern, $limit));
+        return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLineMatches($pattern, $limit));
     }
 
     public function deleteLines(array $lines, bool $ignoreWhitespace = true): Variant
