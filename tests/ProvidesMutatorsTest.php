@@ -299,22 +299,15 @@ test('finish', function () {
 });
 
 test('headline', function () {
-    Vary::string('some text')->headline()
-        ->tap(expectVariantToBe('Some Text'));
-
-    Vary::string('some-text')->headline()
-        ->tap(expectVariantToBe('Some Text'));
-
-    Vary::string('someText')->headline()
-        ->tap(expectVariantToBe('Some Text'));
+    Vary::string('some text')->headline()->tap(expectVariantToBe('Some Text'));
+    Vary::string('some-text')->headline()->tap(expectVariantToBe('Some Text'));
+    Vary::string('some_text')->headline()->tap(expectVariantToBe('Some Text'));
+    Vary::string('someText')->headline()->tap(expectVariantToBe('Some Text'));
 });
 
 test('kebab', function () {
-    Vary::string('Some Text')->kebab()
-        ->tap(expectVariantToBe('some-text'));
-
-    Vary::string('someText')->kebab()
-        ->tap(expectVariantToBe('some-text'));
+    Vary::string('Some Text')->kebab()->tap(expectVariantToBe('some-text'));
+    Vary::string('someText')->kebab()->tap(expectVariantToBe('some-text'));
 });
 
 test('limit', function () {
@@ -422,8 +415,8 @@ test('plural', function () {
 });
 
 test('pluralStudly', function () {
-    Vary::string('Some delicious carrot')->pluralStudly()
-        ->tap(expectVariantToBe('Some delicious carrots'));
+    Vary::string('DeliciousCarrot')->pluralStudly()->tap(expectVariantToBe('DeliciousCarrots'));
+    Vary::string('InsanePotato')->pluralStudly()->tap(expectVariantToBe('InsanePotatoes'));
 });
 
 test('prepend', function () {
@@ -438,43 +431,60 @@ test('prepend', function () {
 });
 
 test('repeat', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text ')->repeat(3)
+        ->tap(expectVariantToBe('Some Text Some Text Some Text '));
+
+    Vary::string('xo')->repeat(10)
+        ->tap(expectVariantToBe('xoxoxoxoxoxoxoxoxoxo'));
 });
 
 test('replace', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->replace('One', 'Two')
+        ->tap(expectVariantToBe('Two apple pie. Two humble pie. Two apple TV.'));
+
+    $variant->replace(['One', 'pie'], ['Two', 'tarts'])
+        ->tap(expectVariantToBe('Two apple tarts. Two humble tarts. Two apple TV.'));
 });
 
 test('replaceAll', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceAll(['One' => 'Two', 'pie' => 'tarts'])
+        ->tap(expectVariantToBe('Two apple tarts. Two humble tarts. Two apple TV.'));
 });
 
 test('replaceFirst', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceFirst('One', 'Two')
+        ->tap(expectVariantToBe('Two apple pie. One humble pie. One apple TV.'));
 });
 
 test('replaceLast', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceLast('One', 'Two')
+        ->tap(expectVariantToBe('One apple pie. One humble pie. Two apple TV.'));
 });
 
 test('replaceMatches', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->replaceMatches('/(pie|TV)/', 'super $1')
+        ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
+
+    $variant->replaceMatches('/(pie|TV)/', fn (array $matches) => "super $matches[1]")
+        ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
 });
 
 test('replaceSequentially', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('One apple pie. One humble pie. One apple TV.')
+        ->replaceSequentially('One', ['Two', 'Three'])
+        ->tap(expectVariantToBe('Two apple pie. Three humble pie. One apple TV.'));
 });
 
 test('reverse', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->reverse()
+        ->tap(expectVariantToBe('txeT emoS'));
 });
 
 test('rtrim', function () {
@@ -489,18 +499,21 @@ test('rtrim', function () {
 });
 
 test('singular', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('carrots')->singular()->tap(expectVariantToBe('carrot'));
+    Vary::string('potatoes')->singular()->tap(expectVariantToBe('potato'));
+    Vary::string('candies')->singular()->tap(expectVariantToBe('candy'));
 });
 
 test('slug', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->slug()->tap(expectVariantToBe('some-text'));
+    Vary::string('Some Text')->slug('[]')->tap(expectVariantToBe('some[]text'));
 });
 
 test('snake', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->snake()->tap(expectVariantToBe('some_text'));
+    Vary::string('Some Text')->snake('[]')->tap(expectVariantToBe('some[]text'));
+    Vary::string('SomeText')->snake()->tap(expectVariantToBe('some_text'));
+    Vary::string('some    Text')->snake()->tap(expectVariantToBe('some_text'));
 });
 
 test('start', function () {
@@ -518,43 +531,53 @@ test('start', function () {
 });
 
 test('stripTags', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('<strong>Some Text</strong>')->stripTags()
+        ->tap(expectVariantToBe('Some Text'));
 });
 
 test('studly', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some text')->studly()->tap(expectVariantToBe('SomeText'));
+    Vary::string('some-text')->studly()->tap(expectVariantToBe('SomeText'));
+    Vary::string('some_text')->studly()->tap(expectVariantToBe('SomeText'));
+    Vary::string('someText')->studly()->tap(expectVariantToBe('SomeText'));
 });
 
 test('substr', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->substr(5)->tap(expectVariantToBe('Text'));
+    Vary::string('Some Text')->substr(0, 4)->tap(expectVariantToBe('Some'));
 });
 
 test('substrReplace', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->substrReplace('Carrots', 5)->tap(expectVariantToBe('Some Carrots'));
+    Vary::string('Some Text')->substrReplace('More', 0, 4)->tap(expectVariantToBe('More Text'));
 });
 
 test('title', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('some text')->title()->tap(expectVariantToBe('Some Text'));
+    Vary::string('Some MaGiC text')->title()->tap(expectVariantToBe('Some Magic Text'));
+    Vary::string('some-text')->title()->tap(expectVariantToBe('Some-Text'));
+    Vary::string('some_text')->title()->tap(expectVariantToBe('Some_Text'));
 });
 
 test('trim', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string("   \n  \t Some Text   \n  \t ")->trim()
+        ->tap(expectVariantToBe('Some Text'));
+
+    Vary::string(' Some Text ')->trim('St ')
+        ->tap(expectVariantToBe('ome Tex'));
+
+    Vary::string(' Some Text ')->trim('SomeTt ')
+        ->tap(expectVariantToBe('x'));
 });
 
 test('ucfirst', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('some text')->ucfirst()
+        ->tap(expectVariantToBe('Some text'));
 });
 
 test('upper', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some Text')->upper()
+        ->tap(expectVariantToBe('SOME TEXT'));
 });
 
 test('whenContains', function () {
@@ -613,54 +636,9 @@ test('whenTest', function () {
 });
 
 test('words', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
-});
+    Vary::string('Some fairly long sentence with seven words')->words(5)
+        ->tap(expectVariantToBe('Some fairly long sentence with...'));
 
-it('replaces all instances of one text with another', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replace('One', 'Two')
-        ->tap(expectVariantToBe('Two apple pie. Two humble pie. Two apple TV.'));
-});
-
-it('replaces multiple instances at onces', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replace(['One', 'pie'], ['Two', 'tarts'])
-        ->tap(expectVariantToBe('Two apple tarts. Two humble tarts. Two apple TV.'));
-});
-
-it('replaces multiple instances at onces by providing a key/value array', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replaceAll(['One' => 'Two', 'pie' => 'tarts'])
-        ->tap(expectVariantToBe('Two apple tarts. Two humble tarts. Two apple TV.'));
-});
-
-it('replaces only the first instance of one text with another', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replaceFirst('One', 'Two')
-        ->tap(expectVariantToBe('Two apple pie. One humble pie. One apple TV.'));
-});
-
-it('replaces only the last instance of one text with another', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replaceLast('One', 'Two')
-        ->tap(expectVariantToBe('One apple pie. One humble pie. Two apple TV.'));
-});
-
-it('replaces multiple instances of one text with a sequence of other texts', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replaceSequentially('One', ['Two', 'Three'])
-        ->tap(expectVariantToBe('Two apple pie. Three humble pie. One apple TV.'));
-});
-
-it('replaces text using regular expressions', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replaceMatches('/(pie|TV)/', 'super $1')
-        ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
-});
-
-it('replaces text using regular expressions and a callback', function () {
-    Vary::string('One apple pie. One humble pie. One apple TV.')
-        ->replaceMatches('/(pie|TV)/', fn (array $matches) => "super $matches[1]")
-        ->tap(expectVariantToBe('One apple super pie. One humble super pie. One apple super TV.'));
+    Vary::string('Some fairly long sentence with seven words')->words(5, ' [redacted]')
+        ->tap(expectVariantToBe('Some fairly long sentence with [redacted]'));
 });
