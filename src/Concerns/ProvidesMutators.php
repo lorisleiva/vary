@@ -106,11 +106,9 @@ trait ProvidesMutators
         return $this->new(class_basename($this->value));
     }
 
-    public function delete(string|array $search): static
+    public function delete(string|array $search, bool $caseSensitive = true): static
     {
-        $replace = is_array($search) ? array_pad([], count($search), '') : '';
-
-        return $this->replace($search, $replace);
+        return $this->new(Str::remove($search, $this->value, $caseSensitive));
     }
 
     public function deleteFirst(string $search): static
@@ -227,11 +225,6 @@ trait ProvidesMutators
     public function prepend(string ...$values): static
     {
         return $this->new(implode('', $values) . $this->value);
-    }
-
-    public function remove(string|array $search, bool $caseSensitive = true): static
-    {
-        return $this->new(Str::remove($search, $this->value, $caseSensitive));
     }
 
     public function repeat(int $times): static

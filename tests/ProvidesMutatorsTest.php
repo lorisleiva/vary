@@ -214,6 +214,7 @@ test('delete', function () {
     $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
 
     $variant->delete('One ')->tap(expectVariantToBe('apple pie. humble pie. apple TV.'));
+    $variant->delete('one ', false)->tap(expectVariantToBe('apple pie. humble pie. apple TV.'));
     $variant->delete(['One ', ' pie'])->tap(expectVariantToBe('apple. humble. apple TV.'));
 });
 
@@ -404,16 +405,25 @@ test('pipe', function () {
     Vary::string('Some Text')
         ->pipe(fn (Variant $variant) => $variant->override('CHANGED'))
         ->tap(expectVariantToBe('CHANGED'));
+
+    // This is different to the `tap` method which
+    // will not propagate the return value.
+    Vary::string('Some Text')
+        ->tap(fn (Variant $variant) => $variant->override('CHANGED'))
+        ->tap(expectVariantToBe('Some Text'));
 });
 
 test('plural', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('carrot')->plural()->tap(expectVariantToBe('carrots'));
+    Vary::string('carrot')->plural(0)->tap(expectVariantToBe('carrots'));
+    Vary::string('carrot')->plural(1)->tap(expectVariantToBe('carrot'));
+    Vary::string('potato')->plural()->tap(expectVariantToBe('potatoes'));
+    Vary::string('Some Text')->plural()->tap(expectVariantToBe('Some Texts'));
 });
 
 test('pluralStudly', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
+    Vary::string('Some delicious carrot')->pluralStudly()
+        ->tap(expectVariantToBe('Some delicious carrots'));
 });
 
 test('prepend', function () {
@@ -425,11 +435,6 @@ test('prepend', function () {
 
     Vary::string('')->prepend('Foo')
         ->tap(expectVariantToBe('Foo'));
-});
-
-test('remove', function () {
-    Vary::string('Some Text')->empty()
-        ->tap(expectVariantToBe(''));
 });
 
 test('repeat', function () {
