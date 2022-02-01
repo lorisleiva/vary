@@ -3,7 +3,6 @@
 namespace Lorisleiva\Vary;
 
 use Illuminate\Filesystem\Filesystem;
-use JetBrains\PhpStorm\Pure;
 
 class Vary
 {
