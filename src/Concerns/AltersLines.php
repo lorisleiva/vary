@@ -63,7 +63,7 @@ trait AltersLines
 
     public function appendLineInPattern(string $pattern, string $content, bool $keepIndent = false, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectPattern(
+        return $this->selectMatch(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
             replace: $replace,
@@ -93,7 +93,7 @@ trait AltersLines
         $safeSearch = preg_quote($search, '/');
         $safeSearch = $ignoreWhitespace ? "^{$spaces}{$safeSearch}{$spaces}$" : "^{$safeSearch}$";
 
-        return $this->selectPattern(
+        return $this->selectMatch(
             pattern: "/($safeSearch\n|\n$safeSearch|$safeSearch)/m",
             callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
@@ -102,7 +102,7 @@ trait AltersLines
 
     public function deleteLinePattern(string $pattern, int $limit = -1): static
     {
-        return $this->selectPattern(
+        return $this->selectMatch(
             pattern: "/(^$pattern$\n|\n^$pattern$|^$pattern$)/m",
             callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
@@ -179,7 +179,7 @@ trait AltersLines
 
     public function prependLineInPattern(string $pattern, string $content, bool $keepIndent = false, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectPattern(
+        return $this->selectMatch(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
             replace: $replace,
@@ -239,14 +239,14 @@ trait AltersLines
             ? ($includeEol ? "/^{$spaces}{$safeSearch}{$spaces}$\n?/m" : "/^{$spaces}{$safeSearch}{$spaces}$/m")
             : ($includeEol ? "/^{$safeSearch}$\n?/m" : "/^{$safeSearch}$/m");
 
-        return $this->selectPattern($regex, $callback, null, $limit);
+        return $this->selectMatch($regex, $callback, null, $limit);
     }
 
     public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): static
     {
         $pattern = $includeEol ? "/^$pattern$\n?/m" : "/^$pattern$/m";
 
-        return $this->selectPattern($pattern, $callback, $replace, $limit);
+        return $this->selectMatch($pattern, $callback, $replace, $limit);
     }
 
     public function selectLinePatternWithEol(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static

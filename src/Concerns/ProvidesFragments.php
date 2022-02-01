@@ -12,7 +12,7 @@ trait ProvidesFragments
     {
         $safeSearch = preg_quote($search, '/');
 
-        return $this->selectPattern("/$safeSearch/", $callback, limit: $limit);
+        return $this->selectMatch("/$safeSearch/", $callback, limit: $limit);
     }
 
     public function selectAfter(string $search, Closure $callback, bool $last = false, bool $included = false): static
@@ -141,26 +141,23 @@ trait ProvidesFragments
         return $this->selectBetween($from, $to, $callback, fromLast: true, fromIncluded: true, toLast: true, toIncluded: true);
     }
 
-    public function selectPattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectMatch(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        $replace = $replace ?? fn (array $matches, Closure $next) => $next($matches[0]);
+        $replace = $replace ?? function (array $matches, Closure $next) {
+            if (! isset($matches[1])) {
+                return $next($matches[0]);
+            }
 
-        $next = fn (string $fragment) => $this->evaluateFragment($fragment, $callback);
-        $newReplace = fn ($matches) => $replace($matches, $next);
-
-        return $this->replacePattern($pattern, $newReplace, $limit);
-    }
-
-    public function selectPatternFirstGroup(string $pattern, Closure $callback, int $limit = -1): static
-    {
-        $replace = function (array $matches, Closure $next) {
             $before = Str::before($matches[0], $matches[1]);
             $after = Str::after($matches[0], $matches[1]);
 
             return $before . $next($matches[1]) . $after;
         };
 
-        return $this->selectPattern($pattern, $callback, $replace, $limit);
+        $next = fn (string $fragment) => $this->evaluateFragment($fragment, $callback);
+        $newReplace = fn ($matches) => $replace($matches, $next);
+
+        return $this->replacePattern($pattern, $newReplace, $limit);
     }
 
     public function tap(Closure $callback): static

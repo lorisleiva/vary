@@ -24,14 +24,14 @@ it('selects a given fragment of text', function () {
 it('selects a fragment from a given pattern', function () {
     $variant = Vary::string('You can also commit injustice by doing nothing.');
 
-    $variant->selectPattern('/com+it/', expectVariantToBe('commit'));
-    $variant->selectPattern('/You.*also/', expectVariantToBe('You can also'));
-    $variant->selectPattern('/NOT_FOUND/', expectVariantNotToBeCalled());
+    $variant->selectMatch('/com+it/', expectVariantToBe('commit'));
+    $variant->selectMatch('/You.*also/', expectVariantToBe('You can also'));
+    $variant->selectMatch('/NOT_FOUND/', expectVariantNotToBeCalled());
 });
 
 it('selects multiple fragments from a given pattern', function () {
     Vary::string('You can also commit injustice by doing nothing.')
-        ->selectPattern('/also|(doing.*)/', overrideVariantTo('CHANGED'))
+        ->selectMatch('/also|(doing.*)/', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe('You can CHANGED commit injustice by CHANGED'));
 });
 
@@ -40,21 +40,21 @@ it('updates matched fragments using a custom replace callback', function () {
     $uppercaseCallback = fn (Variant $variant) => strtoupper($variant);
 
     Vary::string('You can also commit injustice by doing nothing.')
-        ->selectPattern('/You can al(so)(.*) by(.*)/', $uppercaseCallback, $replaceCallback)
+        ->selectMatch('/You can al(so)(.*) by(.*)/', $uppercaseCallback, $replaceCallback)
         ->tap(expectVariantToBe('so COMMIT INJUSTICE doing nothing.'));
 });
 
 it('selects a fragment using the first group of a given pattern', function () {
     $variant = Vary::string('You can also commit injustice by doing nothing.');
 
-    $variant->selectPatternFirstGroup('/You\s(.*)\sby/', expectVariantToBe('can also commit injustice'));
-    $variant->selectPatternFirstGroup('/injustice\s([^t]+)/', expectVariantToBe('by doing no'));
-    $variant->selectPatternFirstGroup('/CONTENT_(NOT)_FOUND/', expectVariantNotToBeCalled());
+    $variant->selectMatch('/You\s(.*)\sby/', expectVariantToBe('can also commit injustice'));
+    $variant->selectMatch('/injustice\s([^t]+)/', expectVariantToBe('by doing no'));
+    $variant->selectMatch('/CONTENT_(NOT)_FOUND/', expectVariantNotToBeCalled());
 });
 
 it('selects multiple fragments using the first group of a given pattern', function () {
     Vary::string('An apple pie, an humble pie and an apple TV.')
-        ->selectPatternFirstGroup('/an\s(.*?)\spie/i', overrideVariantTo('CHANGED'))
+        ->selectMatch('/an\s(.*?)\spie/i', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe('An CHANGED pie, an CHANGED pie and an apple TV.'));
 });
 

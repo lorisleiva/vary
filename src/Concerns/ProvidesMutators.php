@@ -25,7 +25,7 @@ trait ProvidesMutators
 
     public function addAfterPattern(string $pattern, string $content, int $limit = -1): static
     {
-        return $this->selectPattern(
+        return $this->selectMatch(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->append($content),
             limit: $limit,
@@ -34,7 +34,7 @@ trait ProvidesMutators
 
     public function addAfterPatternFirstGroup(string $pattern, string $content, int $limit = -1): static
     {
-        return $this->selectPatternFirstGroup(
+        return $this->selectMatch(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->append($content),
             limit: $limit,
@@ -58,7 +58,7 @@ trait ProvidesMutators
 
     public function addBeforePattern(string $pattern, string $content, int $limit = -1): static
     {
-        return $this->selectPattern(
+        return $this->selectMatch(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->prepend($content),
             limit: $limit,
@@ -67,7 +67,7 @@ trait ProvidesMutators
 
     public function addBeforePatternFirstGroup(string $pattern, string $content, int $limit = -1): static
     {
-        return $this->selectPatternFirstGroup(
+        return $this->selectMatch(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->prepend($content),
             limit: $limit,
@@ -148,7 +148,7 @@ trait ProvidesMutators
 
     public function deletePatternFirstGroup(string $pattern, int $limit = -1): static
     {
-        return $this->selectPatternFirstGroup(
+        return $this->selectMatch(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->empty(),
             limit: $limit,
