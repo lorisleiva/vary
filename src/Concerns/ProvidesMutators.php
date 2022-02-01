@@ -4,7 +4,6 @@ namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
 use Illuminate\Support\Str;
-use JetBrains\PhpStorm\Pure;
 use Lorisleiva\Vary\Variant;
 
 trait ProvidesMutators
