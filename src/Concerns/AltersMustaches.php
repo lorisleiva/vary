@@ -17,8 +17,8 @@ trait AltersMustaches
 
     public function replaceMustache(string $variable, string $value, int $limit = -1): static
     {
-        $safeVariable = preg_quote($variable, '/');
+        $safeVariable = preg_quote($variable, '#');
 
-        return $this->replaceMatches("/{{\s*$safeVariable\s*}}/", $value, $limit);
+        return $this->replaceMatches("#{{\s*$safeVariable\s*}}#", $value, $limit);
     }
 }

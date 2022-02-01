@@ -10,9 +10,9 @@ trait ProvidesFragments
 {
     public function select(string $search, Closure $callback, int $limit = -1): static
     {
-        $safeSearch = preg_quote($search, '/');
+        $safeSearch = preg_quote($search, '#');
 
-        return $this->selectMatches("/$safeSearch/", $callback, limit: $limit);
+        return $this->selectMatches("#$safeSearch#", $callback, limit: $limit);
     }
 
     public function selectAfter(string $search, Closure $callback, bool $last = false, bool $included = false): static
