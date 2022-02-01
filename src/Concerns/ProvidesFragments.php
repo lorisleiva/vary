@@ -17,6 +17,10 @@ trait ProvidesFragments
 
     public function selectAfter(string $search, Closure $callback, bool $last = false, bool $included = false): static
     {
+        if (! $this->contains($search)) {
+            return $this;
+        }
+
         $oldValue = $last
             ? Str::afterLast($this->value, $search)
             : Str::after($this->value, $search);
@@ -49,6 +53,10 @@ trait ProvidesFragments
 
     public function selectBefore(string $search, Closure $callback, bool $last = false, bool $included = false): static
     {
+        if (! $this->contains($search)) {
+            return $this;
+        }
+
         $oldValue = $last
             ? Str::beforeLast($this->value, $search)
             : Str::before($this->value, $search);
@@ -79,7 +87,7 @@ trait ProvidesFragments
         return $this->selectBefore($search, $callback, last: true, included: true);
     }
 
-    public function selectBetween(string $from, string $to, Closure $callback, bool $fromLast = false, bool $fromIncluded = false, bool $toLast = false, bool $toIncluded = false): static
+    public function selectBetween(string $from, string $to, Closure $callback, bool $fromLast = false, bool $fromIncluded = false, bool $toLast = true, bool $toIncluded = false): static
     {
         return $this->selectAfter(
             search: $from,
@@ -94,44 +102,17 @@ trait ProvidesFragments
         );
     }
 
-    public function selectBetweenFirstAndFirst(string $from, string $to, Closure $callback): static
+    public function selectBetweenIncluded(string $from, string $to, Closure $callback, bool $fromLast = false, bool $toLast = true): static
     {
-        return $this->selectBetween($from, $to, $callback);
-    }
-
-    public function selectBetweenFirstAndFirstIncluded(string $from, string $to, Closure $callback): static
-    {
-        return $this->selectBetween($from, $to, $callback, fromIncluded: true, toIncluded: true);
-    }
-
-    public function selectBetweenFirstAndLast(string $from, string $to, Closure $callback): static
-    {
-        return $this->selectBetween($from, $to, $callback, toLast: true);
-    }
-
-    public function selectBetweenFirstAndLastIncluded(string $from, string $to, Closure $callback): static
-    {
-        return $this->selectBetween($from, $to, $callback, fromIncluded: true, toLast: true, toIncluded: true);
-    }
-
-    public function selectBetweenLastAndFirst(string $from, string $to, Closure $callback): static
-    {
-        return $this->selectBetween($from, $to, $callback, fromLast: true);
-    }
-
-    public function selectBetweenLastAndFirstIncluded(string $from, string $to, Closure $callback): static
-    {
-        return $this->selectBetween($from, $to, $callback, fromLast: true, fromIncluded: true, toIncluded: true);
-    }
-
-    public function selectBetweenLastAndLast(string $from, string $to, Closure $callback): static
-    {
-        return $this->selectBetween($from, $to, $callback, fromLast: true, toLast: true);
-    }
-
-    public function selectBetweenLastAndLastIncluded(string $from, string $to, Closure $callback): static
-    {
-        return $this->selectBetween($from, $to, $callback, fromLast: true, fromIncluded: true, toLast: true, toIncluded: true);
+        return $this->selectBetween(
+            from: $from,
+            to: $to,
+            callback: $callback,
+            fromLast: $fromLast,
+            fromIncluded: true,
+            toLast: $toLast,
+            toIncluded: true
+        );
     }
 
     public function selectMatches(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
