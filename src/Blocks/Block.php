@@ -3,7 +3,6 @@
 namespace Lorisleiva\Vary\Blocks;
 
 use Closure;
-use Illuminate\Support\Str;
 use Lorisleiva\Vary\Variant;
 
 class Block
