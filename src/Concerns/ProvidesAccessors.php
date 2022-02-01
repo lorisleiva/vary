@@ -53,7 +53,7 @@ trait ProvidesAccessors
 
     public function isNotEmpty(): bool
     {
-        return !$this->isEmpty();
+        return ! $this->isEmpty();
     }
 
     public function isUuid(): bool

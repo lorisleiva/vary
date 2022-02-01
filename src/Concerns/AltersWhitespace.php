@@ -10,7 +10,7 @@ trait AltersWhitespace
     public function appendBeforeWhitespace(string $suffix): static
     {
         return $this->selectBeforeWhitespace(
-            fn(Variant $variant) => $variant->append($suffix),
+            fn (Variant $variant) => $variant->append($suffix),
         );
     }
 
@@ -31,7 +31,7 @@ trait AltersWhitespace
     public function prependAfterWhitespace(string $prefix): static
     {
         return $this->selectAfterWhitespace(
-            fn(Variant $variant) => $variant->prepend($prefix),
+            fn (Variant $variant) => $variant->prepend($prefix),
         );
     }
 
@@ -48,7 +48,7 @@ trait AltersWhitespace
     public function selectBetweenWhitespace(Closure $callback): static
     {
         return $this->selectAfterWhitespace(
-            fn(Variant $variant) => $variant->selectBeforeWhitespace($callback)
+            fn (Variant $variant) => $variant->selectBeforeWhitespace($callback)
         );
     }
 }

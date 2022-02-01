@@ -13,7 +13,7 @@ trait AltersLines
     {
         return $this->selectLine(
             search: $search,
-            callback: fn(Variant $variant) => $variant->appendLine($content, $keepIndent),
+            callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
             ignoreWhitespace: $ignoreWhitespace,
         );
     }
@@ -22,7 +22,7 @@ trait AltersLines
     {
         return $this->selectLinePattern(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->appendLine($content, $keepIndent),
+            callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
             limit: $limit,
         );
     }
@@ -31,7 +31,7 @@ trait AltersLines
     {
         return $this->selectLine(
             search: $search,
-            callback: fn(Variant $variant) => $variant->prependLine($content, $keepIndent),
+            callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
             ignoreWhitespace: $ignoreWhitespace,
         );
     }
@@ -40,7 +40,7 @@ trait AltersLines
     {
         return $this->selectLinePattern(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->prependLine($content, $keepIndent),
+            callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
             limit: $limit,
         );
     }
@@ -53,7 +53,7 @@ trait AltersLines
             if ($keepIndent) {
                 $indent = $variant->getLeftWhitespace();
                 $content = (new static($content))
-                    ->selectAllLines(fn(Variant $line) => $line->prepend($indent))
+                    ->selectAllLines(fn (Variant $line) => $line->prepend($indent))
                     ->toString();
             }
 
@@ -65,7 +65,7 @@ trait AltersLines
     {
         return $this->selectPattern(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->appendLine($content, $keepIndent),
+            callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
             replace: $replace,
             limit: $limit,
         );
@@ -74,7 +74,7 @@ trait AltersLines
     public function deleteFirstLine(): static
     {
         return $this->selectFirstLine(
-            callback: fn(Variant $variant) => $variant->empty(),
+            callback: fn (Variant $variant) => $variant->empty(),
             includeEol: true,
         );
     }
@@ -82,7 +82,7 @@ trait AltersLines
     public function deleteLastLine(): static
     {
         return $this->selectLastLine(
-            callback: fn(Variant $variant) => $variant->empty(),
+            callback: fn (Variant $variant) => $variant->empty(),
             includeEol: true,
         );
     }
@@ -95,7 +95,7 @@ trait AltersLines
 
         return $this->selectPattern(
             pattern: "/($safeSearch\n|\n$safeSearch|$safeSearch)/m",
-            callback: fn(Variant $line) => $line->empty(),
+            callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
         );
     }
@@ -104,7 +104,7 @@ trait AltersLines
     {
         return $this->selectPattern(
             pattern: "/(^$pattern$\n|\n^$pattern$|^$pattern$)/m",
-            callback: fn(Variant $line) => $line->empty(),
+            callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
         );
     }
@@ -113,7 +113,7 @@ trait AltersLines
     {
         return array_reduce(
             array: $lines,
-            callback: fn(Variant $variant, string $line) => $variant->deleteLine($line, $ignoreWhitespace),
+            callback: fn (Variant $variant, string $line) => $variant->deleteLine($line, $ignoreWhitespace),
             initial: $this,
         );
     }
@@ -124,7 +124,7 @@ trait AltersLines
 
         if ($includeEol) {
             $lastLine = array_pop($lines);
-            $lines = array_map(fn(string $line) => $line . PHP_EOL, $lines);
+            $lines = array_map(fn (string $line) => $line . PHP_EOL, $lines);
             $lines[] = $lastLine;
         }
 
@@ -138,7 +138,7 @@ trait AltersLines
 
     public function getFirstLine(bool $includeEol = false): string
     {
-        if (!str_contains($this->value, PHP_EOL)) {
+        if (! str_contains($this->value, PHP_EOL)) {
             return $this->value;
         }
 
@@ -154,7 +154,7 @@ trait AltersLines
 
     public function getLastLine(): string
     {
-        if (!str_contains($this->value, PHP_EOL)) {
+        if (! str_contains($this->value, PHP_EOL)) {
             return $this->value;
         }
 
@@ -169,7 +169,7 @@ trait AltersLines
             if ($keepIndent) {
                 $indent = $variant->getLeftWhitespace();
                 $content = (new static($content))
-                    ->selectAllLines(fn(Variant $line) => $line->prepend($indent))
+                    ->selectAllLines(fn (Variant $line) => $line->prepend($indent))
                     ->toString();
             }
 
@@ -181,7 +181,7 @@ trait AltersLines
     {
         return $this->selectPattern(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->prependLine($content, $keepIndent),
+            callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
             replace: $replace,
             limit: $limit,
         );
@@ -278,6 +278,6 @@ trait AltersLines
 
     public function sortLinesByLength(): static
     {
-        return $this->sortLines(fn(string $value) => strlen($value));
+        return $this->sortLines(fn (string $value) => strlen($value));
     }
 }

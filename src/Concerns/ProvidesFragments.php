@@ -90,7 +90,7 @@ trait ProvidesFragments
     {
         return $this->selectAfter(
             search: $from,
-            callback: fn(Variant $variant) => $variant->selectBefore(
+            callback: fn (Variant $variant) => $variant->selectBefore(
                 search: $to,
                 callback: $callback,
                 last: $toLast,
@@ -143,10 +143,10 @@ trait ProvidesFragments
 
     public function selectPattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        $replace = $replace ?? fn(array $matches, Closure $next) => $next($matches[0]);
+        $replace = $replace ?? fn (array $matches, Closure $next) => $next($matches[0]);
 
-        $next = fn(string $fragment) => $this->evaluateFragment($fragment, $callback);
-        $newReplace = fn($matches) => $replace($matches, $next);
+        $next = fn (string $fragment) => $this->evaluateFragment($fragment, $callback);
+        $newReplace = fn ($matches) => $replace($matches, $next);
 
         return $this->replacePattern($pattern, $newReplace, $limit);
     }

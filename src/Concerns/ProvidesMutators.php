@@ -27,7 +27,7 @@ trait ProvidesMutators
     {
         return $this->selectPattern(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->append($content),
+            callback: fn (Variant $variant) => $variant->append($content),
             limit: $limit,
         );
     }
@@ -36,7 +36,7 @@ trait ProvidesMutators
     {
         return $this->selectPatternFirstGroup(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->append($content),
+            callback: fn (Variant $variant) => $variant->append($content),
             limit: $limit,
         );
     }
@@ -60,7 +60,7 @@ trait ProvidesMutators
     {
         return $this->selectPattern(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->prepend($content),
+            callback: fn (Variant $variant) => $variant->prepend($content),
             limit: $limit,
         );
     }
@@ -69,7 +69,7 @@ trait ProvidesMutators
     {
         return $this->selectPatternFirstGroup(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->prepend($content),
+            callback: fn (Variant $variant) => $variant->prepend($content),
             limit: $limit,
         );
     }
@@ -150,7 +150,7 @@ trait ProvidesMutators
     {
         return $this->selectPatternFirstGroup(
             pattern: $pattern,
-            callback: fn(Variant $variant) => $variant->empty(),
+            callback: fn (Variant $variant) => $variant->empty(),
             limit: $limit,
         );
     }

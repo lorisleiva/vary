@@ -10,7 +10,7 @@ trait AltersPhpFiles
 {
     public function addPhpImports(string ...$imports): static
     {
-        $imports = array_map(fn(string $import) => "use {$import};", $imports);
+        $imports = array_map(fn (string $import) => "use {$import};", $imports);
         $imports = join(PHP_EOL, $imports);
 
         return $this->getPhpImportsBlock()->appendLines($imports);
@@ -22,7 +22,7 @@ trait AltersPhpFiles
             return $this->getPhpImportsBlock()->empty();
         }
 
-        $imports = array_map(fn(string $import) => "use {$import};", $imports);
+        $imports = array_map(fn (string $import) => "use {$import};", $imports);
 
         return $this->getPhpImportsBlock()->deleteLines($imports);
     }
@@ -56,7 +56,7 @@ trait AltersPhpFiles
 
     public function sortPhpImportsByLength(): static
     {
-        return $this->sortPhpImports(fn(string $value) => strlen($value));
+        return $this->sortPhpImports(fn (string $value) => strlen($value));
     }
 
     protected function getPhpImportsBlock(): Block
