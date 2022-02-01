@@ -193,3 +193,10 @@ it('deletes text using the first group of a regular expression', function () {
         ->deletePatternFirstGroup('/One(.*?) pie./')
         ->tap(expectVariantToBe('One pie. One pie. One apple TV.'));
 });
+
+it('returns the text matching a given pattern', function () {
+    $variant = Vary::string('One apple pie. One humble pie. One apple TV.');
+
+    $variant->match('/One .*? pie/')->tap(expectVariantToBe('One apple pie'));
+    $variant->match('/One (.*?) pie/')->tap(expectVariantToBe('apple'));
+});
