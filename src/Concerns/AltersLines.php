@@ -91,21 +91,19 @@ trait AltersLines
 
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
-        $spaces = '[^\S\r\n]*';
-        $safeSearch = preg_quote($search, '#');
-        $safeSearch = $ignoreWhitespace ? "^{$spaces}{$safeSearch}{$spaces}$" : "^{$safeSearch}$";
-
-        return $this->selectMatches(
-            pattern: "#($safeSearch\n|\n$safeSearch|$safeSearch)#m",
+        return $this->selectLineWithEol(
+            search: $search,
             callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
+            ignoreWhitespace: $ignoreWhitespace,
+            allowWildcards: $allowWildcards,
         );
     }
 
     public function deleteLineMatches(string $pattern, int $limit = -1): static
     {
-        return $this->selectMatches(
-            pattern: "/(^$pattern$\n|\n^$pattern$|^$pattern$)/m",
+        return $this->selectLineMatchesWithEol(
+            pattern: $pattern,
             callback: fn (Variant $line) => $line->empty(),
             limit: $limit,
         );
@@ -242,9 +240,9 @@ trait AltersLines
         return $this->selectLineMatches($pattern, $callback, $limit, true, $delimiter);
     }
 
-    public function selectLineWithEol(string $search, Closure $callback, int $limit = -1): static
+    public function selectLineWithEol(string $search, Closure $callback, int $limit = -1, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
-        return $this->selectLine($search, $callback, $limit, includeEol: true);
+        return $this->selectLine($search, $callback, $limit, true, $ignoreWhitespace, $allowWildcards);
     }
 
     public function sortLines(?Closure $callback = null): static
