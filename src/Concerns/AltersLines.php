@@ -84,7 +84,12 @@ trait AltersLines
         return $this->selectLastLineWithEol(fn (Variant $variant) => $variant->empty());
     }
 
-    public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): static
+    public function deleteExactLine(string $search, int $limit = -1): static
+    {
+        return $this->deleteLine($search, $limit, false, false);
+    }
+
+    public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
         $spaces = '[^\S\r\n]*';
         $safeSearch = preg_quote($search, '#');
