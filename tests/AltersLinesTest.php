@@ -89,11 +89,11 @@ it('selects lines using regular expressions', function () {
         END
     );
 
-    $variant->selectLinePattern('.*TV.*', expectVariantToBe('One apple TV.'));
-    $variant->selectLinePatternWithEol('.*TV.*', expectVariantToBe('One apple TV.'));
-    $variant->selectLinePattern('.*humble.*', expectVariantToBe('One humble pie.'));
-    $variant->selectLinePatternWithEol('.*humble.*', expectVariantToBe("One humble pie.\n"));
-    $variant->selectLinePattern('.*apple.*', overrideVariantTo('CHANGED'))
+    $variant->selectLineMatches('.*TV.*', expectVariantToBe('One apple TV.'));
+    $variant->selectLineMatchesWithEol('.*TV.*', expectVariantToBe('One apple TV.'));
+    $variant->selectLineMatches('.*humble.*', expectVariantToBe('One humble pie.'));
+    $variant->selectLineMatchesWithEol('.*humble.*', expectVariantToBe("One humble pie.\n"));
+    $variant->selectLineMatches('.*apple.*', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe(
             <<<END
             CHANGED
@@ -103,7 +103,7 @@ it('selects lines using regular expressions', function () {
         ));
 
     // It has to match the entire line!
-    $variant->selectLinePattern('TV', expectVariantNotToBeCalled());
+    $variant->selectLineMatches('TV', expectVariantNotToBeCalled());
 });
 
 it('prepends some lines', function () {

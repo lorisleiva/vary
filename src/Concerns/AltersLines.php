@@ -20,7 +20,7 @@ trait AltersLines
 
     public function addAfterLinePattern(string $pattern, string $content, bool $keepIndent = false, int $limit = -1): static
     {
-        return $this->selectLinePattern(
+        return $this->selectLineMatches(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
             limit: $limit,
@@ -38,7 +38,7 @@ trait AltersLines
 
     public function addBeforeLinePattern(string $pattern, string $content, bool $keepIndent = false, int $limit = -1): static
     {
-        return $this->selectLinePattern(
+        return $this->selectLineMatches(
             pattern: $pattern,
             callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
             limit: $limit,
@@ -189,7 +189,7 @@ trait AltersLines
 
     public function selectAllLines(Closure $callback, bool $includeEol = false): static
     {
-        return $this->selectLinePattern('.*', $callback, includeEol: $includeEol);
+        return $this->selectLineMatches('.*', $callback, includeEol: $includeEol);
     }
 
     public function selectAllLinesWithEol(Closure $callback): static
@@ -241,16 +241,16 @@ trait AltersLines
         return $this->selectMatches($pattern, $callback, $replace, $limit);
     }
 
-    public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, string $delimiter = '#'): static
+    public function selectLineMatches(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, string $delimiter = '#'): static
     {
         $pattern = $this->getLinePattern($pattern, $includeEol, $delimiter);
 
         return $this->selectMatches($pattern, $callback, $replace, $limit);
     }
 
-    public function selectLinePatternWithEol(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectLineMatchesWithEol(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectLinePattern($pattern, $callback, $replace, $limit, includeEol: true);
+        return $this->selectLineMatches($pattern, $callback, $replace, $limit, includeEol: true);
     }
 
     public function selectLineWithEol(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
