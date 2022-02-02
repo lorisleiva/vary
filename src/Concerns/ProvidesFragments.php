@@ -8,11 +8,11 @@ use Lorisleiva\Vary\Variant;
 
 trait ProvidesFragments
 {
-    public function select(string $search, Closure $callback, int $limit = -1): static
+    public function select(string $search, Closure $callback, int $limit = -1, bool $allowWildcard = true): static
     {
-        $safeSearch = preg_quote($search, '#');
+        $pattern = $this->getWildcardPattern($search, $allowWildcard, '#');
 
-        return $this->selectMatches("#$safeSearch#", $callback, limit: $limit);
+        return $this->selectMatches("#$pattern#", $callback, limit: $limit);
     }
 
     public function selectAfter(string $search, Closure $callback, bool $last = false, bool $included = false): static
@@ -115,6 +115,11 @@ trait ProvidesFragments
         );
     }
 
+    public function selectExact(string $search, Closure $callback, int $limit = -1): static
+    {
+        return $this->select($search, $callback, $limit, false);
+    }
+
     public function selectMatches(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
         $replace = $replace ?? function (array $matches, Closure $next) {
@@ -139,5 +144,16 @@ trait ProvidesFragments
         $newValue = $callback(new static($oldValue));
 
         return $newValue instanceof Variant ? $newValue->toString() : $newValue;
+    }
+
+    protected function getWildcardPattern(string $pattern, bool $allowWildcard, string $delimiter = '#'): string
+    {
+        $pattern = preg_quote($pattern, $delimiter);
+
+        if ($allowWildcard) {
+            $pattern = str_replace('\*', '.*', $pattern);
+        }
+
+        return $pattern;
     }
 }

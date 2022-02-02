@@ -13,6 +13,16 @@ test('select', function () {
     Vary::string('Hello World, Hello Kitty!')
         ->select('Hello', overrideVariantTo('Bye'))
         ->tap(expectVariantToBe('Bye World, Bye Kitty!'));
+
+    Vary::string('Hello World')
+        ->select('*World', expectVariantToBe('Hello World'));
+
+    Vary::string('Hello World')
+        ->select('o*o', expectVariantToBe('o Wo'));
+
+    Vary::string('Hello World')
+        ->select('*X*', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('Hello World'));
 });
 
 test('selectAfter', function () {
@@ -174,6 +184,15 @@ test('selectBetweenIncluded', function () {
     $variant->selectBetweenIncluded('One', 'pie', expectVariantToBe('One apple pie'), fromLast: false, toLast: false);
     $variant->selectBetweenIncluded('One', 'pie', expectVariantToBe('One humble pie'), fromLast: true, toLast: false);
     $variant->selectBetweenIncluded('One', 'pie', expectVariantToBe('One humble pie. Two berry pie'), fromLast: true, toLast: true);
+});
+
+test('selectExact', function () {
+    Vary::string('Hello World')
+        ->selectExact('World', expectVariantToBe('World'));
+
+    Vary::string('Hello World')
+        ->selectExact('*World', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe('Hello World'));
 });
 
 test('selectMatches', function () {
