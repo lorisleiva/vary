@@ -200,12 +200,12 @@ trait AltersLines
 
     public function selectExactLine(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $replace, $limit, ignoreWhitespace: false);
+        return $this->selectLine($search, $callback, $replace, $limit, ignoreWhitespace: false, allowWildcards: false);
     }
 
     public function selectExactLineWithEol(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $replace, $limit, includeEol: true, ignoreWhitespace: false);
+        return $this->selectLine($search, $callback, $replace, $limit, includeEol: true, ignoreWhitespace: false, allowWildcards: false);
     }
 
     public function selectFirstLine(Closure $callback, bool $includeEol = false): static
@@ -279,15 +279,5 @@ trait AltersLines
     public function sortLinesByLength(): static
     {
         return $this->sortLines(fn (string $value) => strlen($value));
-    }
-
-    protected function getLinePattern(string $pattern, bool $includeEol = false, string $delimiter = '#'): string
-    {
-        return sprintf(
-            '%3$s^%1$s$%2$s%3$sm',
-            $pattern,
-            $includeEol ? '\n?' : '',
-            $delimiter,
-        );
     }
 }
