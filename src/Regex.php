@@ -9,7 +9,7 @@ class Regex
         $subPattern = sprintf('^%s$', $subPattern);
 
         if ($includeEol) {
-            $subPattern = sprintf('%1$s\n?', $subPattern);
+            $subPattern = sprintf('(?:%1$s\n|\n%1$s(?!\n)|%1$s)', $subPattern);
         }
 
         return $delimiter.$subPattern.$delimiter.$options;

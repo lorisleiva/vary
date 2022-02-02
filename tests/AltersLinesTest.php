@@ -12,13 +12,13 @@ it('selects a line by providing its content', function () {
     // Select lines ignoring left and right whitespace.
     $variant->selectLine('One apple pie.', expectVariantToBe("    One apple pie."));
     $variant->selectLineWithEol('One apple pie.', expectVariantToBe("    One apple pie.\n"));
-    $variant->selectLineWithEol('One apple TV.', expectVariantToBe("    One apple TV."));
+    $variant->selectLineWithEol('One apple TV.', expectVariantToBe("\n    One apple TV."));
 
     // Select lines including whitespaces.
     $variant->selectExactLine('One apple pie.', expectVariantNotToBeCalled());
     $variant->selectExactLine('    One apple pie.', expectVariantToBe("    One apple pie."));
     $variant->selectExactLineWithEol('    One apple pie.', expectVariantToBe("    One apple pie.\n"));
-    $variant->selectExactLineWithEol('    One apple TV.', expectVariantToBe("    One apple TV."));
+    $variant->selectExactLineWithEol('    One apple TV.', expectVariantToBe("\n    One apple TV."));
 });
 
 it('selects multiple lines by providing their content', function () {
@@ -40,8 +40,7 @@ it('selects multiple lines by providing their content', function () {
     $variant->selectLineWithEol('One apple pie.', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe(
             <<<END
-            CHANGED    One humble pie.
-            CHANGED
+            CHANGED    One humble pie.CHANGED
             END
         ));
 });
@@ -90,7 +89,7 @@ it('selects lines using regular expressions', function () {
     );
 
     $variant->selectLineMatches('.*TV.*', expectVariantToBe('One apple TV.'));
-    $variant->selectLineMatchesWithEol('.*TV.*', expectVariantToBe('One apple TV.'));
+    $variant->selectLineMatchesWithEol('.*TV.*', expectVariantToBe("\nOne apple TV."));
     $variant->selectLineMatches('.*humble.*', expectVariantToBe('One humble pie.'));
     $variant->selectLineMatchesWithEol('.*humble.*', expectVariantToBe("One humble pie.\n"));
     $variant->selectLineMatches('.*apple.*', overrideVariantTo('CHANGED'))
