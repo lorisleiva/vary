@@ -19,7 +19,7 @@ trait AltersLines
         );
     }
 
-    public function addAfterLinePattern(string $pattern, string $content, bool $keepIndent = false, int $limit = -1): static
+    public function addAfterLineMatches(string $pattern, string $content, bool $keepIndent = false, int $limit = -1): static
     {
         return $this->selectLineMatches(
             pattern: $pattern,
@@ -37,7 +37,7 @@ trait AltersLines
         );
     }
 
-    public function addBeforeLinePattern(string $pattern, string $content, bool $keepIndent = false, int $limit = -1): static
+    public function addBeforeLineMatches(string $pattern, string $content, bool $keepIndent = false, int $limit = -1): static
     {
         return $this->selectLineMatches(
             pattern: $pattern,
@@ -60,16 +60,6 @@ trait AltersLines
 
             return $variant->append("$lineJump$content");
         });
-    }
-
-    public function appendLineInPattern(string $pattern, string $content, bool $keepIndent = false, ?Closure $replace = null, int $limit = -1): static
-    {
-        return $this->selectMatches(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
-            replace: $replace,
-            limit: $limit,
-        );
     }
 
     public function deleteFirstLine(): static
@@ -176,16 +166,6 @@ trait AltersLines
 
             return $variant->prepend("$content$lineJump");
         });
-    }
-
-    public function prependLineInPattern(string $pattern, string $content, bool $keepIndent = false, ?Closure $replace = null, int $limit = -1): static
-    {
-        return $this->selectMatches(
-            pattern: $pattern,
-            callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
-            replace: $replace,
-            limit: $limit,
-        );
     }
 
     public function selectAllLines(Closure $callback, bool $includeEol = false): static

@@ -30,13 +30,9 @@ it('adds Laravel routes with their use statements', function () {
             Route::post('articles', StoreArticleController::class)->name('articles.store');
             PHP
         )
-        ->appendLineInPattern(
-            pattern: '/(?:use [^;]+;$\n)*(?:use [^;]+;$)/m',
-            content: <<<PHP
-                use App\Http\Controllers\CreateArticleController;
-                use App\Http\Controllers\StoreArticleController;
-                PHP,
-            keepIndent: true,
+        ->addPhpImports(
+            'App\Http\Controllers\CreateArticleController',
+            'App\Http\Controllers\StoreArticleController',
         )
         ->sortPhpImports();
 
