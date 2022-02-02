@@ -4,15 +4,16 @@ namespace Lorisleiva\Vary\Concerns;
 
 use Closure;
 use Illuminate\Support\Str;
+use Lorisleiva\Vary\Regex;
 use Lorisleiva\Vary\Variant;
 
 trait ProvidesFragments
 {
-    public function select(string $search, Closure $callback, int $limit = -1, bool $allowWildcard = true): static
+    public function select(string $search, Closure $callback, int $limit = -1, bool $allowWildcards = true): static
     {
-        $pattern = $this->getWildcardPattern($search, $allowWildcard, '#');
+        $pattern = Regex::getWildcardPattern($search, $allowWildcards);
 
-        return $this->selectMatches("#$pattern#", $callback, limit: $limit);
+        return $this->selectMatches($pattern, $callback, limit: $limit);
     }
 
     public function selectAfter(string $search, Closure $callback, bool $last = false, bool $included = false): static
@@ -144,16 +145,5 @@ trait ProvidesFragments
         $newValue = $callback(new static($oldValue));
 
         return $newValue instanceof Variant ? $newValue->toString() : $newValue;
-    }
-
-    protected function getWildcardPattern(string $pattern, bool $allowWildcard, string $delimiter = '#'): string
-    {
-        $pattern = preg_quote($pattern, $delimiter);
-
-        if ($allowWildcard) {
-            $pattern = str_replace('\*', '.*', $pattern);
-        }
-
-        return $pattern;
     }
 }

@@ -5,6 +5,7 @@ namespace Lorisleiva\Vary\Concerns;
 use Closure;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Lorisleiva\Vary\Regex;
 use Lorisleiva\Vary\Variant;
 
 trait AltersLines
@@ -231,26 +232,26 @@ trait AltersLines
         return $this->selectLastLine($callback, includeEol: true);
     }
 
-    public function selectLine(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true): static
+    public function selectLine(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
         $spaces = '[^\S\r\n]*';
-        $safeSearch = preg_quote($search, '#');
-        $safeSearch = $ignoreWhitespace ? ($spaces.$safeSearch.$spaces) : $safeSearch;
-        $pattern = $this->getLinePattern($safeSearch, $includeEol, '#');
+        $subPattern = Regex::getWildcardSubPattern($search, $allowWildcards, '#');
+        $subPattern = $ignoreWhitespace ? ($spaces.$subPattern.$spaces) : $subPattern;
+        $pattern = Regex::getLinePattern($subPattern, $includeEol, '#');
 
         return $this->selectMatches($pattern, $callback, $replace, $limit);
     }
 
     public function selectLineMatches(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, string $delimiter = '#'): static
     {
-        $pattern = $this->getLinePattern($pattern, $includeEol, $delimiter);
+        $pattern = Regex::getLinePattern($pattern, $includeEol, $delimiter);
 
         return $this->selectMatches($pattern, $callback, $replace, $limit);
     }
 
-    public function selectLineMatchesWithEol(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectLineMatchesWithEol(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, string $delimiter = '#'): static
     {
-        return $this->selectLineMatches($pattern, $callback, $replace, $limit, includeEol: true);
+        return $this->selectLineMatches($pattern, $callback, $replace, $limit, true, $delimiter);
     }
 
     public function selectLineWithEol(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
