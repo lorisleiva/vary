@@ -4,14 +4,15 @@ namespace Lorisleiva\Vary;
 
 class Regex
 {
-    public static function getLinePattern(string $subPattern, bool $includeEol = false, string $delimiter = '#'): string
+    public static function getLinePattern(string $subPattern, bool $includeEol = false, string $delimiter = '#', string $options = 'm'): string
     {
-        return sprintf(
-            '%3$s^%1$s$%2$s%3$sm',
-            $subPattern,
-            $includeEol ? '\n?' : '',
-            $delimiter,
-        );
+        $subPattern = sprintf('^%s$', $subPattern);
+
+        if ($includeEol) {
+            $subPattern = sprintf('%1$s\n?', $subPattern);
+        }
+
+        return $delimiter.$subPattern.$delimiter.$options;
     }
 
     public static function getWildcardLinePattern(string $search, bool $includeEol, bool $ignoreWhitespace, bool $allowWildcards): string
@@ -25,7 +26,7 @@ class Regex
 
     public static function getWildcardPattern(string $search, bool $allowWildcards): string
     {
-        $pattern = static::getWildcardSubPattern($search, $allowWildcards);
+        $pattern = static::getWildcardSubPattern($search, $allowWildcards, '#');
 
         return "#$pattern#";
     }
