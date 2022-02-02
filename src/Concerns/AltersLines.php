@@ -89,6 +89,11 @@ trait AltersLines
         return $this->deleteLine($search, $limit, false, false);
     }
 
+    public function deleteExactLines(array $lines): static
+    {
+        return $this->deleteLines($lines, false, false);
+    }
+
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
         return $this->selectLineWithEol(
@@ -109,11 +114,11 @@ trait AltersLines
         );
     }
 
-    public function deleteLines(array $lines, bool $ignoreWhitespace = true): static
+    public function deleteLines(array $lines, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
         return array_reduce(
             array: $lines,
-            callback: fn (Variant $variant, string $line) => $variant->deleteLine($line, $ignoreWhitespace),
+            callback: fn (Variant $variant, string $line) => $variant->deleteLine($line, $ignoreWhitespace, $allowWildcards),
             initial: $this,
         );
     }
