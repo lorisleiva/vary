@@ -14,6 +14,15 @@ class Regex
         );
     }
 
+    public static function getWildcardLinePattern(string $search, bool $includeEol, bool $ignoreWhitespace, bool $allowWildcards): string
+    {
+        $spaces = '[^\S\r\n]*';
+        $subPattern = static::getWildcardSubPattern($search, $allowWildcards, '#');
+        $subPattern = $ignoreWhitespace ? ($spaces.$subPattern.$spaces) : $subPattern;
+
+        return static::getLinePattern($subPattern, $includeEol, '#');
+    }
+
     public static function getWildcardPattern(string $search, bool $allowWildcards): string
     {
         $pattern = static::getWildcardSubPattern($search, $allowWildcards);

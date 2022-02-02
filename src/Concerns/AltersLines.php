@@ -10,12 +10,18 @@ use Lorisleiva\Vary\Variant;
 
 trait AltersLines
 {
-    public function addAfterLine(string $search, string $content, bool $keepIndent = false, bool $ignoreWhitespace = true): static
+    public function addAfterExactLine(string $search, string $content, bool $keepIndent = false): static
+    {
+        return $this->addAfterLine($search, $content, $keepIndent, false, false);
+    }
+
+    public function addAfterLine(string $search, string $content, bool $keepIndent = false, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
         return $this->selectLine(
             search: $search,
             callback: fn (Variant $variant) => $variant->appendLine($content, $keepIndent),
             ignoreWhitespace: $ignoreWhitespace,
+            allowWildcards: $allowWildcards,
         );
     }
 
@@ -28,12 +34,18 @@ trait AltersLines
         );
     }
 
-    public function addBeforeLine(string $search, string $content, bool $keepIndent = false, bool $ignoreWhitespace = true): static
+    public function addBeforeExactLine(string $search, string $content, bool $keepIndent = false): static
+    {
+        return $this->addBeforeLine($search, $content, $keepIndent, false, false);
+    }
+
+    public function addBeforeLine(string $search, string $content, bool $keepIndent = false, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
         return $this->selectLine(
             search: $search,
             callback: fn (Variant $variant) => $variant->prependLine($content, $keepIndent),
             ignoreWhitespace: $ignoreWhitespace,
+            allowWildcards: $allowWildcards,
         );
     }
 
@@ -64,18 +76,12 @@ trait AltersLines
 
     public function deleteFirstLine(): static
     {
-        return $this->selectFirstLine(
-            callback: fn (Variant $variant) => $variant->empty(),
-            includeEol: true,
-        );
+        return $this->selectFirstLineWithEol(fn (Variant $variant) => $variant->empty());
     }
 
     public function deleteLastLine(): static
     {
-        return $this->selectLastLine(
-            callback: fn (Variant $variant) => $variant->empty(),
-            includeEol: true,
-        );
+        return $this->selectLastLineWithEol(fn (Variant $variant) => $variant->empty());
     }
 
     public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): static
@@ -178,14 +184,14 @@ trait AltersLines
         return $this->selectAllLines($callback, includeEol: true);
     }
 
-    public function selectExactLine(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectExactLine(string $search, Closure $callback, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $replace, $limit, ignoreWhitespace: false, allowWildcards: false);
+        return $this->selectLine($search, $callback, $limit, ignoreWhitespace: false, allowWildcards: false);
     }
 
-    public function selectExactLineWithEol(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectExactLineWithEol(string $search, Closure $callback, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $replace, $limit, includeEol: true, ignoreWhitespace: false, allowWildcards: false);
+        return $this->selectLine($search, $callback, $limit, includeEol: true, ignoreWhitespace: false, allowWildcards: false);
     }
 
     public function selectFirstLine(Closure $callback, bool $includeEol = false): static
@@ -212,31 +218,28 @@ trait AltersLines
         return $this->selectLastLine($callback, includeEol: true);
     }
 
-    public function selectLine(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
+    public function selectLine(string $search, Closure $callback, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true, bool $allowWildcards = true): static
     {
-        $spaces = '[^\S\r\n]*';
-        $subPattern = Regex::getWildcardSubPattern($search, $allowWildcards, '#');
-        $subPattern = $ignoreWhitespace ? ($spaces.$subPattern.$spaces) : $subPattern;
-        $pattern = Regex::getLinePattern($subPattern, $includeEol, '#');
+        $pattern = Regex::getWildcardLinePattern($search, $includeEol, $ignoreWhitespace, $allowWildcards);
 
-        return $this->selectMatches($pattern, $callback, $replace, $limit);
+        return $this->selectMatches($pattern, $callback, null, $limit);
     }
 
-    public function selectLineMatches(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, string $delimiter = '#'): static
+    public function selectLineMatches(string $pattern, Closure $callback, int $limit = -1, bool $includeEol = false, string $delimiter = '#'): static
     {
         $pattern = Regex::getLinePattern($pattern, $includeEol, $delimiter);
 
-        return $this->selectMatches($pattern, $callback, $replace, $limit);
+        return $this->selectMatches($pattern, $callback, null, $limit);
     }
 
-    public function selectLineMatchesWithEol(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, string $delimiter = '#'): static
+    public function selectLineMatchesWithEol(string $pattern, Closure $callback, int $limit = -1, string $delimiter = '#'): static
     {
-        return $this->selectLineMatches($pattern, $callback, $replace, $limit, true, $delimiter);
+        return $this->selectLineMatches($pattern, $callback, $limit, true, $delimiter);
     }
 
-    public function selectLineWithEol(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
+    public function selectLineWithEol(string $search, Closure $callback, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $replace, $limit, includeEol: true);
+        return $this->selectLine($search, $callback, $limit, includeEol: true);
     }
 
     public function sortLines(?Closure $callback = null): static
