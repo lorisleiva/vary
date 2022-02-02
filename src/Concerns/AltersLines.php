@@ -197,14 +197,14 @@ trait AltersLines
         return $this->selectAllLines($callback, includeEol: true);
     }
 
-    public function selectExactLine(string $search, Closure $callback, int $limit = -1): static
+    public function selectExactLine(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $limit, ignoreWhitespace: false);
+        return $this->selectLine($search, $callback, $replace, $limit, ignoreWhitespace: false);
     }
 
-    public function selectExactLineWithEol(string $search, Closure $callback, int $limit = -1): static
+    public function selectExactLineWithEol(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $limit, includeEol: true, ignoreWhitespace: false);
+        return $this->selectLine($search, $callback, $replace, $limit, includeEol: true, ignoreWhitespace: false);
     }
 
     public function selectFirstLine(Closure $callback, bool $includeEol = false): static
@@ -231,20 +231,19 @@ trait AltersLines
         return $this->selectLastLine($callback, includeEol: true);
     }
 
-    public function selectLine(string $search, Closure $callback, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true): static
+    public function selectLine(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, bool $ignoreWhitespace = true): static
     {
-        $safeSearch = preg_quote($search, '#');
         $spaces = '[^\S\r\n]*';
-        $regex = $ignoreWhitespace
-            ? ($includeEol ? "#^{$spaces}{$safeSearch}{$spaces}$\n?#m" : "#^{$spaces}{$safeSearch}{$spaces}$#m")
-            : ($includeEol ? "#^{$safeSearch}$\n?#m" : "#^{$safeSearch}$#m");
+        $safeSearch = preg_quote($search, '#');
+        $safeSearch = $ignoreWhitespace ? ($spaces.$safeSearch.$spaces) : $safeSearch;
+        $pattern = $this->getLinePattern($safeSearch, $includeEol, '#');
 
-        return $this->selectMatches($regex, $callback, null, $limit);
+        return $this->selectMatches($pattern, $callback, $replace, $limit);
     }
 
-    public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): static
+    public function selectLinePattern(string $pattern, Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false, string $delimiter = '#'): static
     {
-        $pattern = $includeEol ? "/^$pattern$\n?/m" : "/^$pattern$/m";
+        $pattern = $this->getLinePattern($pattern, $includeEol, $delimiter);
 
         return $this->selectMatches($pattern, $callback, $replace, $limit);
     }
@@ -254,9 +253,9 @@ trait AltersLines
         return $this->selectLinePattern($pattern, $callback, $replace, $limit, includeEol: true);
     }
 
-    public function selectLineWithEol(string $search, Closure $callback, int $limit = -1): static
+    public function selectLineWithEol(string $search, Closure $callback, ?Closure $replace = null, int $limit = -1): static
     {
-        return $this->selectLine($search, $callback, $limit, includeEol: true);
+        return $this->selectLine($search, $callback, $replace, $limit, includeEol: true);
     }
 
     public function sortLines(?Closure $callback = null): static
@@ -279,5 +278,15 @@ trait AltersLines
     public function sortLinesByLength(): static
     {
         return $this->sortLines(fn (string $value) => strlen($value));
+    }
+
+    protected function getLinePattern(string $pattern, bool $includeEol = false, string $delimiter = '#'): string
+    {
+        return sprintf(
+            '%3$s^%1$s$%2$s%3$sm',
+            $pattern,
+            $includeEol ? '\n?' : '',
+            $delimiter,
+        );
     }
 }
