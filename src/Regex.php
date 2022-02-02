@@ -4,6 +4,16 @@ namespace Lorisleiva\Vary;
 
 class Regex
 {
+    public static function getBlockPattern(string $pattern, string $allowedPattern, bool $includeEol = false): string
+    {
+        return sprintf(
+            '/%3$s(?:%1$s%2$s)*(?:%1$s%3$s)/m',
+            $pattern,
+            $allowedPattern,
+            $includeEol ? '\n?' : ''
+        );
+    }
+
     public static function getLinePattern(string $subPattern, bool $includeEol = false, string $delimiter = '#', string $options = 'm'): string
     {
         $subPattern = sprintf('^%s$', $subPattern);

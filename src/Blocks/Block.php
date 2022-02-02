@@ -3,6 +3,7 @@
 namespace Lorisleiva\Vary\Blocks;
 
 use Closure;
+use Lorisleiva\Vary\Regex;
 use Lorisleiva\Vary\Variant;
 
 class Block
@@ -80,12 +81,7 @@ class Block
 
     public function getPattern(bool $includeEol = false): string
     {
-        return sprintf(
-            '/%3$s(?:%1$s%2$s)*(?:%1$s%3$s)/m',
-            $this->pattern,
-            $this->allowedPattern,
-            $includeEol ? '\n?' : ''
-        );
+        return Regex::getBlockPattern($this->pattern, $this->allowedPattern, $includeEol);
     }
 
     public function prepend(string $prefix): Variant
