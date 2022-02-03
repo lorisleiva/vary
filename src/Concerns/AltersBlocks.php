@@ -45,12 +45,11 @@ trait AltersBlocks
 
     public function selectPhpBlocks(string $pattern, Closure $closure, int $limit = -1, bool $includeEol = false): static
     {
-        $lineComment = '\/\/.*$';
-        $blockComment = '\/\*(?:[^*]|(?:\*[^\/]))*\*\/'; // TODO: Try negative look-ahead here.
-        $newLine = '\s';
-        $allowedPattern = "(?:{$newLine}|{$lineComment}|{$blockComment})*";
-        $pattern = Regex::getBlockPattern($pattern, $allowedPattern, $includeEol);
+        return $this->selectBlocks($pattern, $closure, $limit, Regex::getPhpBlockAllowedPattern(), $includeEol);
+    }
 
-        return $this->selectMatches($pattern, $closure, null, $limit);
+    public function selectPhpBlocksWithEol(string $pattern, Closure $closure, int $limit = -1): static
+    {
+        return $this->selectBlocksWithEol($pattern, $closure, $limit, Regex::getPhpBlockAllowedPattern());
     }
 }

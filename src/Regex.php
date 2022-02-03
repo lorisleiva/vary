@@ -25,6 +25,15 @@ class Regex
         return $delimiter.$subPattern.$delimiter.$options;
     }
 
+    public static function getPhpBlockAllowedPattern(): string
+    {
+        $lineComment = '\/\/.*$';
+        $blockComment = '\/\*(?:[^*]|(?:\*[^\/]))*\*\/'; // TODO: Try negative look-ahead here.
+        $newLine = '\s';
+
+        return "(?:{$newLine}|{$lineComment}|{$blockComment})*";
+    }
+
     public static function getWildcardLinePattern(string $search, bool $includeEol, bool $ignoreWhitespace, bool $allowWildcards): string
     {
         $spaces = '[^\S\r\n]*';

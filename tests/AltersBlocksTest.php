@@ -118,6 +118,10 @@ test('selectBlocksWithEol', function () {
         ->tap(expectVariantToBe("CHANGEDC"));
 });
 
-//test('selectPhpBlocks', function () {
-//    //
-//});
+test('selectPhpBlocks', function () {
+    //
+});
+
+test('selectPhpBlocksWithEol', function () {
+    //
+});
