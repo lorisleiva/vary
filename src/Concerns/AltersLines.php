@@ -118,7 +118,11 @@ trait AltersLines
     {
         return array_reduce(
             array: $lines,
-            callback: fn (Variant $variant, string $line) => $variant->deleteLine($line, $ignoreWhitespace, $allowWildcards),
+            callback: fn (Variant $variant, string $line) => $variant->deleteLine(
+                search: $line,
+                ignoreWhitespace: $ignoreWhitespace,
+                allowWildcards: $allowWildcards,
+            ),
             initial: $this,
         );
     }
