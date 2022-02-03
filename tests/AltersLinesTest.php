@@ -119,19 +119,35 @@ test('selectExactLineWithEol', function () {
 });
 
 test('selectFirstLine', function () {
-    //
+    Vary::string("One apple pie.\nOne humble pie.")
+        ->selectFirstLine(expectVariantToBe("One apple pie."));
+
+    Vary::string('')
+        ->selectFirstLine(expectVariantToBe(''));
 });
 
 test('selectFirstLineWithEol', function () {
-    //
+    Vary::string("One apple pie.\nOne humble pie.")
+        ->selectFirstLineWithEol(expectVariantToBe("One apple pie.\n"));
+
+    Vary::string('')
+        ->selectFirstLineWithEol(expectVariantToBe(''));
 });
 
 test('selectLastLine', function () {
-    //
+    Vary::string("One apple pie.\nOne humble pie.")
+        ->selectLastLine(expectVariantToBe("One humble pie."));
+
+    Vary::string('')
+        ->selectLastLine(expectVariantToBe(''));
 });
 
 test('selectLastLineWithEol', function () {
-    //
+    Vary::string("One apple pie.\nOne humble pie.")
+        ->selectLastLineWithEol(expectVariantToBe("\nOne humble pie."));
+
+    Vary::string('')
+        ->selectLastLineWithEol(expectVariantToBe(''));
 });
 
 test('selectLine', function () {
@@ -186,20 +202,6 @@ test('sortLines', function () {
 
 test('sortLinesByLength', function () {
     //
-});
-
-it('selects the first and last lines', function () {
-    $variant = Vary::string(
-        <<<END
-        One apple pie.
-        One humble pie.
-        END
-    );
-
-    $variant->selectFirstLine(expectVariantToBe("One apple pie."));
-    $variant->selectFirstLineWithEol(expectVariantToBe("One apple pie.\n"));
-    $variant->selectLastLine(expectVariantToBe("One humble pie."));
-    $variant->selectLastLineWithEol(expectVariantToBe("\nOne humble pie."));
 });
 
 it('selects all lines', function () {
