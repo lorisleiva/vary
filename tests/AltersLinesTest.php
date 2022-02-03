@@ -181,11 +181,33 @@ test('deleteLastLine', function () {
 });
 
 test('deleteExactLine', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+            First line.
+            Second line.
+            Last line.
+        END
+    );
+
+    $variant->deleteExactLine('    First line.')
+        ->tap(expectVariantToBe("    Second line.\n    Last line."));
+    $variant->deleteExactLine('First*')
+        ->tap(expectVariantToBe($variant->toString()));
 });
 
 test('deleteExactLines', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+            First line.
+            Second line.
+            Last line.
+        END
+    );
+
+    $variant->deleteExactLines(['    First line.', '    Second line.'])
+        ->tap(expectVariantToBe('    Last line.'));
+    $variant->deleteExactLines(['First*', 'Second*'])
+        ->tap(expectVariantToBe($variant->toString()));
 });
 
 test('deleteLine', function () {
@@ -252,14 +274,16 @@ test('deleteLineMatches', function () {
 });
 
 test('deleteLines', function () {
-    $variant = Vary::string(<<<END
+    $variant = Vary::string(
+        <<<END
         First line.
         Second line.
         Last line.
-    END);
+        END
+    );
 
-    $variant->deleteLines(['First line.', 'Second line.'])
-        ->tap(expectVariantToBe('    Last line.'));
+    $variant->deleteLines(['First*', 'Second*'])
+        ->tap(expectVariantToBe('Last line.'));
 });
 
 test('getAllLines', function () {
