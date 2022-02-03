@@ -1,6 +1,5 @@
 <?php
 
-use Lorisleiva\Vary\Blocks\Block;
 use Lorisleiva\Vary\Vary;
 
 test('matchAllBlocks', function () {
