@@ -27,7 +27,49 @@ test('addBeforeLineMatches', function () {
 });
 
 test('appendLine', function () {
-    //
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->appendLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END
+        )->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                One humble pie.
+            Two apple pie.
+            Two humble pie.
+            END
+        ));
+
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->appendLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END,
+            keepIndent: true,
+        )->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                One humble pie.
+                Two apple pie.
+                Two humble pie.
+            END
+        ));
+
+    Vary::string('')->appendLine('New Line', keepIndent: true)
+        ->tap(expectVariantToBe('New Line'));
 });
 
 test('deleteFirstLine', function () {
@@ -83,7 +125,49 @@ test('getLastLineWithEol', function () {
 });
 
 test('prependLine', function () {
-    //
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->prependLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END
+        )->tap(expectVariantToBe(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+                One apple pie.
+                One humble pie.
+            END
+        ));
+
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->prependLine(
+            <<<END
+            Two apple pie.
+            Two humble pie.
+            END,
+            keepIndent: true,
+        )->tap(expectVariantToBe(
+            <<<END
+                Two apple pie.
+                Two humble pie.
+                One apple pie.
+                One humble pie.
+            END
+        ));
+
+    Vary::string('')->prependLine('New Line', keepIndent: true)
+        ->tap(expectVariantToBe('New Line'));
 });
 
 test('selectAllLines', function () {
@@ -238,104 +322,6 @@ test('sortLines', function () {
 
 test('sortLinesByLength', function () {
     //
-});
-
-it('prepends some lines', function () {
-    Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    )
-        ->prependLine(
-            <<<END
-            Two apple pie.
-            Two humble pie.
-            END
-        )->tap(expectVariantToBe(
-            <<<END
-            Two apple pie.
-            Two humble pie.
-                One apple pie.
-                One humble pie.
-            END
-        ));
-});
-
-it('prepends some lines whilst keeping the indentation of the first line', function () {
-    Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    )
-        ->prependLine(
-            <<<END
-            Two apple pie.
-            Two humble pie.
-            END,
-            keepIndent: true,
-        )->tap(expectVariantToBe(
-            <<<END
-                Two apple pie.
-                Two humble pie.
-                One apple pie.
-                One humble pie.
-            END
-        ));
-});
-
-it('appends some lines', function () {
-    Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    )
-        ->appendLine(
-            <<<END
-            Two apple pie.
-            Two humble pie.
-            END
-        )->tap(expectVariantToBe(
-            <<<END
-                One apple pie.
-                One humble pie.
-            Two apple pie.
-            Two humble pie.
-            END
-        ));
-});
-
-it('appends some lines whilst keeping the indentation of the last line', function () {
-    Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    )
-        ->appendLine(
-            <<<END
-            Two apple pie.
-            Two humble pie.
-            END,
-            keepIndent: true,
-        )->tap(expectVariantToBe(
-            <<<END
-                One apple pie.
-                One humble pie.
-                Two apple pie.
-                Two humble pie.
-            END
-        ));
-});
-
-it('ignores indentation and line jumps when the text is empty', function () {
-    Vary::string('')->appendLine('New Line', keepIndent: true)
-        ->tap(expectVariantToBe('New Line'));
-
-    Vary::string('')->prependLine('New Line', keepIndent: true)
-        ->tap(expectVariantToBe('New Line'));
 });
 
 it('adds some lines before other lines', function () {
