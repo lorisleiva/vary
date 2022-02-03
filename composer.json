@@ -16,11 +16,11 @@
     ],
     "require": {
         "php": "^8.0",
-        "illuminate/collections": "^8.45",
-        "illuminate/contracts": "^8.45",
-        "illuminate/filesystem": "^8.45",
-        "illuminate/macroable": "^8.45",
-        "illuminate/support": "^8.45",
+        "illuminate/collections": "^8.82",
+        "illuminate/contracts": "^8.82",
+        "illuminate/filesystem": "^8.82",
+        "illuminate/macroable": "^8.82",
+        "illuminate/support": "^8.82",
         "symfony/var-dumper": "^5.3"
     },
     "require-dev": {
