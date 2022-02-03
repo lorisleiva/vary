@@ -3,15 +3,71 @@
 use Lorisleiva\Vary\Vary;
 
 test('addAfterExactLine', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    );
+
+    $variant->addAfterExactLine('    One apple pie.', 'NEW_LINE', true)
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                NEW_LINE
+                One humble pie.
+            END
+        ));
+
+    $variant->addAfterExactLine('One apple pie.', 'NEW_LINE')
+        ->tap(expectVariantToBe($variant->toString()));
+    $variant->addAfterExactLine('*apple*', 'NEW_LINE')
+        ->tap(expectVariantToBe($variant->toString()));
 });
 
 test('addAfterLine', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+                One humble pie.
+        END
+    );
+
+    $variant->addAfterLine('One apple*', 'NEW_LINE')
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+            NEW_LINE
+                    One humble pie.
+            END
+        ));
+
+    $variant->addAfterLine('One apple*', 'NEW_LINE', true)
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                NEW_LINE
+                    One humble pie.
+            END
+        ));
 });
 
 test('addAfterLineMatches', function () {
-    //
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->addAfterLineMatches('.*pie.*', 'NEW LINE',  true)
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                NEW LINE
+                One humble pie.
+                NEW LINE
+            END
+        ));
 });
 
 test('addBeforeExactLine', function () {
@@ -65,7 +121,21 @@ test('addBeforeLine', function () {
 });
 
 test('addBeforeLineMatches', function () {
-    //
+    Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    )
+        ->addBeforeLineMatches('.*pie.*', 'NEW LINE',  true)
+        ->tap(expectVariantToBe(
+            <<<END
+                NEW LINE
+                One apple pie.
+                NEW LINE
+                One humble pie.
+            END
+        ));
 });
 
 test('appendLine', function () {
@@ -332,107 +402,6 @@ test('sortLines', function () {
 
 test('sortLinesByLength', function () {
     //
-});
-
-it('adds some lines before other lines using regular expressions', function () {
-    $variant = Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    );
-
-    $variant
-        ->addBeforeLineMatches(
-            pattern: '.*pie.*',
-            content: 'NEW LINE',
-            keepIndent: true,
-        )
-        ->tap(expectVariantToBe(
-            <<<END
-                NEW LINE
-                One apple pie.
-                NEW LINE
-                One humble pie.
-            END
-        ));
-});
-
-it('adds some lines after other lines', function () {
-    $variant = Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    );
-
-    $variant
-        ->addAfterLine(
-            search: 'One apple pie.',
-            content: <<<END
-            Two apple pie.
-            Two humble pie.
-            END
-        )
-        ->tap(expectVariantToBe(
-            <<<END
-                One apple pie.
-            Two apple pie.
-            Two humble pie.
-                One humble pie.
-            END
-        ));
-});
-
-it('adds some lines after other lines whilst keeping its indentation', function () {
-    $variant = Vary::string(
-        <<<END
-            One apple pie.
-                One humble pie.
-        END
-    );
-
-    $variant
-        ->addAfterLine(
-            search: 'One apple pie.',
-            content: <<<END
-            Two apple pie.
-            Two humble pie.
-            END,
-            keepIndent: true,
-        )
-        ->tap(expectVariantToBe(
-            <<<END
-                One apple pie.
-                Two apple pie.
-                Two humble pie.
-                    One humble pie.
-            END
-        ));
-});
-
-it('adds some lines after other lines using regular expressions', function () {
-    $variant = Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    );
-
-    $variant
-        ->addAfterLineMatches(
-            pattern: '.*pie.*',
-            content: 'NEW LINE',
-            keepIndent: true,
-        )
-        ->tap(expectVariantToBe(
-            <<<END
-                One apple pie.
-                NEW LINE
-                One humble pie.
-                NEW LINE
-            END
-        ));
 });
 
 it('deletes lines by providing their content', function () {
