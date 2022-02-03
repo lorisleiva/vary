@@ -4,6 +4,60 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Lorisleiva\Vary\Vary;
 
+it('matches PHP import statements', function () {
+    $useStatements = <<<PHP
+        // Before
+
+        use App\Http\Controllers\FetchArticleController;
+        use Illuminate\Support\Facades\Route;
+        use Illuminate\Support\Str;
+
+        // After
+        PHP;
+
+    Vary::string($useStatements)
+        ->phpImports()->match()->tap(expectVariantToBe(
+            <<<PHP
+            use App\Http\Controllers\FetchArticleController;
+            use Illuminate\Support\Facades\Route;
+            use Illuminate\Support\Str;
+            PHP
+        ));
+});
+
+it('matches PHP import statements in multiple locations', function () {
+    $useStatements = <<<PHP
+        // A
+        use App\Http\Controllers\FetchArticleController;
+        use Illuminate\Support\Facades\Route;
+        // B
+        use Illuminate\Support\Str;
+        // C
+        PHP;
+
+    $matches = Vary::string($useStatements)->phpImports()->matchAll();
+    expect($matches)->toBe([
+        "use App\Http\Controllers\FetchArticleController;\nuse Illuminate\Support\Facades\Route;",
+        "use Illuminate\Support\Str;",
+    ]);
+});
+
+it('does not match trait imports as PHP import statements', function () {
+    $useStatements = <<<PHP
+        use App\Http\Controllers\FetchArticleController;
+        use Illuminate\Support\Facades\Route;
+
+        class Foo {
+            use SomeTrait;
+        }
+        PHP;
+
+    $matches = Vary::string($useStatements)->phpImports()->matchAll();
+    expect($matches)->toBe([
+        "use App\Http\Controllers\FetchArticleController;\nuse Illuminate\Support\Facades\Route;",
+    ]);
+});
+
 test('add', function () {
     $useStatements = <<<PHP
         use Illuminate\Support\Str;
@@ -151,83 +205,6 @@ test('sortByLength', function () {
 
             use App\Models\User;
             use App\Models\Article;
-            PHP
-        ));
-});
-
-it('selects PHP import statements', function () {
-    $useStatements = <<<PHP
-        // Before
-
-        use App\Http\Controllers\FetchArticleController;
-        use Illuminate\Support\Facades\Route;
-        use Illuminate\Support\Str;
-
-        // After
-        PHP;
-
-    Vary::string($useStatements)
-        ->phpImports()->select(expectVariantToBe(
-            <<<PHP
-            use App\Http\Controllers\FetchArticleController;
-            use Illuminate\Support\Facades\Route;
-            use Illuminate\Support\Str;
-            PHP
-        ));
-
-    Vary::string($useStatements)
-        ->phpImports()->selectWithEol(expectVariantToBe(
-            <<<PHP
-
-            use App\Http\Controllers\FetchArticleController;
-            use Illuminate\Support\Facades\Route;
-            use Illuminate\Support\Str;
-
-            PHP
-        ));
-});
-
-it('selects PHP import statements in multiple locations', function () {
-    $useStatements = <<<PHP
-        // A
-        use App\Http\Controllers\FetchArticleController;
-        use Illuminate\Support\Facades\Route;
-        // B
-        use Illuminate\Support\Str;
-        // C
-        PHP;
-
-    Vary::string($useStatements)
-        ->phpImports()->select(emptyVariant())
-        ->tap(expectVariantToBe(
-            <<<PHP
-            // A
-
-            // B
-
-            // C
-            PHP
-        ));
-});
-
-it('does not select trait imports as PHP import statements', function () {
-    $useStatements = <<<PHP
-        use App\Http\Controllers\FetchArticleController;
-        use Illuminate\Support\Facades\Route;
-
-        class Foo {
-            use SomeTrait;
-        }
-        PHP;
-
-    Vary::string($useStatements)
-        ->phpImports()->selectWithEol(emptyVariant())
-        ->tap(expectVariantToBe(
-            <<<PHP
-
-            class Foo {
-                use SomeTrait;
-            }
             PHP
         ));
 });
