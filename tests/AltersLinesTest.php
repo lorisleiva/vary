@@ -185,11 +185,35 @@ test('selectLine', function () {
 });
 
 test('selectLineMatches', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        One apple pie.
+        One humble pie.
+        One apple TV.
+        END
+    );
+
+    $variant->selectLineMatches('.*TV\.', expectVariantToBe('One apple TV.'));
+    $variant->selectLineMatches('TV', expectVariantNotToBeCalled());
+    $variant->selectLineMatches('.*humble.*', expectVariantToBe('One humble pie.'));
+    $variant->selectLineMatches('.*apple.*', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGED\nOne humble pie.\nCHANGED"));
 });
 
 test('selectLineMatchesWithEol', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        One apple pie.
+        One humble pie.
+        One apple TV.
+        END
+    );
+
+    $variant->selectLineMatchesWithEol('.*TV\.', expectVariantToBe("\nOne apple TV."));
+    $variant->selectLineMatchesWithEol('TV', expectVariantNotToBeCalled());
+    $variant->selectLineMatchesWithEol('.*humble.*', expectVariantToBe("One humble pie.\n"));
+    $variant->selectLineMatchesWithEol('.*apple.*', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGEDOne humble pie.CHANGED"));
 });
 
 test('selectLineWithEol', function () {
@@ -214,32 +238,6 @@ test('sortLines', function () {
 
 test('sortLinesByLength', function () {
     //
-});
-
-it('selects lines using regular expressions', function () {
-    $variant = Vary::string(
-        <<<END
-        One apple pie.
-        One humble pie.
-        One apple TV.
-        END
-    );
-
-    $variant->selectLineMatches('.*TV.*', expectVariantToBe('One apple TV.'));
-    $variant->selectLineMatchesWithEol('.*TV.*', expectVariantToBe("\nOne apple TV."));
-    $variant->selectLineMatches('.*humble.*', expectVariantToBe('One humble pie.'));
-    $variant->selectLineMatchesWithEol('.*humble.*', expectVariantToBe("One humble pie.\n"));
-    $variant->selectLineMatches('.*apple.*', overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe(
-            <<<END
-            CHANGED
-            One humble pie.
-            CHANGED
-            END
-        ));
-
-    // It has to match the entire line!
-    $variant->selectLineMatches('TV', expectVariantNotToBeCalled());
 });
 
 it('prepends some lines', function () {
