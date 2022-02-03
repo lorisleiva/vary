@@ -12,14 +12,4 @@ trait AltersBlocks
     {
         return new Block($this, $pattern, $allowedPattern);
     }
-
-    public function phpBlock(string $pattern): PhpBlock
-    {
-        return new PhpBlock($this, $pattern);
-    }
-
-    public function phpImports(): PhpImportsBlock
-    {
-        return new PhpImportsBlock($this);
-    }
 }
