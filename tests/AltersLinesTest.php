@@ -169,11 +169,15 @@ test('appendLine', function () {
 });
 
 test('deleteFirstLine', function () {
-    //
+    Vary::string("First line.\nLast line.")
+        ->deleteFirstLine()
+        ->tap(expectVariantToBe('Last line.'));
 });
 
 test('deleteLastLine', function () {
-    //
+    Vary::string("First line.\nLast line.")
+        ->deleteLastLine()
+        ->tap(expectVariantToBe('First line.'));
 });
 
 test('deleteExactLine', function () {
@@ -185,15 +189,77 @@ test('deleteExactLines', function () {
 });
 
 test('deleteLine', function () {
-    //
+    $variant = Vary::string(<<<END
+        One apple pie.
+        One humble pie.
+        One apple TV.
+    END);
+
+    $variant->deleteLine('One apple*')->tap(expectVariantToBe('    One humble pie.'));
+    $variant->deleteLine('One apple*', limit: 1)->tap(expectVariantToBe("    One humble pie.\n    One apple TV."));
+    $variant->deleteLine('    One apple*', ignoreWhitespace: false)->tap(expectVariantToBe('    One humble pie.'));
+
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    $variant->deleteLine('First line.')->tap(expectVariantToBe("Second line.\nLast line."));
+    $variant->deleteLine('Second line.')->tap(expectVariantToBe("First line.\nLast line."));
+    $variant->deleteLine('Last line.')->tap(expectVariantToBe("First line.\nSecond line."));
+
+    Vary::string('One line only.')
+        ->deleteLine('One line only.')
+        ->tap(expectVariantToBe(''));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLine('Second line.')
+        ->tap(expectVariantToBe("First line.\n"));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLine('First line.')
+        ->tap(expectVariantToBe("Second line.\n"));
 });
 
 test('deleteLineMatches', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    $variant->deleteLineMatches('.*t line\.')->tap(expectVariantToBe('Second line.'));
+    $variant->deleteLineMatches('First.*')->tap(expectVariantToBe("Second line.\nLast line."));
+    $variant->deleteLineMatches('Second.*')->tap(expectVariantToBe("First line.\nLast line."));
+    $variant->deleteLineMatches('Last.*')->tap(expectVariantToBe("First line.\nSecond line."));
+
+    Vary::string('One line only.')
+        ->deleteLineMatches('.*')
+        ->tap(expectVariantToBe(''));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLineMatches('Second.*')
+        ->tap(expectVariantToBe("First line.\n"));
+
+    Vary::string("First line.\nSecond line.\n")
+        ->deleteLineMatches('First.*')
+        ->tap(expectVariantToBe("Second line.\n"));
 });
 
 test('deleteLines', function () {
-    //
+    $variant = Vary::string(<<<END
+        First line.
+        Second line.
+        Last line.
+    END);
+
+    $variant->deleteLines(['First line.', 'Second line.'])
+        ->tap(expectVariantToBe('    Last line.'));
 });
 
 test('getAllLines', function () {
@@ -402,128 +468,6 @@ test('sortLines', function () {
 
 test('sortLinesByLength', function () {
     //
-});
-
-it('deletes lines by providing their content', function () {
-    $variant = Vary::string(<<<END
-        One apple pie.
-        One humble pie.
-        One apple pie.
-    END);
-
-    $variant->deleteLine('One apple pie.')
-        ->tap(expectVariantToBe('    One humble pie.'));
-
-    $variant->deleteLine('    One apple pie.', ignoreWhitespace: false)
-        ->tap(expectVariantToBe('    One humble pie.'));
-});
-
-it('deletes multiple lines at the same time', function () {
-    $variant = Vary::string(<<<END
-        First line.
-        Second line.
-        Last line.
-    END);
-
-    $variant->deleteLines(['First line.', 'Second line.'])
-        ->tap(expectVariantToBe('    Last line.'));
-});
-
-it('deletes the EOL accordingly', function () {
-    $variant = Vary::string(
-        <<<END
-        First line.
-        Second line.
-        Last line.
-        END
-    );
-
-    $variant->deleteLine('First line.')
-        ->tap(expectVariantToBe("Second line.\nLast line."));
-
-    $variant->deleteLine('Second line.')
-        ->tap(expectVariantToBe("First line.\nLast line."));
-
-    $variant->deleteLine('Last line.')
-        ->tap(expectVariantToBe("First line.\nSecond line."));
-
-    Vary::string('One line only.')
-        ->deleteLine('One line only.')
-        ->tap(expectVariantToBe(''));
-
-    Vary::string("First line.\nSecond line.\n")
-        ->deleteLine('Second line.')
-        ->tap(expectVariantToBe("First line.\n"));
-
-    Vary::string("First line.\nSecond line.\n")
-        ->deleteLine('First line.')
-        ->tap(expectVariantToBe("Second line.\n"));
-});
-
-it('removes the first line', function () {
-    $variant = Vary::string(
-        <<<END
-        First line.
-        Last line.
-        END
-    );
-
-    $variant->deleteFirstLine()
-        ->tap(expectVariantToBe('Last line.'));
-});
-
-it('removes the last line', function () {
-    $variant = Vary::string(
-        <<<END
-        First line.
-        Last line.
-        END
-    );
-
-    $variant->deleteLastLine()
-        ->tap(expectVariantToBe('First line.'));
-});
-
-it('deletes lines using regular expressions', function () {
-    $variant = Vary::string(<<<END
-        One apple pie.
-        One humble pie.
-        One apple TV.
-    END);
-
-    $variant->deleteLineMatches('.*pie.*')
-        ->tap(expectVariantToBe('    One apple TV.'));
-});
-
-it('deletes the EOL accordingly using regular expressions', function () {
-    $variant = Vary::string(
-        <<<END
-        First line.
-        Second line.
-        Last line.
-        END
-    );
-
-    $variant->deleteLineMatches('First.*')
-        ->tap(expectVariantToBe("Second line.\nLast line."));
-
-    $variant->deleteLineMatches('Second.*')
-        ->tap(expectVariantToBe("First line.\nLast line."));
-
-    $variant->deleteLineMatches('Last.*')
-        ->tap(expectVariantToBe("First line.\nSecond line."));
-
-    Vary::string('One line only.')
-        ->deleteLineMatches('.*')
-        ->tap(expectVariantToBe(''));
-
-    Vary::string("First line.\nSecond line.\n")
-        ->deleteLineMatches('Second.*')
-        ->tap(expectVariantToBe("First line.\n"));
-
-    Vary::string("First line.\nSecond line.\n")
-        ->deleteLineMatches('First.*')
-        ->tap(expectVariantToBe("Second line.\n"));
 });
 
 it('sorts all lines by alphabetical order', function () {
