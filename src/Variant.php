@@ -7,6 +7,7 @@ use Illuminate\Support\Traits\Conditionable;
 use Illuminate\Support\Traits\Macroable;
 use Illuminate\Support\Traits\Tappable;
 use JetBrains\PhpStorm\NoReturn;
+use Lorisleiva\Vary\Concerns\AltersBlocks;
 use Lorisleiva\Vary\Concerns\AltersLines;
 use Lorisleiva\Vary\Concerns\AltersMustaches;
 use Lorisleiva\Vary\Concerns\AltersPhpFiles;
@@ -32,6 +33,7 @@ class Variant
     use AltersMustaches;
     use AltersWhitespace;
     use AltersLines;
+    use AltersBlocks;
     use AltersPhpFiles;
 
     protected string $value;
