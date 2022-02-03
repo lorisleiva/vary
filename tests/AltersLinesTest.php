@@ -15,11 +15,53 @@ test('addAfterLineMatches', function () {
 });
 
 test('addBeforeExactLine', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+            One humble pie.
+        END
+    );
+
+    $variant->addBeforeExactLine('    One humble pie.', 'NEW_LINE', true)
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                NEW_LINE
+                One humble pie.
+            END
+        ));
+
+    $variant->addBeforeExactLine('One humble pie.', 'NEW_LINE')
+        ->tap(expectVariantToBe($variant->toString()));
+    $variant->addBeforeExactLine('*humble*', 'NEW_LINE')
+        ->tap(expectVariantToBe($variant->toString()));
 });
 
 test('addBeforeLine', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+            One apple pie.
+                One humble pie.
+        END
+    );
+
+    $variant->addBeforeLine('One humble*', 'NEW_LINE')
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+            NEW_LINE
+                    One humble pie.
+            END
+        ));
+
+    $variant->addBeforeLine('One humble*', 'NEW_LINE', true)
+        ->tap(expectVariantToBe(
+            <<<END
+                One apple pie.
+                    NEW_LINE
+                    One humble pie.
+            END
+        ));
 });
 
 test('addBeforeLineMatches', function () {
@@ -27,49 +69,33 @@ test('addBeforeLineMatches', function () {
 });
 
 test('appendLine', function () {
-    Vary::string(
+    $variant = Vary::string(
         <<<END
             One apple pie.
             One humble pie.
         END
-    )
-        ->appendLine(
-            <<<END
-            Two apple pie.
-            Two humble pie.
-            END
-        )->tap(expectVariantToBe(
+    );
+
+    $variant->appendLine('NEW_LINE')
+        ->tap(expectVariantToBe(
             <<<END
                 One apple pie.
                 One humble pie.
-            Two apple pie.
-            Two humble pie.
+            NEW_LINE
             END
         ));
 
-    Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    )
-        ->appendLine(
-            <<<END
-            Two apple pie.
-            Two humble pie.
-            END,
-            keepIndent: true,
-        )->tap(expectVariantToBe(
+    $variant->appendLine('NEW_LINE', true)
+        ->tap(expectVariantToBe(
             <<<END
                 One apple pie.
                 One humble pie.
-                Two apple pie.
-                Two humble pie.
+                NEW_LINE
             END
         ));
 
-    Vary::string('')->appendLine('New Line', keepIndent: true)
-        ->tap(expectVariantToBe('New Line'));
+    Vary::string('')->appendLine('NEW_LINE', keepIndent: true)
+        ->tap(expectVariantToBe('NEW_LINE'));
 });
 
 test('deleteFirstLine', function () {
@@ -125,49 +151,33 @@ test('getLastLineWithEol', function () {
 });
 
 test('prependLine', function () {
-    Vary::string(
+    $variant = Vary::string(
         <<<END
             One apple pie.
             One humble pie.
         END
-    )
-        ->prependLine(
+    );
+
+    $variant->prependLine('NEW_LINE')
+        ->tap(expectVariantToBe(
             <<<END
-            Two apple pie.
-            Two humble pie.
-            END
-        )->tap(expectVariantToBe(
-            <<<END
-            Two apple pie.
-            Two humble pie.
+            NEW_LINE
                 One apple pie.
                 One humble pie.
             END
         ));
 
-    Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    )
-        ->prependLine(
+    $variant->prependLine('NEW_LINE', true)
+        ->tap(expectVariantToBe(
             <<<END
-            Two apple pie.
-            Two humble pie.
-            END,
-            keepIndent: true,
-        )->tap(expectVariantToBe(
-            <<<END
-                Two apple pie.
-                Two humble pie.
+                NEW_LINE
                 One apple pie.
                 One humble pie.
             END
         ));
 
-    Vary::string('')->prependLine('New Line', keepIndent: true)
-        ->tap(expectVariantToBe('New Line'));
+    Vary::string('')->prependLine('NEW_LINE', keepIndent: true)
+        ->tap(expectVariantToBe('NEW_LINE'));
 });
 
 test('selectAllLines', function () {
@@ -322,59 +332,6 @@ test('sortLines', function () {
 
 test('sortLinesByLength', function () {
     //
-});
-
-it('adds some lines before other lines', function () {
-    $variant = Vary::string(
-        <<<END
-            One apple pie.
-            One humble pie.
-        END
-    );
-
-    $variant
-        ->addBeforeLine(
-            search: 'One humble pie.',
-            content: <<<END
-            Two apple pie.
-            Two humble pie.
-            END
-        )
-        ->tap(expectVariantToBe(
-            <<<END
-                One apple pie.
-            Two apple pie.
-            Two humble pie.
-                One humble pie.
-            END
-        ));
-});
-
-it('adds some lines before other lines whilst keeping its indentation', function () {
-    $variant = Vary::string(
-        <<<END
-            One apple pie.
-                One humble pie.
-        END
-    );
-
-    $variant
-        ->addBeforeLine(
-            search: 'One humble pie.',
-            content: <<<END
-            Two apple pie.
-            Two humble pie.
-            END,
-            keepIndent: true,
-        )
-        ->tap(expectVariantToBe(
-            <<<END
-                One apple pie.
-                    Two apple pie.
-                    Two humble pie.
-                    One humble pie.
-            END
-        ));
 });
 
 it('adds some lines before other lines using regular expressions', function () {
