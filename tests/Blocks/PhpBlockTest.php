@@ -16,7 +16,7 @@ it('parses blocks of patterned items whilst allowing PHP line comments', functio
 
     $block = new PhpBlock($variant, 'A');
 
-    expect($block->first())->toBe(
+    expect($block->match())->toBe(
         <<<PHP
         A // Some comment next to an item.
         // Some comment inside.
@@ -40,7 +40,7 @@ it('parses blocks of patterned items whilst allowing PHP block comments', functi
 
     $block = new PhpBlock($variant, 'A');
 
-    expect($block->first())->toBe(
+    expect($block->match())->toBe(
         <<<PHP
         A /* Some
         Multiline
@@ -69,7 +69,7 @@ it('parses blocks of patterned items whilst allowing PHP comments', function () 
 
     $block = new PhpBlock($variant, 'A');
 
-    expect($block->all())->toBe([
+    expect($block->matchAll())->toBe([
         <<<PHP
         A
         // Some comment inside.
@@ -82,7 +82,7 @@ it('parses blocks of patterned items whilst allowing PHP comments', function () 
         PHP
     ]);
 
-    expect($block->allWithEol())->toBe([
+    expect($block->matchAllWithEol())->toBe([
         <<<PHP
 
         A

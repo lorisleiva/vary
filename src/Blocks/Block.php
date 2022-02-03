@@ -19,16 +19,6 @@ class Block
         $this->allowedPattern = $allowedPattern;
     }
 
-    public function all(bool $includeEol = false): array
-    {
-        return $this->variant->matchAll($this->getPattern($includeEol));
-    }
-
-    public function allWithEol(): array
-    {
-        return $this->all(true);
-    }
-
     public function append(string $suffix): Variant
     {
         return $this->appendAfterEach($suffix, 1);
@@ -69,19 +59,29 @@ class Block
         return $this->selectWithEol(fn (Variant $variant) => $variant->emptyFragment());
     }
 
-    public function first(bool $includeEol = false): string
+    public function getPattern(bool $includeEol = false): string
+    {
+        return Regex::getBlockPattern($this->pattern, $this->allowedPattern, $includeEol);
+    }
+
+    public function match(bool $includeEol = false): string
     {
         return $this->variant->match($this->getPattern($includeEol));
     }
 
-    public function firstWithEol(): string
+    public function matchAll(bool $includeEol = false): array
     {
-        return $this->first(true);
+        return $this->variant->matchAll($this->getPattern($includeEol));
     }
 
-    public function getPattern(bool $includeEol = false): string
+    public function matchAllWithEol(): array
     {
-        return Regex::getBlockPattern($this->pattern, $this->allowedPattern, $includeEol);
+        return $this->matchAll(true);
+    }
+
+    public function matchWithEol(): string
+    {
+        return $this->match(true);
     }
 
     public function prepend(string $prefix): Variant
