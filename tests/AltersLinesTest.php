@@ -87,11 +87,23 @@ test('prependLine', function () {
 });
 
 test('selectAllLines', function () {
-    //
+    Vary::string("One apple pie.\nOne humble pie.")
+        ->selectAllLines(overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGED\nCHANGED"));
+
+    Vary::string('')
+        ->selectAllLines(overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGED"));
 });
 
 test('selectAllLinesWithEol', function () {
-    //
+    Vary::string("One apple pie.\nOne humble pie.")
+        ->selectAllLinesWithEol(overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGEDCHANGED"));
+
+    Vary::string('')
+        ->selectAllLinesWithEol(overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGED"));
 });
 
 test('selectExactLine', function () {
@@ -202,26 +214,6 @@ test('sortLines', function () {
 
 test('sortLinesByLength', function () {
     //
-});
-
-it('selects all lines', function () {
-    $variant = Vary::string(
-        <<<END
-        One apple pie.
-        One humble pie.
-        END
-    );
-
-    $variant->selectAllLines(overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe(
-            <<<END
-            CHANGED
-            CHANGED
-            END
-        ));
-
-    $variant->selectAllLinesWithEol(overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe('CHANGEDCHANGED'));
 });
 
 it('selects lines using regular expressions', function () {
