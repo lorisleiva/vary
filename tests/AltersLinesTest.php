@@ -168,6 +168,36 @@ test('appendLine', function () {
         ->tap(expectVariantToBe('NEW_LINE'));
 });
 
+test('cleanEmptyLines', function () {
+    Vary::string("A\n   \n \t \nB\nC\n")
+        ->cleanEmptyLines()
+        ->tap(expectVariantToBe("A\n\nB\nC\n"));
+
+    Vary::string("A\n   \n \t \nB\n\n\nC\n")
+        ->cleanEmptyLines(ignoreWhitespace: false)
+        ->tap(expectVariantToBe("A\n   \n \t \nB\n\nC\n"));
+
+    Vary::string("A\n\n\n\n")
+        ->cleanEmptyLines()
+        ->tap(expectVariantToBe("A\n\n"));
+
+    Vary::string("\n\n\n\nA")
+        ->cleanEmptyLines()
+        ->tap(expectVariantToBe("\nA"));
+
+    Vary::string("A\n\n\n\nB")
+        ->cleanEmptyLines(2)
+        ->tap(expectVariantToBe("A\n\nB"));
+
+    Vary::string("A\n\n\n\nB")
+        ->cleanEmptyLines(3)
+        ->tap(expectVariantToBe("A\n\n\n\nB"));
+
+    Vary::string("A\n\n\n\nB\n\n\n\nC")
+        ->cleanEmptyLines(limit: 1)
+        ->tap(expectVariantToBe("A\n\nB\n\n\n\nC"));
+});
+
 test('deleteFirstLine', function () {
     Vary::string("First line.\nLast line.")
         ->deleteFirstLine()

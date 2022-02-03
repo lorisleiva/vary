@@ -74,6 +74,17 @@ trait AltersLines
         });
     }
 
+    public function cleanEmptyLines(int $consecutiveEmptyLinesAllowed = 1, bool $ignoreWhitespace = true, int $limit = -1): static
+    {
+        $pattern = sprintf(
+            '#^(%2$s\r?\n){%1$s,}#m',
+            $consecutiveEmptyLinesAllowed + 1,
+            $ignoreWhitespace ? '\s*' : '',
+        );
+
+        return $this->replaceMatches($pattern, "\n", $limit);
+    }
+
     public function deleteFirstLine(): static
     {
         return $this->selectFirstLineWithEol(fn (Variant $variant) => $variant->empty());
