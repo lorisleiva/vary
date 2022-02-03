@@ -30,11 +30,11 @@ it('adds Laravel routes with their use statements', function () {
             Route::post('articles', StoreArticleController::class)->name('articles.store');
             PHP
         )
-        ->addPhpImports(
+        ->phpImports()->add(
             'App\Http\Controllers\CreateArticleController',
             'App\Http\Controllers\StoreArticleController',
         )
-        ->sortPhpImports();
+        ->phpImports()->sort();
 
     // Then the routes file has been correctly updated.
     $expected = <<<PHP

@@ -16,7 +16,7 @@ it('selects PHP import statements', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->selectPhpImports(expectVariantToBe(
+        ->phpImports()->select(expectVariantToBe(
             <<<PHP
             use App\Http\Controllers\FetchArticleController;
             use Illuminate\Support\Facades\Route;
@@ -25,7 +25,7 @@ it('selects PHP import statements', function () {
         ));
 
     Vary::string($useStatements)
-        ->selectPhpImportsWithEol(expectVariantToBe(
+        ->phpImports()->selectWithEol(expectVariantToBe(
             <<<PHP
 
             use App\Http\Controllers\FetchArticleController;
@@ -47,7 +47,7 @@ it('selects PHP import statements in multiple locations', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->selectPhpImports(emptyVariant())
+        ->phpImports()->select(emptyVariant())
         ->tap(expectVariantToBe(
             <<<PHP
             // A
@@ -70,7 +70,7 @@ it('does not select trait imports as PHP import statements', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->selectPhpImportsWithEol(emptyVariant())
+        ->phpImports()->selectWithEol(emptyVariant())
         ->tap(expectVariantToBe(
             <<<PHP
 
@@ -92,7 +92,7 @@ it('sorts PHP import statements', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->sortPhpImports()
+        ->phpImports()->sort()
         ->tap(expectVariantToBe(
             <<<PHP
             use App\Http\Controllers\FetchArticleController;
@@ -116,7 +116,7 @@ it('sorts PHP import statements by length', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->sortPhpImportsByLength()
+        ->phpImports()->sortByLength()
         ->tap(expectVariantToBe(
             <<<PHP
             use Illuminate\Support\Str;
@@ -139,7 +139,7 @@ it('adds PHP imports', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->addPhpImports(Arr::class, Str::class)
+        ->phpImports()->add(Arr::class, Str::class)
         ->tap(expectVariantToBe(
             <<<PHP
             use Illuminate\Support\Str;
@@ -153,7 +153,7 @@ it('adds PHP imports', function () {
         ));
 
     Vary::string("use Illuminate\Support\Str;")
-        ->addPhpImports(Arr::class)
+        ->phpImports()->add(Arr::class)
         ->tap(expectVariantToBe(
             <<<PHP
             use Illuminate\Support\Str;
@@ -172,7 +172,7 @@ it('replaces PHP imports', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->replacePhpImport(Str::class, Arr::class)
+        ->phpImports()->replace(Str::class, Arr::class)
         ->tap(expectVariantToBe(
             <<<PHP
             use Illuminate\Support\Arr;
@@ -184,7 +184,7 @@ it('replaces PHP imports', function () {
         ));
 
     Vary::string($useStatements)
-        ->replacePhpImports([
+        ->phpImports()->replaceAll([
             Str::class => Arr::class,
             'App\Models\Article' => 'App\Models\Post',
         ])
@@ -209,7 +209,7 @@ it('deletes PHP imports', function () {
         PHP;
 
     Vary::string($useStatements)
-        ->deletePhpImports(Str::class, 'App\Models\Article')
+        ->phpImports()->delete(Str::class, 'App\Models\Article')
         ->tap(expectVariantToBe(
             <<<PHP
             use App\Http\Controllers\FetchArticleController;
@@ -218,7 +218,7 @@ it('deletes PHP imports', function () {
         ));
 
     Vary::string($useStatements)
-        ->deletePhpImports()
+        ->phpImports()->delete()
         ->tap(expectVariantToBe(
             <<<PHP
 
