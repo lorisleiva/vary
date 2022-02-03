@@ -3,44 +3,6 @@
 use Lorisleiva\Vary\Blocks\Block;
 use Lorisleiva\Vary\Vary;
 
-it('parses more complex blocks of patterned items', function () {
-    $variant = Vary::string(
-        <<<EOL
-        Hello World,
-        Hello Loris!
-        Hiya, my name is Barney.
-        Did someone say hello?
-        EOL
-    );
-    $block = new Block($variant, '^.*[Hh]ello.*$');
-
-    expect($block->first())->toBe("Hello World,\nHello Loris!");
-    expect($block->all())->toBe(["Hello World,\nHello Loris!", "Did someone say hello?"]);
-    expect($block->firstWithEol())->toBe("Hello World,\nHello Loris!\n");
-    expect($block->allWithEol())->toBe(["Hello World,\nHello Loris!\n", "\nDid someone say hello?"]);
-});
-
-it('allows other patterns inside the block', function () {
-    $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
-    $block = new Block($variant, 'A', '(?:\n|B)*');
-
-    expect($block->first())->toBe("A\nA\nB\nA\nA\nA");
-    expect($block->all())->toBe(["A\nA\nB\nA\nA\nA"]);
-    expect($block->firstWithEol())->toBe("A\nA\nB\nA\nA\nA\n");
-    expect($block->allWithEol())->toBe(["A\nA\nB\nA\nA\nA\n"]);
-});
-
-it('selects blocks of patterned items', function () {
-    $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
-    $block = new Block($variant, 'A');
-
-    $block->select(overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe("CHANGED\nB\nCHANGED\nC"));
-
-    $block->selectWithEol(overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe("CHANGEDBCHANGEDC"));
-});
-
 it('prepends content before blocks', function () {
     $variant = Vary::string("A\nB\nA");
     $block = new Block($variant, 'A');

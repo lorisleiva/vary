@@ -99,9 +99,25 @@ test('matchBlockWithEol', function () {
 });
 
 test('selectBlocks', function () {
-    //
+    $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
+
+    $variant->selectBlocks('A', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGED\nB\nCHANGED\nC"));
+
+    $variant->selectBlocks('A|B', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGED\nC"));
 });
 
-test('selectPhpBlocks', function () {
-    //
+test('selectBlocksWithEol', function () {
+    $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
+
+    $variant->selectBlocksWithEol('A', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGEDBCHANGEDC"));
+
+    $variant->selectBlocksWithEol('A|B', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGEDC"));
 });
+
+//test('selectPhpBlocks', function () {
+//    //
+//});

@@ -38,6 +38,11 @@ trait AltersBlocks
         return $this->selectMatches($pattern, $closure, null, $limit);
     }
 
+    public function selectBlocksWithEol(string $pattern, Closure $closure, int $limit = -1, string $allowedPattern = '\s*'): static
+    {
+        return $this->selectBlocks($pattern, $closure, $limit, $allowedPattern, true);
+    }
+
     public function selectPhpBlocks(string $pattern, Closure $closure, int $limit = -1, bool $includeEol = false): static
     {
         $lineComment = '\/\/.*$';
