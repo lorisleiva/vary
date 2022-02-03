@@ -287,27 +287,83 @@ test('deleteLines', function () {
 });
 
 test('getAllLines', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getAllLines())->toBe([
+        'First line.',
+        'Second line.',
+        'Last line.',
+    ]);
 });
 
 test('getAllLinesWithEol', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getAllLinesWithEol())->toBe([
+        'First line.' . PHP_EOL,
+        'Second line.' . PHP_EOL,
+        'Last line.',
+    ]);
 });
 
 test('getFirstLine', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getFirstLine())->toBe('First line.');
 });
 
 test('getFirstLineWithEol', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getFirstLineWithEol())->toBe("First line.\n");
 });
 
 test('getLastLine', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getLastLine())->toBe('Last line.');
 });
 
 test('getLastLineWithEol', function () {
-    //
+    $variant = Vary::string(
+        <<<END
+        First line.
+        Second line.
+        Last line.
+        END
+    );
+
+    expect($variant->getLastLineWithEol())->toBe("\nLast line.");
 });
 
 test('prependLine', function () {
@@ -487,58 +543,28 @@ test('selectLineWithEol', function () {
 });
 
 test('sortLines', function () {
-    //
-});
-
-test('sortLinesByLength', function () {
-    //
-});
-
-it('sorts all lines by alphabetical order', function () {
     Vary::string(
         <<<END
         Some line.
         Another line.
         New line.
         END
-    )
-        ->sortLines()
-        ->tap(expectVariantToBe(
-            <<<END
-            Another line.
-            New line.
-            Some line.
-            END
-        ));
+    )->sortLines()->tap(expectVariantToBe(
+        <<<END
+        Another line.
+        New line.
+        Some line.
+        END
+    ));
 
     Vary::string("D\nA\nC\nB\n")
         ->sortLines()
         ->tap(expectVariantToBe("A\nB\nC\nD\n"));
-});
 
-it('sorts all lines by length', function () {
-    Vary::string(
-        <<<END
-        Some line.
-        Another line.
-        New line.
-        END
-    )
-        ->sortLinesByLength()
-        ->tap(expectVariantToBe(
-            <<<END
-            New line.
-            Some line.
-            Another line.
-            END
-        ));
-
-    Vary::string("DDDD\nA\nCCC\nBB\n")
+    Vary::string("\n\nB\n\nA\n\n")
         ->sortLines()
-        ->tap(expectVariantToBe("A\nBB\nCCC\nDDDD\n"));
-});
+        ->tap(expectVariantToBe("\n\n\n\nA\nB\n"));
 
-it('sorts all lines by a given custom order', function () {
     Vary::string(
         <<<END
         A. Some line. [3]
@@ -558,38 +584,24 @@ it('sorts all lines by a given custom order', function () {
         ));
 });
 
-it('returns the first and last lines of the content', function () {
-    $variant = Vary::string(
+test('sortLinesByLength', function () {
+    Vary::string(
         <<<END
-        First line.
-        Second line.
-        Last line.
+        Some line.
+        Another line.
+        New line.
         END
-    );
+    )
+        ->sortLinesByLength()
+        ->tap(expectVariantToBe(
+            <<<END
+            New line.
+            Some line.
+            Another line.
+            END
+        ));
 
-    expect($variant->getFirstLine())->toBe('First line.');
-    expect($variant->getFirstLineWithEol())->toBe("First line.\n");
-    expect($variant->getLastLine())->toBe('Last line.');
-});
-
-it('returns all lines in the content', function () {
-    $variant = Vary::string(
-        <<<END
-        First line.
-        Second line.
-        Last line.
-        END
-    );
-
-    expect($variant->getAllLines())->toBe([
-        'First line.',
-        'Second line.',
-        'Last line.',
-    ]);
-
-    expect($variant->getAllLinesWithEol())->toBe([
-        'First line.' . PHP_EOL,
-        'Second line.' . PHP_EOL,
-        'Last line.',
-    ]);
+    Vary::string("DDDD\nA\nCCC\nBB\n")
+        ->sortLines()
+        ->tap(expectVariantToBe("A\nBB\nCCC\nDDDD\n"));
 });
