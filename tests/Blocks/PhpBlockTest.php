@@ -1,9 +1,8 @@
 <?php
 
-use Lorisleiva\Vary\Blocks\PhpBlock;
 use Lorisleiva\Vary\Vary;
 
-it('parses blocks of patterned items whilst allowing PHP line comments', function () {
+it('allows PHP line comments', function () {
     $variant = Vary::string(
         <<<PHP
         // Some comment before.
@@ -14,18 +13,16 @@ it('parses blocks of patterned items whilst allowing PHP line comments', functio
         PHP
     );
 
-    $block = new PhpBlock($variant, 'A');
-
-    expect($block->match())->toBe(
+    $variant->phpBlock('A')->match()->tap(expectVariantToBe(
         <<<PHP
         A // Some comment next to an item.
         // Some comment inside.
         A
         PHP
-    );
+    ));
 });
 
-it('parses blocks of patterned items whilst allowing PHP block comments', function () {
+it('allows PHP block comments', function () {
     $variant = Vary::string(
         <<<PHP
         /* Some comment before. */
@@ -38,9 +35,7 @@ it('parses blocks of patterned items whilst allowing PHP block comments', functi
         PHP
     );
 
-    $block = new PhpBlock($variant, 'A');
-
-    expect($block->match())->toBe(
+    $variant->phpBlock('A')->match()->tap(expectVariantToBe(
         <<<PHP
         A /* Some
         Multiline
@@ -48,10 +43,10 @@ it('parses blocks of patterned items whilst allowing PHP block comments', functi
         /* Some comment inside. */
         A
         PHP
-    );
+    ));
 });
 
-it('parses blocks of patterned items whilst allowing PHP comments', function () {
+it('allows PHP all types of comments', function () {
     $variant = Vary::string(
         <<<PHP
         // Some comment before.
@@ -67,9 +62,7 @@ it('parses blocks of patterned items whilst allowing PHP comments', function () 
         PHP
     );
 
-    $block = new PhpBlock($variant, 'A');
-
-    expect($block->matchAll())->toBe([
+    expect($variant->phpBlock('A')->matchAll())->toBe([
         <<<PHP
         A
         // Some comment inside.
@@ -82,7 +75,7 @@ it('parses blocks of patterned items whilst allowing PHP comments', function () 
         PHP
     ]);
 
-    expect($block->matchAllWithEol())->toBe([
+    expect($variant->phpBlock('A')->matchAllWithEol())->toBe([
         <<<PHP
 
         A

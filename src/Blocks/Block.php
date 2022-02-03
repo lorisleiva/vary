@@ -19,52 +19,12 @@ class Block
         $this->allowedPattern = $allowedPattern;
     }
 
-    public function append(string $suffix): Variant
-    {
-        return $this->appendAfterEach($suffix, 1);
-    }
-
-    public function appendAfterEach(string $suffix, int $limit = -1): Variant
-    {
-        return $this->select(fn (Variant $variant) => $variant->append($suffix), limit: $limit);
-    }
-
-    public function appendLines(string $content, bool $keepIndent = false): Variant
-    {
-        return $this->appendLinesAfterEach($content, $keepIndent, 1);
-    }
-
-    public function appendLinesAfterEach(string $content, bool $keepIndent = false, int $limit = -1): Variant
-    {
-        return $this->select(fn (Variant $variant) => $variant->appendLine($content, $keepIndent), limit: $limit);
-    }
-
-    public function deleteLine(string $search, int $limit = -1, bool $ignoreWhitespace = true): Variant
-    {
-        return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLine($search, $limit, $ignoreWhitespace));
-    }
-
-    public function deleteLinePattern(string $pattern, int $limit = -1): Variant
-    {
-        return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLineMatches($pattern, $limit));
-    }
-
-    public function deleteLines(array $lines, bool $ignoreWhitespace = true): Variant
-    {
-        return $this->selectWithEol(fn (Variant $variant) => $variant->deleteLines($lines, $ignoreWhitespace));
-    }
-
     public function empty(): Variant
     {
         return $this->selectWithEol(fn (Variant $variant) => $variant->emptyFragment());
     }
 
-    public function getPattern(bool $includeEol = false): string
-    {
-        return Regex::getBlockPattern($this->pattern, $this->allowedPattern, $includeEol);
-    }
-
-    public function match(bool $includeEol = false): string
+    public function match(bool $includeEol = false): Variant
     {
         return $this->variant->match($this->getPattern($includeEol));
     }
@@ -79,39 +39,9 @@ class Block
         return $this->matchAll(true);
     }
 
-    public function matchWithEol(): string
+    public function matchWithEol(): Variant
     {
         return $this->match(true);
-    }
-
-    public function prepend(string $prefix): Variant
-    {
-        return $this->prependBeforeEach($prefix, 1);
-    }
-
-    public function prependBeforeEach(string $prefix, int $limit = -1): Variant
-    {
-        return $this->select(fn (Variant $variant) => $variant->prepend($prefix), limit: $limit);
-    }
-
-    public function prependLines(string $content, bool $keepIndent = false): Variant
-    {
-        return $this->prependLinesBeforeEach($content, $keepIndent, 1);
-    }
-
-    public function prependLinesBeforeEach(string $content, bool $keepIndent = false, int $limit = -1): Variant
-    {
-        return $this->select(fn (Variant $variant) => $variant->prependLine($content, $keepIndent), limit: $limit);
-    }
-
-    public function replace(string $search, string $replace): Variant
-    {
-        return $this->select(fn (Variant $variant) => $variant->replace($search, $replace));
-    }
-
-    public function replaceAll(array $replacements): Variant
-    {
-        return $this->select(fn (Variant $variant) => $variant->replaceAll($replacements));
     }
 
     public function select(Closure $callback, ?Closure $replace = null, int $limit = -1, bool $includeEol = false): Variant
@@ -122,5 +52,10 @@ class Block
     public function selectWithEol(Closure $callback, ?Closure $replace = null, int $limit = -1): Variant
     {
         return $this->select($callback, $replace, $limit, true);
+    }
+
+    protected function getPattern(bool $includeEol = false): string
+    {
+        return Regex::getBlockPattern($this->pattern, $this->allowedPattern, $includeEol);
     }
 }
