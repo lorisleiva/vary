@@ -157,13 +157,20 @@ trait AltersLines
         return $this->getFirstLine(true);
     }
 
-    public function getLastLine(): string
+    public function getLastLine(bool $includeEol = false): string
     {
         if (! str_contains($this->value, PHP_EOL)) {
             return $this->value;
         }
 
-        return Str::afterLast($this->value, PHP_EOL);
+        $line = Str::afterLast($this->value, PHP_EOL);
+
+        return $includeEol ? PHP_EOL . $line : $line;
+    }
+
+    public function getLastLineWithEol(): string
+    {
+        return $this->getLastLine(true);
     }
 
     public function prependLine(string $content, bool $keepIndent = false): static
