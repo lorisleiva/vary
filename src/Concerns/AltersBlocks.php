@@ -14,11 +14,21 @@ trait AltersBlocks
         return $this->matchAll($pattern);
     }
 
+    public function matchAllBlockWithEol(string $pattern, string $allowedPattern = '\s*'): array
+    {
+        return $this->matchAllBlocks($pattern, $allowedPattern, true);
+    }
+
     public function matchBlock(string $pattern, string $allowedPattern = '\s*', bool $includeEol = false): static
     {
         $pattern = Regex::getBlockPattern($pattern, $allowedPattern, $includeEol);
 
         return $this->match($pattern);
+    }
+
+    public function matchBlockWithEol(string $pattern, string $allowedPattern = '\s*'): static
+    {
+        return $this->matchBlock($pattern, $allowedPattern, true);
     }
 
     public function selectBlocks(string $pattern, Closure $closure, int $limit = -1, string $allowedPattern = '\s*', bool $includeEol = false): static

@@ -7,7 +7,7 @@ class Regex
     public static function getBlockPattern(string $pattern, string $allowedPattern, bool $includeEol = false): string
     {
         return sprintf(
-            '/%3$s(?:%1$s%2$s)*(?:%1$s%3$s)/m',
+            '/%3$s(?:(?:%1$s)(?:%2$s))*(?:(?:%1$s)%3$s)/m',
             $pattern,
             $allowedPattern,
             $includeEol ? '\n?' : ''

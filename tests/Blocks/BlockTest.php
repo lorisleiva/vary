@@ -3,16 +3,6 @@
 use Lorisleiva\Vary\Blocks\Block;
 use Lorisleiva\Vary\Vary;
 
-it('parses block of patterned items', function () {
-    $variant = Vary::string("A\nA\nB\nA\nA\nA\nC");
-    $block = new Block($variant, 'A');
-
-    expect($block->first())->toBe("A\nA");
-    expect($block->all())->toBe(["A\nA", "A\nA\nA"]);
-    expect($block->firstWithEol())->toBe("A\nA\n");
-    expect($block->allWithEol())->toBe(["A\nA\n", "\nA\nA\nA\n"]);
-});
-
 it('parses more complex blocks of patterned items', function () {
     $variant = Vary::string(
         <<<EOL
