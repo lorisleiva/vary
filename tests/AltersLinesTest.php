@@ -2,33 +2,151 @@
 
 use Lorisleiva\Vary\Vary;
 
-it('selects a line by providing its content', function () {
+test('addAfterExactLine', function () {
+    //
+});
+
+test('addAfterLine', function () {
+    //
+});
+
+test('addAfterLineMatches', function () {
+    //
+});
+
+test('addBeforeExactLine', function () {
+    //
+});
+
+test('addBeforeLine', function () {
+    //
+});
+
+test('addBeforeLineMatches', function () {
+    //
+});
+
+test('appendLine', function () {
+    //
+});
+
+test('deleteFirstLine', function () {
+    //
+});
+
+test('deleteLastLine', function () {
+    //
+});
+
+test('deleteExactLine', function () {
+    //
+});
+
+test('deleteExactLines', function () {
+    //
+});
+
+test('deleteLine', function () {
+    //
+});
+
+test('deleteLineMatches', function () {
+    //
+});
+
+test('deleteLines', function () {
+    //
+});
+
+test('getAllLines', function () {
+    //
+});
+
+test('getAllLinesWithEol', function () {
+    //
+});
+
+test('getFirstLine', function () {
+    //
+});
+
+test('getFirstLineWithEol', function () {
+    //
+});
+
+test('getLastLine', function () {
+    //
+});
+
+test('getLastLineWithEol', function () {
+    //
+});
+
+test('prependLine', function () {
+    //
+});
+
+test('selectAllLines', function () {
+    //
+});
+
+test('selectAllLinesWithEol', function () {
+    //
+});
+
+test('selectExactLine', function () {
     $variant = Vary::string(<<<END
         One apple pie.
         One humble pie.
         One apple TV.
     END);
 
-    // Select lines ignoring left and right whitespace.
-    $variant->selectLine('One apple pie.', expectVariantToBe("    One apple pie."));
-    $variant->selectLineWithEol('One apple pie.', expectVariantToBe("    One apple pie.\n"));
-    $variant->selectLineWithEol('One apple TV.', expectVariantToBe("\n    One apple TV."));
-
-    // Select lines including whitespaces.
     $variant->selectExactLine('One apple pie.', expectVariantNotToBeCalled());
     $variant->selectExactLine('    One apple pie.', expectVariantToBe("    One apple pie."));
-    $variant->selectExactLineWithEol('    One apple pie.', expectVariantToBe("    One apple pie.\n"));
-    $variant->selectExactLineWithEol('    One apple TV.', expectVariantToBe("\n    One apple TV."));
+    $variant->selectExactLine('*apple*', expectVariantNotToBeCalled());
 });
 
-it('selects multiple lines by providing their content', function () {
+test('selectExactLineWithEol', function () {
     $variant = Vary::string(<<<END
         One apple pie.
         One humble pie.
-        One apple pie.
+        One apple TV.
     END);
 
-    $variant->selectLine('One apple pie.', overrideVariantTo('CHANGED'))
+    $variant->selectExactLineWithEol('One apple pie.', expectVariantNotToBeCalled());
+    $variant->selectExactLineWithEol('    One apple pie.', expectVariantToBe("    One apple pie.\n"));
+    $variant->selectExactLineWithEol('*apple*', expectVariantNotToBeCalled());
+});
+
+test('selectFirstLine', function () {
+    //
+});
+
+test('selectFirstLineWithEol', function () {
+    //
+});
+
+test('selectLastLine', function () {
+    //
+});
+
+test('selectLastLineWithEol', function () {
+    //
+});
+
+test('selectLine', function () {
+    $variant = Vary::string(<<<END
+        One apple pie.
+        One humble pie.
+        One apple TV.
+    END);
+
+    $variant->selectLine('One apple pie.', expectVariantToBe("    One apple pie."));
+    $variant->selectLine('One apple pie.', expectVariantNotToBeCalled(), ignoreWhitespace: false);
+    $variant->selectLine('    One apple pie.', expectVariantToBe("    One apple pie."), ignoreWhitespace: false);
+    $variant->selectLine('*apple pie*', expectVariantToBe("    One apple pie."));
+    $variant->selectLine('One apple pie*', expectVariantNotToBeCalled(), ignoreWhitespace: false);
+    $variant->selectLine('*apple*', overrideVariantTo('CHANGED'))
         ->tap(expectVariantToBe(
             <<<END
             CHANGED
@@ -36,13 +154,38 @@ it('selects multiple lines by providing their content', function () {
             CHANGED
             END
         ));
+});
 
-    $variant->selectLineWithEol('One apple pie.', overrideVariantTo('CHANGED'))
-        ->tap(expectVariantToBe(
-            <<<END
-            CHANGED    One humble pie.CHANGED
-            END
-        ));
+test('selectLineMatches', function () {
+    //
+});
+
+test('selectLineMatchesWithEol', function () {
+    //
+});
+
+test('selectLineWithEol', function () {
+    $variant = Vary::string(<<<END
+        One apple pie.
+        One humble pie.
+        One apple TV.
+    END);
+
+    $variant->selectLineWithEol('One apple pie.', expectVariantToBe("    One apple pie.\n"));
+    $variant->selectLineWithEol('*apple pie*', expectVariantToBe("    One apple pie.\n"));
+    $variant->selectLineWithEol('*TV*', expectVariantToBe("\n    One apple TV."));
+    $variant->selectLineWithEol('*apple*', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGED    One humble pie.CHANGED"));
+    $variant->selectLineWithEol('*pie*', overrideVariantTo('CHANGED'))
+        ->tap(expectVariantToBe("CHANGEDCHANGED    One apple TV."));
+});
+
+test('sortLines', function () {
+    //
+});
+
+test('sortLinesByLength', function () {
+    //
 });
 
 it('selects the first and last lines', function () {
